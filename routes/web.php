@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\ClienteController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -23,9 +24,11 @@ require __DIR__.'/auth.php';
 
 // Panel Admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
+    Route::get('/dashboard', function () {        
         return view('admin.dashboard');
     })->name('dashboard');
+
+    Route::resource('clientes', ClienteController::class);
 });
 
 // Panel Cajero
