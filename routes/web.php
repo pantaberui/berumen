@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ClienteController;
+use App\Http\Controllers\Admin\ContratoController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -29,6 +30,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     })->name('dashboard');
 
     Route::resource('clientes', ClienteController::class);
+    Route::resource('contratos', ContratoController::class);
 });
 
 // Panel Cajero

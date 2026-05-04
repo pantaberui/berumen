@@ -6,20 +6,21 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('contratos', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('cliente_id')->constrained('clientes')->onDelete('cascade');
+            $table->string('numero_contrato')->unique();
+            $table->date('fecha_inicio');
+            $table->decimal('mensualidad', 8, 2);
+            $table->enum('estatus', ['activo', 'adeudo', 'cancelado'])->default('activo');
+            $table->string('velocidad')->nullable();
+            $table->text('observaciones')->nullable();
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('contratos');
