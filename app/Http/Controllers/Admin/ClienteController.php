@@ -139,6 +139,34 @@ class ClienteController extends Controller
             ->with('success', 'Cliente actualizado correctamente.');
     }
 
+
+    public function buscar(Request $request)
+    {
+        $termino = strtoupper(trim($request->q));
+
+        if (strlen($termino) < 3) {
+            return response()->json([]);
+        }
+
+        // Dividir en palabras para buscar cada una
+        $palabras = array_filter(explode(' ', $termino), fn($p) => strlen($p) >= 2);
+
+        $clientes = Cliente::where(function ($query) use ($palabras) {
+            foreach ($palabras as $palabra) {
+                $query->where(function ($q) use ($palabra) {
+                    $q->whereRaw('UPPER(nombre) LIKE ?', ["%{$palabra}%"])
+                    ->orWhereRaw('UPPER(apellido_paterno) LIKE ?', ["%{$palabra}%"])
+                    ->orWhereRaw('UPPER(apellido_materno) LIKE ?', ["%{$palabra}%"])
+                    ->orWhereRaw('UPPER(curp) LIKE ?', ["%{$palabra}%"])
+                    ->orWhereRaw('UPPER(rfc) LIKE ?', ["%{$palabra}%"]);
+                });
+            }
+        })->limit(10)->get();
+
+        return response()->json($clientes);
+    }
+
+
     public function destroy(Cliente $cliente)
     {
         $cliente->delete();

@@ -23,9 +23,15 @@
             {{-- Ticket visual --}}
             <div class="bg-white shadow-sm rounded-lg p-6 font-mono text-sm" id="ticket">
                 <div class="text-center mb-4">
-                    <p class="font-bold text-lg">ENTRETENIMIENTO BERUMEN</p>
-                    <p class="text-gray-500">Recibo de Pago</p>
-                    <p class="text-gray-400 text-xs">{{ now()->format('d/m/Y H:i') }}</p>
+                    <img src="{{ asset('images/logo.jpg') }}"
+                        alt="Entretenimiento Berumen"
+                        class="mx-auto mb-3"
+                        style="width: 95%; max-width: 700px; height: 250px; object-fit: contain;">
+                    <p class="text-gray-600 text-sm">Tamaulipas 3, San José de Mojarras</p>
+                    <p class="text-gray-600 text-sm">Nayarit, México. Tel. (311) 352-2645</p>
+                    <p class="text-gray-600 text-sm">entretenimientoberumen@hotmail.com</p>
+                    <p class="text-gray-600 text-sm">Síguenos en Facebook: /berumen.entretenimiento</p>
+                    <p class="text-gray-400 text-xs mt-1">{{ now()->format('d/m/Y H:i') }}</p>
                 </div>
 
                 <div class="border-t border-dashed pt-4 space-y-2">
@@ -62,6 +68,11 @@
                         <span>-${{ number_format($pago->descuento, 2) }}</span>
                     </div>
                     @endif
+
+                    <div class="flex justify-between text-xs text-gray-500 italic mt-1">
+                        <span colspan="2">{{ \App\Helpers\NumeroALetras::convertir($pago->total) }}</span>
+                    </div>
+
                     <div class="flex justify-between font-bold text-lg border-t pt-2 mt-2">
                         <span>TOTAL:</span>
                         <span>${{ number_format($pago->total, 2) }}</span>
