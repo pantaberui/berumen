@@ -63,20 +63,39 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700">CURP</label>
-                            <input type="text" name="curp" value="{{ old('curp', $cliente->curp) }}"
-                                   class="mt-1 w-full border-gray-300 rounded-md shadow-sm" maxlength="18">
+                            <input type="text" name="curp" id="curp"
+                                value="{{ old('curp', $cliente->curp) }}"
+                                class="mt-1 w-full border-gray-300 rounded-md shadow-sm"
+                                maxlength="18" placeholder="BADD110313HCMLNS09">
+                            <p id="error_curp" class="hidden text-red-600 text-xs mt-1">
+                                Formato inválido. Ejemplo: BADD110313HCMLNS09
+                            </p>
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700">RFC</label>
-                            <input type="text" name="rfc" value="{{ old('rfc', $cliente->rfc) }}"
-                                   class="mt-1 w-full border-gray-300 rounded-md shadow-sm" maxlength="13">
+                            <input type="text" name="rfc" id="rfc"
+                                value="{{ old('rfc', $cliente->rfc) }}"
+                                class="mt-1 w-full border-gray-300 rounded-md shadow-sm"
+                                maxlength="13" placeholder="BADD110313AB3">
+                            <p id="error_rfc" class="hidden text-red-600 text-xs mt-1">
+                                Formato inválido. Ejemplo: BADD110313AB3 (13 caracteres, persona física)
+                            </p>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Ciudad</label>
-                            <input type="text" name="ciudad" value="{{ old('ciudad', $cliente->ciudad) }}"
-                                   class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                            <label class="block text-sm font-medium text-gray-700">Ciudad / Localidad</label>
+                            <select name="ciudad" id="ciudad" class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                                @foreach([
+                                    'SAN JOSÉ DE MOJARRAS', 'COLONIA MODERNA', 'CERRO BLANCO',
+                                    'RINCÓN DE CALIMAYO', 'EL HUANACAXTLE', 'LAS CUEVAS',
+                                    'MIGUEL HIDALGO', 'BUCKINGHAM', 'SANTA MARÍA DEL ORO', 'SAN LUIS DE LOZADA'
+                                ] as $ciudad)
+                                    <option value="{{ $ciudad }}" {{ old('ciudad', $cliente->ciudad) == $ciudad ? 'selected' : '' }}>
+                                        {{ $ciudad }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
 
                         <div>
@@ -133,4 +152,31 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Validar CURP en tiempo real
+        document.getElementById('curp')?.addEventListener('input', function () {
+            const val = this.value.toUpperCase();
+            const regex = /^[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]\d$/;
+            const error = document.getElementById('error_curp');
+            if (val.length === 18 && !regex.test(val)) {
+                error.classList.remove('hidden');
+            } else {
+                error.classList.add('hidden');
+            }
+        });
+
+        // Validar RFC en tiempo real
+        document.getElementById('rfc')?.addEventListener('input', function () {
+            const val = this.value.toUpperCase();
+            const regex = /^[A-Z]{4}\d{6}[A-Z0-9]{3}$/;
+            const error = document.getElementById('error_rfc');
+            if (val.length === 13 && !regex.test(val)) {
+                error.classList.remove('hidden');
+            } else {
+                error.classList.add('hidden');
+            }
+        });
+    </script>
+
 </x-app-layout>

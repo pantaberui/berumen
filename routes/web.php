@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ClienteController;
 use App\Http\Controllers\Admin\ContratoController;
 use App\Http\Controllers\Admin\PagoController;
+use App\Http\Controllers\Admin\IncidenciaController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -34,6 +35,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('clientes', ClienteController::class);
     Route::resource('contratos', ContratoController::class);
     Route::resource('pagos', PagoController::class);
+    Route::resource('incidencias', IncidenciaController::class);
 });
 
 // Panel Cajero

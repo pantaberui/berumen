@@ -23,7 +23,7 @@
 
                         <div class="md:col-span-2">
                             <label class="block text-sm font-medium text-gray-700">Cliente *</label>
-                            <select name="cliente_id" class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                            <select name="cliente_id" id="cliente_id" class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
                                 <option value="">— Selecciona un cliente —</option>
                                 @foreach($clientes as $cliente)
                                     <option value="{{ $cliente->id }}"
@@ -93,4 +93,12 @@
             </div>
         </div>
     </div>
+
+    <script>
+        new TomSelect('#cliente_id', {
+            searchField: ['text'],
+            placeholder: '— Busca por nombre de cliente —',
+            maxOptions: 50,
+        });
+    </script>
 </x-app-layout>

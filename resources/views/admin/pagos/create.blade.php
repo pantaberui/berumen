@@ -171,5 +171,12 @@
             const total = importe - descuento;
             document.getElementById('total_display').textContent = '$' + total.toFixed(2);
         }
+
+        new TomSelect('#contrato_id', {
+            searchField: ['text'],
+            placeholder: '— Busca por nombre o número de contrato —',
+            maxOptions: 50,
+        });
+        
     </script>
 </x-app-layout>
