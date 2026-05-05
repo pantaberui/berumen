@@ -12,8 +12,20 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
+                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
+                        Dashboard
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('admin.clientes.*')">
+                        Clientes
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.contratos.index')" :active="request()->routeIs('admin.contratos.*')">
+                        Contratos
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.pagos.index')" :active="request()->routeIs('admin.pagos.*')">
+                        Pagos
+                    </x-nav-link>
+                    <x-nav-link :href="route('admin.incidencias.index')" :active="request()->routeIs('admin.incidencias.*')">
+                        Incidencias
                     </x-nav-link>
                 </div>
             </div>
