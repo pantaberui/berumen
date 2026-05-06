@@ -67,6 +67,7 @@ class PagoController extends Controller
             'total'         => $total,
             'tipo_pago'     => $request->tipo_pago,
             'observaciones' => $request->observaciones,
+            'fecha_hora_registro'  => now(),
         ]);
 
         // Actualizar estatus del contrato a activo

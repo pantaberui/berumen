@@ -13,12 +13,14 @@ class Pago extends Model
         'contrato_id', 'user_id', 'fecha_pago',
         'periodo_desde', 'periodo_hasta', 'importe',
         'descuento', 'total', 'tipo_pago', 'observaciones',
+        'fecha_hora_registro',
     ];
 
     protected $casts = [
         'fecha_pago'    => 'date',
         'periodo_desde' => 'date',
         'periodo_hasta' => 'date',
+        'fecha_hora_registro'  => 'datetime',
     ];
 
     public function contrato()

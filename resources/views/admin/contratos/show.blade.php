@@ -32,6 +32,7 @@
                     <div><span class="font-medium text-gray-500">Fecha Inicio</span><p>{{ $contrato->fecha_inicio->format('d/m/Y') }}</p></div>
                     <div><span class="font-medium text-gray-500">Mensualidad</span><p>${{ number_format($contrato->mensualidad, 2) }}</p></div>
                     <div><span class="font-medium text-gray-500">Velocidad</span><p>{{ $contrato->velocidad ?? '—' }}</p></div>
+                    <div><span class="font-medium text-gray-500">Dirección IP</span><p>{{ $contrato->ip ?? '—' }}</p></div>
                     <div><span class="font-medium text-gray-500">Estatus</span>
                         <p>
                             @if($contrato->estatus === 'activo')
@@ -43,6 +44,14 @@
                             @endif
                         </p>
                     </div>
+
+                    @if($contrato->fecha_cancelacion)
+                    <div>
+                        <span class="font-medium text-gray-500">Fecha Cancelación</span>
+                        <p class="text-red-600 font-medium">{{ $contrato->fecha_cancelacion->format('d/m/Y') }}</p>
+                    </div>
+                    @endif
+
                     @if($contrato->observaciones)
                     <div class="col-span-3"><span class="font-medium text-gray-500">Observaciones</span>
                         <p>{{ $contrato->observaciones }}</p>

@@ -21,17 +21,19 @@
             @endif
 
             {{-- Ticket visual --}}
-            <div class="bg-white shadow-sm rounded-lg p-6 font-mono text-sm" id="ticket">
+            <div class="bg-white shadow-sm rounded-lg p-6 font-mono text-sm" id="ticket" style="max-width: 600px; margin: 0 auto;">
                 <div class="text-center mb-4">
                     <img src="{{ asset('images/logo.jpg') }}"
                         alt="Entretenimiento Berumen"
                         class="mx-auto mb-3"
                         style="width: 95%; max-width: 700px; height: 250px; object-fit: contain;">
-                    <p class="text-gray-600 text-sm">Tamaulipas 3, San José de Mojarras</p>
-                    <p class="text-gray-600 text-sm">Nayarit, México. Tel. (311) 352-2645</p>
+                    <p class="text-gray-600 text-sm">Tamaulipas 3, San José de Mojarras,</p>
+                    <p class="text-gray-600 text-sm">Nayarit, México. Tel. (311) 352-26-45</p>
                     <p class="text-gray-600 text-sm">entretenimientoberumen@hotmail.com</p>
                     <p class="text-gray-600 text-sm">Síguenos en Facebook: /berumen.entretenimiento</p>
-                    <p class="text-gray-400 text-xs mt-1">{{ now()->format('d/m/Y H:i') }}</p>
+                    <p class="text-gray-400 text-xs mt-1">
+                        {{ $pago->fecha_hora_registro ? $pago->fecha_hora_registro->format('d/m/Y H:i') : $pago->created_at->format('d/m/Y H:i') }}
+                    </p>
                 </div>
 
                 <div class="border-t border-dashed pt-4 space-y-2">
@@ -69,13 +71,13 @@
                     </div>
                     @endif
 
-                    <div class="flex justify-between text-xs text-gray-500 italic mt-1">
-                        <span colspan="2">{{ \App\Helpers\NumeroALetras::convertir($pago->total) }}</span>
-                    </div>
 
                     <div class="flex justify-between font-bold text-lg border-t pt-2 mt-2">
                         <span>TOTAL:</span>
                         <span>${{ number_format($pago->total, 2) }}</span>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500 italic mt-1">
+                        <span colspan="2">{{ \App\Helpers\NumeroALetras::convertir($pago->total) }}</span>
                     </div>
                 </div>
 
@@ -86,7 +88,7 @@
             </div>
 
             <div class="mt-4 text-center">
-                <button onclick="window.print()"
+                <button onclick="imprimirTicket()"
                         class="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-900">
                     🖨 Imprimir Ticket
                 </button>
@@ -94,4 +96,104 @@
 
         </div>
     </div>
+
+    <style>
+        @media print {
+            /* Ocultar todo excepto el ticket */
+            nav, header, .print\:hidden,
+            [class*="header"], [class*="nav"],
+            .flex.justify-between.items-center,
+            a, button {
+                display: none !important;
+            }
+
+            /* Resetear márgenes de página */
+            @page {
+                margin: 0.5cm;
+                size: A4;
+            }
+
+            body {
+                margin: 0;
+                padding: 0;
+            }
+
+            /* Mostrar solo el ticket */
+            #ticket {
+                display: block !important;
+                width: 100%;
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                page-break-after: avoid;
+                page-break-inside: avoid;
+            }
+
+            /* Ocultar todo lo que no sea el ticket */
+            body > * {
+                display: none !important;
+            }
+
+            #ticket {
+                display: block !important;
+            }
+        }
+    </style>
+
+    <script>
+        function imprimirTicket() {
+            const ticket = document.getElementById('ticket').innerHTML;
+            const ventana = window.open('', '_blank', 'width=700,height=900');
+            ventana.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>Recibo de Pago</title>
+                    <style>
+                        body { font-family: monospace; font-size: 13px; margin: 20px; }
+                        img { max-width: 100%; }
+                        .text-center { text-align: center; }
+                        .text-right { text-align: right; }
+                        .flex { display: flex; }
+                        .justify-between { justify-content: space-between; }
+                        .font-bold { font-weight: bold; }
+                        .font-medium { font-weight: 500; }
+                        .text-lg { font-size: 16px; }
+                        .text-base { font-size: 14px; }
+                        .text-sm { font-size: 12px; }
+                        .text-xs { font-size: 11px; }
+                        .text-gray-500 { color: #6b7280; }
+                        .text-gray-600 { color: #4b5563; }
+                        .text-gray-400 { color: #9ca3af; }
+                        .text-red-600 { color: #dc2626; }
+                        .text-green-700 { color: #15803d; }
+                        .border-t { border-top: 1px solid #e5e7eb; }
+                        .border-dashed { border-top-style: dashed; }
+                        .pt-4 { padding-top: 16px; }
+                        .mt-4 { margin-top: 16px; }
+                        .mt-2 { margin-top: 8px; }
+                        .mt-1 { margin-top: 4px; }
+                        .mb-4 { margin-bottom: 16px; }
+                        .mb-3 { margin-bottom: 12px; }
+                        .mb-2 { margin-bottom: 8px; }
+                        .space-y-2 > * + * { margin-top: 8px; }
+                        .space-y-1 > * + * { margin-top: 4px; }
+                        .pt-2 { padding-top: 8px; }
+                        .italic { font-style: italic; }
+                        @page { margin: 1cm; }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    ${ticket}
+                </body>
+                </html>
+            `);
+            ventana.document.close();
+        }
+    </script>
+
+
+
 </x-app-layout>

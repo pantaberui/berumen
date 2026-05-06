@@ -31,6 +31,7 @@ class ContratoController extends Controller
             'mensualidad'      => 'required|numeric|min:0',
             'velocidad'        => 'nullable|string|max:50',
             'estatus'          => 'required|in:activo,adeudo,cancelado',
+            'ip'               => 'nullable|ip',
             'observaciones'    => 'nullable|string',
         ]);
 
@@ -61,7 +62,11 @@ class ContratoController extends Controller
             'mensualidad'     => 'required|numeric|min:0',
             'velocidad'       => 'nullable|string|max:50',
             'estatus'         => 'required|in:activo,adeudo,cancelado',
+            'ip'              => 'nullable|ip',
+            'fecha_cancelacion' => 'nullable|required_if:estatus,cancelado|date',
             'observaciones'   => 'nullable|string',
+        ],  [
+            'fecha_cancelacion.required_if' => 'La fecha de cancelación es obligatoria al cancelar el contrato.',
         ]);
 
         $contrato->update($request->all());

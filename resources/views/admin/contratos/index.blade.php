@@ -26,7 +26,7 @@
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fecha Inicio</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mensualidad</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Velocidad</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">IP</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estatus</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
                         </tr>
@@ -38,7 +38,7 @@
                             <td class="px-6 py-4 text-sm text-gray-700">{{ $contrato->cliente->nombre_completo }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $contrato->fecha_inicio->format('d/m/Y') }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">${{ number_format($contrato->mensualidad, 2) }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500">{{ $contrato->velocidad ?? '—' }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">{{ $contrato->ip ?? '—' }}</td>
                             <td class="px-6 py-4 text-sm">
                                 @if($contrato->estatus === 'activo')
                                     <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Activo</span>

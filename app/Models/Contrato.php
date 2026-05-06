@@ -11,11 +11,12 @@ class Contrato extends Model
 
     protected $fillable = [
         'cliente_id', 'numero_contrato', 'fecha_inicio',
-        'mensualidad', 'estatus', 'velocidad', 'observaciones',
+        'mensualidad', 'estatus', 'velocidad', 'ip', 'fecha_cancelacion', 'observaciones',
     ];
 
     protected $casts = [
         'fecha_inicio' => 'date',
+        'fecha_cancelacion' => 'date',
     ];
 
     public function cliente()

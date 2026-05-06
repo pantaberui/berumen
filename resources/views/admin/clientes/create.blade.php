@@ -34,8 +34,8 @@
                             <p class="text-green-600 text-sm">Puedes proceder con el registro.</p>
                         </div>
                         <button onclick="habilitarFormulario()"
-                                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                            Registrar nuevo cliente
+                                class="px-4 py-2 bg-blue-600 text-white font-medium rounded hover:bg-blue-700 shadow">
+                            + Registrar nuevo cliente
                         </button>
                     </div>
                 </div>

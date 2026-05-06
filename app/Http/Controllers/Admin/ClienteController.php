@@ -67,6 +67,11 @@ class ClienteController extends Controller
             ])->withInput();
         }
 
+        $request->merge([
+            'telefono' => preg_replace('/\D/', '', $request->telefono),
+            'celular'  => preg_replace('/\D/', '', $request->celular),
+        ]);
+
         Cliente::create($request->all());
 
         return redirect()->route('admin.clientes.index')
