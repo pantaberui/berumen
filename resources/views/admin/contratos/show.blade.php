@@ -32,7 +32,41 @@
                     <div><span class="font-medium text-gray-500">Fecha Inicio</span><p>{{ $contrato->fecha_inicio->format('d/m/Y') }}</p></div>
                     <div><span class="font-medium text-gray-500">Mensualidad</span><p>${{ number_format($contrato->mensualidad, 2) }}</p></div>
                     <div><span class="font-medium text-gray-500">Velocidad</span><p>{{ $contrato->velocidad ?? '—' }}</p></div>
-                    <div><span class="font-medium text-gray-500">Dirección IP</span><p>{{ $contrato->ip ?? '—' }}</p></div>
+                    
+                    <div>
+                        <span class="font-medium text-gray-500">Dirección IP</span>
+                        <div class="flex items-center gap-3 mt-1">
+                            <p>{{ $contrato->ip ?? '—' }}</p>
+                            @if($contrato->ip)
+                                <button onclick="mostrarModalIP('{{ $contrato->ip }}')"
+                                        class="px-3 py-1 bg-blue-600 text-white text-xs rounded hover:bg-blue-700">
+                                    Acceder
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Modal confirmación IP --}}
+                    <div id="modal_ip" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                        <div class="bg-white rounded-lg shadow-xl p-6 max-w-xs mx-4">
+                            <h3 class="text-base font-semibold text-gray-900 mb-2">Acceso a equipo</h3>
+                            <p class="text-sm text-gray-600 mb-6">
+                                ¿Estás ya conectado a la red correspondiente a la antena (2, 3, Netplus)?
+                            </p>
+                            <div class="flex justify-end gap-3">
+                                <button onclick="cerrarModalIP()"
+                                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
+                                    Cancelar
+                                </button>
+                                <a id="btn_continuar_ip" href="#" target="_blank"
+                                onclick="cerrarModalIP()"
+                                class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+                                    Continuar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
                     <div><span class="font-medium text-gray-500">Estatus</span>
                         <p>
                             @if($contrato->estatus === 'activo')
@@ -43,6 +77,15 @@
                                 <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Cancelado</span>
                             @endif
                         </p>
+                    </div>
+
+                    <div>
+                        <span class="font-medium text-gray-500">Teléfono de contacto</span>
+                        <p>{{ $contrato->cliente->celular ?? $contrato->cliente->telefono ?? '—' }}</p>
+                    </div>
+                    <div>
+                        <span class="font-medium text-gray-500">Correo de contacto</span>
+                        <p>{{ $contrato->cliente->email ?? '—' }}</p>
                     </div>
 
                     @if($contrato->fecha_cancelacion)
@@ -75,4 +118,19 @@
 
         </div>
     </div>
+    <script>
+        function mostrarModalIP(ip) {
+            document.getElementById('btn_continuar_ip').href = 'http://' + ip;
+            document.getElementById('modal_ip').classList.remove('hidden');
+        }
+
+        function cerrarModalIP() {
+            document.getElementById('modal_ip').classList.add('hidden');
+        }
+
+        // Cerrar con ESC
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') cerrarModalIP();
+        });
+    </script>
 </x-app-layout>

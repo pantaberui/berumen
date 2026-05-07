@@ -2,10 +2,28 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800">Incidencias</h2>
-            <a href="{{ route('admin.incidencias.create') }}"
-               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                + Nueva Incidencia
-            </a>
+            <div class="flex items-center gap-3">
+                <form action="{{ route('admin.incidencias.buscar') }}" method="GET" class="flex gap-2">
+                    <input type="text" name="q" value="{{ $busqueda ?? '' }}"
+                        placeholder="Buscar por nombre..."
+                        class="border-gray-300 rounded-md shadow-sm text-sm"
+                        minlength="3">
+                    <button type="submit"
+                            class="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
+                        Buscar
+                    </button>
+                    @if(!empty($busqueda))
+                        <a href="{{ route('admin.incidencias.index') }}"
+                        class="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
+                            ✕ Limpiar
+                        </a>
+                    @endif
+                </form>
+                <a href="{{ route('admin.incidencias.create') }}"
+                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    + Nueva Incidencia
+                </a>
+            </div>
         </div>
     </x-slot>
 

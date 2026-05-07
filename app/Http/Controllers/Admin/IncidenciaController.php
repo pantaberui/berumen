@@ -14,7 +14,8 @@ class IncidenciaController extends Controller
         $incidencias = Incidencia::with('cliente', 'usuario')
                                  ->orderBy('created_at', 'desc')
                                  ->paginate(15);
-        return view('admin.incidencias.index', compact('incidencias'));
+        $busqueda = null;
+        return view('admin.incidencias.index', compact('incidencias', 'busqueda'));
     }
 
     public function create()
@@ -78,6 +79,31 @@ class IncidenciaController extends Controller
 
         return redirect()->route('admin.incidencias.show', $incidencia)
             ->with('success', 'Incidencia actualizada correctamente.');
+    }
+    public function buscar(Request $request)
+    {
+        $termino  = strtoupper(trim($request->q));
+        if (strlen($termino) < 3) {
+            return redirect()->route('admin.incidencias.index');
+        }
+
+        $palabras = array_filter(explode(' ', $termino), fn($p) => strlen($p) >= 2);
+
+        $incidencias = Incidencia::with('cliente', 'usuario')
+            ->whereHas('cliente', function ($query) use ($palabras) {
+                foreach ($palabras as $palabra) {
+                    $query->where(function ($q) use ($palabra) {
+                        $q->whereRaw('UPPER(nombre) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(apellido_paterno) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(apellido_materno) LIKE ?', ["%{$palabra}%"]);
+                    });
+                }
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        $busqueda = $request->q;
+        return view('admin.incidencias.index', compact('incidencias', 'busqueda'));
     }
 
     public function destroy(Incidencia $incidencia)

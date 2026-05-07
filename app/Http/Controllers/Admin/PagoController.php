@@ -14,7 +14,8 @@ class PagoController extends Controller
         $pagos = Pago::with('contrato.cliente', 'cajero')
                      ->orderBy('created_at', 'desc')
                      ->paginate(15);
-        return view('admin.pagos.index', compact('pagos'));
+        $busqueda = null;
+        return view('admin.pagos.index', compact('pagos', 'busqueda'));
     }
 
     public function create()
@@ -116,6 +117,51 @@ class PagoController extends Controller
 
         return redirect()->route('admin.pagos.show', $pago)
             ->with('success', 'Pago actualizado correctamente.');
+    }
+
+    public function buscar(Request $request)
+    {
+        $termino  = strtoupper(trim($request->q));
+        if (strlen($termino) < 3) {
+            return redirect()->route('admin.pagos.index');
+        }
+
+        $palabras = array_filter(explode(' ', $termino), fn($p) => strlen($p) >= 2);
+
+        $pagos = Pago::with('contrato.cliente', 'cajero')
+            ->whereHas('contrato.cliente', function ($query) use ($palabras) {
+                foreach ($palabras as $palabra) {
+                    $query->where(function ($q) use ($palabra) {
+                        $q->whereRaw('UPPER(nombre) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(apellido_paterno) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(apellido_materno) LIKE ?', ["%{$palabra}%"]);
+                    });
+                }
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        $busqueda = $request->q;
+        return view('admin.pagos.index', compact('pagos', 'busqueda'));
+    }
+
+    public function enviarCorreo(Request $request, Pago $pago)
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ], [
+            'email.required' => 'El correo es obligatorio.',
+            'email.email'    => 'El formato del correo no es válido.',
+        ]);
+
+        $pago->load('contrato.cliente', 'cajero');
+
+        try {
+            \Mail::to($request->email)->send(new \App\Mail\TicketPagoMail($pago));
+            return back()->with('success_correo', 'Ticket enviado correctamente a ' . $request->email);
+        } catch (\Exception $e) {
+            return back()->with('error_correo', 'Error al enviar el correo. Verifique la configuración.');
+        }
     }
 
     public function destroy(Pago $pago)

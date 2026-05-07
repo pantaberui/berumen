@@ -35,8 +35,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('clientes/buscar', [ClienteController::class, 'buscar'])->name('clientes.buscar');
     Route::resource('clientes', ClienteController::class);
+    Route::get('contratos/buscar',   [ContratoController::class,   'buscar'])->name('contratos.buscar');
     Route::resource('contratos', ContratoController::class);
+    Route::get('pagos/buscar',       [PagoController::class,       'buscar'])->name('pagos.buscar');
+    Route::post('pagos/{pago}/enviar-correo', [PagoController::class, 'enviarCorreo'])->name('pagos.enviar-correo');
     Route::resource('pagos', PagoController::class);
+    Route::get('incidencias/buscar', [IncidenciaController::class, 'buscar'])->name('incidencias.buscar');
     Route::resource('incidencias', IncidenciaController::class);
 });
 

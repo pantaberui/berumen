@@ -29,14 +29,21 @@
                         style="width: 95%; max-width: 700px; height: 250px; object-fit: contain;">
                     <p class="text-gray-600 text-sm">Tamaulipas 3, San José de Mojarras,</p>
                     <p class="text-gray-600 text-sm">Nayarit, México. Tel. (311) 352-26-45</p>
-                    <p class="text-gray-600 text-sm">entretenimientoberumen@hotmail.com</p>
+                    <p class="text-gray-600 text-sm">ecberumen2015@gmail.com</p>
                     <p class="text-gray-600 text-sm">Síguenos en Facebook: /berumen.entretenimiento</p>
                     <p class="text-gray-400 text-xs mt-1">
                         {{ $pago->fecha_hora_registro ? $pago->fecha_hora_registro->format('d/m/Y H:i') : $pago->created_at->format('d/m/Y H:i') }}
                     </p>
                 </div>
 
+
+                
                 <div class="border-t border-dashed pt-4 space-y-2">
+
+                    <div class="flex justify-between">
+                        <span class="text-gray-500">Folio:</span>
+                        <span class="font-bold"># {{ str_pad($pago->id, 6, '0', STR_PAD_LEFT) }}</span>
+                    </div>
                     <div class="flex justify-between">
                         <span class="text-gray-500">Cliente:</span>
                         <span class="font-medium">{{ $pago->contrato->cliente->nombre_completo }}</span>
@@ -87,12 +94,101 @@
                 </div>
             </div>
 
-            <div class="mt-4 text-center">
+            <div class="mt-4 flex justify-center gap-3">
                 <button onclick="imprimirTicket()"
                         class="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-900">
                     🖨 Imprimir Ticket
                 </button>
+                <button onclick="abrirModalCorreo()"
+                        class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                    ✉️ Enviar por Correo
+                </button>
+                <button onclick="abrirModalWhatsApp()"
+                        class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+                    📱 Enviar por WhatsApp
+                </button>
             </div>
+
+
+            {{-- Modal envío por correo --}}
+            <div id="modal_correo" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4">
+                    <h3 class="text-base font-semibold text-gray-900 mb-1">Enviar Ticket por Correo</h3>
+                    <p class="text-sm text-gray-500 mb-4">Puedes modificar el correo si deseas enviarlo a una dirección diferente.</p>
+
+                    @if(session('success_correo'))
+                        <div class="bg-green-100 text-green-800 px-3 py-2 rounded text-sm mb-3">
+                            {{ session('success_correo') }}
+                        </div>
+                    @endif
+
+                    @if(session('error_correo'))
+                        <div class="bg-red-100 text-red-800 px-3 py-2 rounded text-sm mb-3">
+                            {{ session('error_correo') }}
+                        </div>
+                    @endif
+
+                    <form action="{{ route('admin.pagos.enviar-correo', $pago) }}" method="POST">
+                        @csrf
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                            <input type="email" name="email" id="modal_email"
+                                value="{{ $pago->contrato->cliente->email ?? '' }}"
+                                class="w-full border-gray-300 rounded-md shadow-sm text-sm"
+                                placeholder="correo@ejemplo.com">
+                            @error('email')
+                                <p class="text-red-600 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+                        <div class="flex justify-end gap-3">
+                            <button type="button" onclick="cerrarModalCorreo()"
+                                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
+                                Cancelar
+                            </button>
+                            <button type="submit"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+                                ✉️ Enviar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {{-- Modal WhatsApp --}}
+            <div id="modal_whatsapp" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm mx-4">
+                    <h3 class="text-base font-semibold text-gray-900 mb-1">Enviar por WhatsApp</h3>
+                    <p class="text-sm text-gray-500 mb-4">Verifica o edita el número antes de continuar.</p>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">
+                            Número de WhatsApp (10 dígitos)
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm text-gray-500 bg-gray-100 border border-gray-300 rounded px-3 py-2">+52</span>
+                            <input type="text" id="whatsapp_numero"
+                                value="{{ preg_replace('/\D/', '', $pago->contrato->cliente->celular ?? $pago->contrato->cliente->telefono ?? '') }}"
+                                class="flex-1 border-gray-300 rounded-md shadow-sm text-sm"
+                                maxlength="10" placeholder="3113522645">
+                        </div>
+                        <p id="error_whatsapp" class="hidden text-red-600 text-xs mt-1">
+                            Ingresa un número válido de 10 dígitos.
+                        </p>
+                    </div>
+
+                    <div class="flex justify-end gap-3">
+                        <button type="button" onclick="cerrarModalWhatsApp()"
+                                class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
+                            Cancelar
+                        </button>
+                        <button type="button" onclick="enviarWhatsApp()"
+                                class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
+                            📱 Abrir WhatsApp
+                        </button>
+                    </div>
+                </div>
+            </div>
+
 
         </div>
     </div>
@@ -192,6 +288,82 @@
             `);
             ventana.document.close();
         }
+
+        function abrirModalCorreo() {
+            document.getElementById('modal_correo').classList.remove('hidden');
+        }
+
+        function cerrarModalCorreo() {
+            document.getElementById('modal_correo').classList.add('hidden');
+        }
+
+        // Abrir modal automáticamente si hay mensaje de respuesta
+        @if(session('success_correo') || session('error_correo') || $errors->has('email'))
+            document.addEventListener('DOMContentLoaded', function () {
+                abrirModalCorreo();
+            });
+        @endif
+
+        function abrirModalWhatsApp() {
+            document.getElementById('modal_whatsapp').classList.remove('hidden');
+        }
+
+        function cerrarModalWhatsApp() {
+            document.getElementById('modal_whatsapp').classList.add('hidden');
+        }
+
+        function enviarWhatsApp() {
+        const numero = document.getElementById('whatsapp_numero').value.replace(/\D/g, '');
+        const error  = document.getElementById('error_whatsapp');
+
+        if (numero.length !== 10) {
+            error.classList.remove('hidden');
+            return;
+        }
+        error.classList.add('hidden');
+
+        const datos = {
+            folio:    '{{ str_pad($pago->id, 6, "0", STR_PAD_LEFT) }}',
+            cliente:  @json($pago->contrato->cliente->nombre_completo),
+            contrato: @json($pago->contrato->numero_contrato),
+            fecha:    '{{ $pago->fecha_pago->format("d/m/Y") }}',
+            desde:    '{{ $pago->periodo_desde->format("d/m/Y") }}',
+            hasta:    '{{ $pago->periodo_hasta->format("d/m/Y") }}',
+            importe:  '${{ number_format($pago->importe, 2) }}',
+            descuento: '{{ $pago->descuento > 0 ? "-$" . number_format($pago->descuento, 2) : "" }}',
+            total:    '${{ number_format($pago->total, 2) }}',
+        };
+
+        let texto =
+            `*ENTRETENIMIENTO BERUMEN*\n` +
+            `Tamaulipas 3, San José de Mojarras,\n` +
+            `Tel. (311) 352-2645\n\n` +
+            `*Recibo de Pago*\n` +
+            `Folio: #${datos.folio}\n` +
+            `Cliente: ${datos.cliente}\n` +
+            `Contrato: ${datos.contrato}\n` +
+            `Fecha: ${datos.fecha}\n` +
+            `Periodo: ${datos.desde} al ${datos.hasta}\n` +
+            `Importe: ${datos.importe}\n`;
+
+        if (datos.descuento) texto += `Descuento: ${datos.descuento}\n`;
+
+        texto += `*TOTAL: ${datos.total}*\n\n¡Gracias por su pago!`;
+
+        window.open(`https://wa.me/52${numero}?text=${encodeURIComponent(texto)}`, '_blank');
+        cerrarModalWhatsApp();
+    }
+
+    // Cerrar modales con ESC
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            cerrarModalCorreo();
+            cerrarModalWhatsApp();
+            if (document.getElementById('modal_ip')) cerrarModalIP();
+        }
+        });
+
+
     </script>
 
 

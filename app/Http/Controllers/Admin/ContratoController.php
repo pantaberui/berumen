@@ -12,7 +12,8 @@ class ContratoController extends Controller
     public function index()
     {
         $contratos = Contrato::with('cliente')->orderBy('created_at', 'desc')->paginate(15);
-        return view('admin.contratos.index', compact('contratos'));
+        $busqueda  = null;
+        return view('admin.contratos.index', compact('contratos', 'busqueda'));
     }
 
     public function create()
@@ -74,6 +75,33 @@ class ContratoController extends Controller
         return redirect()->route('admin.contratos.index')
             ->with('success', 'Contrato actualizado correctamente.');
     }
+
+    public function buscar(Request $request)
+    {
+        $termino  = strtoupper(trim($request->q));
+        if (strlen($termino) < 3) {
+            return redirect()->route('admin.contratos.index');
+        }
+
+        $palabras = array_filter(explode(' ', $termino), fn($p) => strlen($p) >= 2);
+
+        $contratos = Contrato::with('cliente')
+            ->whereHas('cliente', function ($query) use ($palabras) {
+                foreach ($palabras as $palabra) {
+                    $query->where(function ($q) use ($palabra) {
+                        $q->whereRaw('UPPER(nombre) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(apellido_paterno) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(apellido_materno) LIKE ?', ["%{$palabra}%"]);
+                    });
+                }
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        $busqueda = $request->q;
+        return view('admin.contratos.index', compact('contratos', 'busqueda'));
+    }
+
 
     public function destroy(Contrato $contrato)
     {

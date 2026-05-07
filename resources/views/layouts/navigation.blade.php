@@ -13,23 +13,61 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex items-center">
                     <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                         Dashboard
                     </x-nav-link>
+
                     <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('admin.clientes.*')">
                         Clientes
                     </x-nav-link>
-                    <x-nav-link :href="route('admin.contratos.index')" :active="request()->routeIs('admin.contratos.*')">
-                        Contratos
-                    </x-nav-link>
-                    <x-nav-link :href="route('admin.pagos.index')" :active="request()->routeIs('admin.pagos.*')">
-                        Pagos
-                    </x-nav-link>
-                    <x-nav-link :href="route('admin.incidencias.index')" :active="request()->routeIs('admin.incidencias.*')">
-                        Incidencias
-                    </x-nav-link>
+
+                    {{-- Menú Internet --}}
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" @click.outside="open = false"
+                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none">
+                            Internet
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition
+                            class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 z-50">
+                            <a href="{{ route('admin.contratos.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.contratos.*') ? 'font-semibold text-indigo-600' : '' }}">
+                                Contratos
+                            </a>
+                            <a href="{{ route('admin.pagos.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.pagos.*') ? 'font-semibold text-indigo-600' : '' }}">
+                                Pagos
+                            </a>
+                            <a href="{{ route('admin.incidencias.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.incidencias.*') ? 'font-semibold text-indigo-600' : '' }}">
+                                Incidencias
+                            </a>
+                        </div>
+                    </div>
+
+                    {{-- Menú Pago de Servicios (próxima fase) --}}
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" @click.outside="open = false"
+                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-400 cursor-not-allowed focus:outline-none">
+                            Pago de Servicios
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    {{-- Próximas fases --}}
+                    <span class="text-sm text-gray-300 cursor-not-allowed">Fichas WiFi</span>
+                    <span class="text-sm text-gray-300 cursor-not-allowed">Ventas</span>
+                    <span class="text-sm text-gray-300 cursor-not-allowed">Control de Tiempos</span>
                 </div>
+
+
+
+
             </div>
 
             <!-- Settings Dropdown -->
