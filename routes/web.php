@@ -6,6 +6,8 @@ use App\Http\Controllers\Admin\ClienteController;
 use App\Http\Controllers\Admin\ContratoController;
 use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\IncidenciaController;
+use App\Http\Controllers\Admin\TipoServicioController;
+use App\Http\Controllers\Admin\PagoServicioController;
 
 
 Route::get('/', function () {
@@ -42,6 +44,11 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('pagos', PagoController::class);
     Route::get('incidencias/buscar', [IncidenciaController::class, 'buscar'])->name('incidencias.buscar');
     Route::resource('incidencias', IncidenciaController::class);
+    Route::resource('tipo-servicios', TipoServicioController::class)->except(['show']);
+    Route::get('pagos-servicios/buscar-cliente', [PagoServicioController::class, 'buscarCliente'])->name('pagos-servicios.buscar-cliente');
+    Route::get('pagos-servicios/ultima-referencia', [PagoServicioController::class, 'ultimaReferencia'])->name('pagos-servicios.ultima-referencia');
+    Route::resource('pagos-servicios', PagoServicioController::class)->parameters(['pagos-servicios' => 'pagoServicio']);
+    Route::post('pagos-servicios/{pagoServicio}/enviar-correo', [PagoServicioController::class, 'enviarCorreo'])->name('pagos-servicios.enviar-correo');
 });
 
 // Panel Cajero

@@ -48,15 +48,30 @@
                         </div>
                     </div>
 
-                    {{-- Menú Pago de Servicios (próxima fase) --}}
+                    {{-- Menú Pago de Servicios --}}
                     <div class="relative" x-data="{ open: false }">
                         <button @click="open = !open" @click.outside="open = false"
-                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-400 cursor-not-allowed focus:outline-none">
+                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none">
                             Pago de Servicios
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
+                        <div x-show="open" x-transition
+                            class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 z-50">
+                            <a href="{{ route('admin.tipo-servicios.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.tipo-servicios.*') ? 'font-semibold text-indigo-600' : '' }}">
+                                Tipos de Servicio
+                            </a>
+                            <a href="{{ route('admin.pagos-servicios.create') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.pagos-servicios.create') ? 'font-semibold text-indigo-600' : '' }}">
+                                Registrar Pago
+                            </a>
+                            <a href="{{ route('admin.pagos-servicios.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.pagos-servicios.index') ? 'font-semibold text-indigo-600' : '' }}">
+                                Consultar Pagos
+                            </a>
+                        </div>
                     </div>
 
                     {{-- Próximas fases --}}
