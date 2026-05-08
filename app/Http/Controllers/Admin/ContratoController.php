@@ -46,6 +46,7 @@ class ContratoController extends Controller
     {
         $contrato->load('cliente', 'pagos');
         return view('admin.contratos.show', compact('contrato'));
+
     }
 
     public function edit(Contrato $contrato)

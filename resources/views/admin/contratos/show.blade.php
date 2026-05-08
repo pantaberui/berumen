@@ -106,7 +106,7 @@
             {{-- Historial de pagos --}}
             <div class="bg-white shadow-sm rounded-lg p-6">
                 <h3 class="text-lg font-medium text-gray-900 mb-4">Historial de Pagos</h3>
-                @forelse($contrato->pagos as $pago)
+                @forelse($contrato->pagos->sortByDesc('fecha_pago') as $pago)
                     <div class="border rounded p-3 mb-2 text-sm flex justify-between">
                         <span>{{ $pago->fecha_pago->format('d/m/Y') }} — Periodo: {{ $pago->periodo_desde->format('d/m/Y') }} al {{ $pago->periodo_hasta->format('d/m/Y') }}</span>
                         <span class="font-medium">${{ number_format($pago->total, 2) }}</span>
