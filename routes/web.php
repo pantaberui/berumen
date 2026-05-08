@@ -8,6 +8,8 @@ use App\Http\Controllers\Admin\PagoController;
 use App\Http\Controllers\Admin\IncidenciaController;
 use App\Http\Controllers\Admin\TipoServicioController;
 use App\Http\Controllers\Admin\PagoServicioController;
+use App\Http\Controllers\Admin\CodigoNetplusController;
+use App\Http\Controllers\Admin\FichaWifiController;
 
 
 Route::get('/', function () {
@@ -49,6 +51,20 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('pagos-servicios/ultima-referencia', [PagoServicioController::class, 'ultimaReferencia'])->name('pagos-servicios.ultima-referencia');
     Route::resource('pagos-servicios', PagoServicioController::class)->parameters(['pagos-servicios' => 'pagoServicio']);
     Route::post('pagos-servicios/{pagoServicio}/enviar-correo', [PagoServicioController::class, 'enviarCorreo'])->name('pagos-servicios.enviar-correo');
+
+    // Fichas WiFi
+    Route::get('fichas-wifi',              [FichaWifiController::class, 'create'])->name('fichas-wifi.create');
+    Route::post('fichas-wifi/vender',      [FichaWifiController::class, 'vender'])->name('fichas-wifi.vender');
+    Route::get('fichas-wifi/ticket/{codigoNetplus}', [FichaWifiController::class, 'ticket'])->name('fichas-wifi.ticket');
+    Route::get('fichas-wifi/buscar',       [FichaWifiController::class, 'buscar'])->name('fichas-wifi.buscar');
+
+    // Códigos NetPlus (solo admin)
+    Route::get('codigos-netplus',                      [CodigoNetplusController::class, 'index'])->name('codigos-netplus.index');
+    Route::post('codigos-netplus/cargar',              [CodigoNetplusController::class, 'cargar'])->name('codigos-netplus.cargar');
+    Route::get('codigos-netplus/recientes',            [CodigoNetplusController::class, 'listarRecientes'])->name('codigos-netplus.recientes');
+    Route::patch('codigos-netplus/{codigoNetplus}/cancelar', [CodigoNetplusController::class, 'cancelar'])->name('codigos-netplus.cancelar');
+    Route::get('codigos-netplus/reporte', [CodigoNetplusController::class, 'reporte'])->name('codigos-netplus.reporte');
+    
 });
 
 // Panel Cajero

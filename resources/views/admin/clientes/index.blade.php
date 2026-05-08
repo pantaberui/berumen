@@ -2,10 +2,28 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800">Clientes</h2>
-            <a href="{{ route('admin.clientes.create') }}"
-               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                + Nuevo Cliente
-            </a>
+            <div class="flex items-center gap-3">
+                <form method="GET" action="{{ route('admin.clientes.index') }}" class="flex gap-2">
+                    <input type="text" name="q" value="{{ $busqueda ?? '' }}"
+                           placeholder="Buscar nombre, apellido, CURP, RFC..."
+                           class="border-gray-300 rounded-md shadow-sm text-sm w-64"
+                           minlength="3">
+                    <button type="submit"
+                            class="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
+                        Buscar
+                    </button>
+                    @if(!empty($busqueda))
+                        <a href="{{ route('admin.clientes.index') }}"
+                           class="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
+                            ✕ Limpiar
+                        </a>
+                    @endif
+                </form>
+                <a href="{{ route('admin.clientes.create') }}"
+                   class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                    + Nuevo Cliente
+                </a>
+            </div>
         </div>
     </x-slot>
 
@@ -23,7 +41,34 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+
+                            {{-- Columnas ordenables --}}
+                            @php
+                                $cols = [
+                                    'nombre'           => 'Nombre',
+                                    'apellido_paterno' => 'Apellido Paterno',
+                                    'apellido_materno' => 'Apellido Materno',
+                                ];
+                            @endphp
+
+                            @foreach($cols as $col => $label)
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+                                <a href="{{ route('admin.clientes.index', array_merge(request()->query(), [
+                                        'orden' => $col,
+                                        'dir'   => ($orden === $col && $direccion === 'asc') ? 'desc' : 'asc',
+                                        'q'     => $busqueda ?? '',
+                                    ])) }}"
+                                   class="flex items-center gap-1 hover:text-gray-700">
+                                    {{ $label }}
+                                    @if($orden === $col)
+                                        {{ $direccion === 'asc' ? '↑' : '↓' }}
+                                    @else
+                                        <span class="text-gray-300">↕</span>
+                                    @endif
+                                </a>
+                            </th>
+                            @endforeach
+
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Teléfono</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Celular</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ciudad</th>
@@ -35,9 +80,9 @@
                         @forelse($clientes as $cliente)
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $cliente->id }}</td>
-                            <td class="px-6 py-4 text-sm font-medium text-gray-900">
-                                {{ $cliente->nombre_completo }}
-                            </td>
+                            <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $cliente->nombre }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $cliente->apellido_paterno }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-700">{{ $cliente->apellido_materno ?? '—' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $cliente->telefono ?? '—' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $cliente->celular ?? '—' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $cliente->ciudad ?? '—' }}</td>
@@ -64,14 +109,17 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-6 py-8 text-center text-gray-400">
-                                No hay clientes registrados aún.
+                            <td colspan="9" class="px-6 py-8 text-center text-gray-400">
+                                @if(!empty($busqueda))
+                                    No se encontraron clientes con "{{ $busqueda }}".
+                                @else
+                                    No hay clientes registrados aún.
+                                @endif
                             </td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
-
                 <div class="px-6 py-4">
                     {{ $clientes->links() }}
                 </div>

@@ -8,10 +8,42 @@ use Illuminate\Http\Request;
 
 class ClienteController extends Controller
 {
-    public function index()
+   public function index(Request $request)
     {
-        $clientes = Cliente::orderBy('apellido_paterno')->paginate(15);
-        return view('admin.clientes.index', compact('clientes'));
+        $query = Cliente::query();
+
+        // Búsqueda
+        if ($request->filled('q') && strlen($request->q) >= 3) {
+            $palabras = array_filter(explode(' ', strtoupper(trim($request->q))), fn($p) => strlen($p) >= 2);
+            $query->where(function ($q) use ($palabras) {
+                foreach ($palabras as $palabra) {
+                    $q->where(function ($sq) use ($palabra) {
+                        $sq->whereRaw('UPPER(nombre) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(apellido_paterno) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(apellido_materno) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(curp) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(rfc) LIKE ?', ["%{$palabra}%"]);
+                    });
+                }
+            });
+        }
+
+        // Ordenamiento
+        $orden     = $request->get('orden', 'apellido_paterno');
+        $direccion = $request->get('dir', 'asc');
+
+        $columnas = ['nombre', 'apellido_paterno', 'apellido_materno'];
+        if (!in_array($orden, $columnas)) $orden = 'apellido_paterno';
+        if (!in_array($direccion, ['asc', 'desc'])) $direccion = 'asc';
+
+        $clientes = $query->orderBy($orden, $direccion)
+                        ->orderBy('apellido_paterno')
+                        ->paginate(15)
+                        ->withQueryString();
+
+        $busqueda = $request->q;
+
+        return view('admin.clientes.index', compact('clientes', 'busqueda', 'orden', 'direccion'));
     }
 
     public function create()
