@@ -34,18 +34,18 @@ class PagoServicioController extends Controller
         }
 
         // Filtro por fecha
-        if ($request->filled('fecha_desde')) {
-            $query->whereDate('fecha_hora_registro', '>=', $request->fecha_desde);
-        }
-        if ($request->filled('fecha_hasta')) {
-            $query->whereDate('fecha_hora_registro', '<=', $request->fecha_hasta);
-        }
+       $fechaDesde = $request->get('fecha_desde', now()->format('Y-m-d'));
+        $fechaHasta = $request->get('fecha_hasta', now()->format('Y-m-d'));
 
-        $pagos     = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        $query->whereDate('fecha_hora_registro', '>=', $fechaDesde);
+        $query->whereDate('fecha_hora_registro', '<=', $fechaHasta);
+
+        $totalAcumulado = $query->sum('total');
+        $pagos = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
         $servicios = TipoServicio::where('activo', true)->orderBy('nombre')->get();
         $busqueda  = $request->q;
 
-        return view('admin.pagos_servicios.index', compact('pagos', 'servicios', 'busqueda'));
+        return view('admin.pagos_servicios.index', compact('pagos', 'servicios', 'busqueda', 'totalAcumulado', 'fechaDesde', 'fechaHasta'));
     }
 
     public function create()

@@ -9,13 +9,36 @@ use Illuminate\Http\Request;
 
 class PagoController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $pagos = Pago::with('contrato.cliente', 'cajero')
-                     ->orderBy('created_at', 'desc')
-                     ->paginate(15);
-        $busqueda = null;
-        return view('admin.pagos.index', compact('pagos', 'busqueda'));
+        $query = Pago::with('contrato.cliente', 'cajero');
+
+        // Búsqueda por nombre
+        if ($request->filled('q') && strlen($request->q) >= 3) {
+            $palabras = array_filter(explode(' ', strtoupper(trim($request->q))), fn($p) => strlen($p) >= 2);
+            $query->whereHas('contrato.cliente', function ($q) use ($palabras) {
+                foreach ($palabras as $palabra) {
+                    $q->where(function ($sq) use ($palabra) {
+                        $sq->whereRaw('UPPER(nombre) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(apellido_paterno) LIKE ?', ["%{$palabra}%"])
+                        ->orWhereRaw('UPPER(apellido_materno) LIKE ?', ["%{$palabra}%"]);
+                    });
+                }
+            });
+        }
+
+        // Fechas por defecto: hoy
+        $fechaDesde = $request->get('fecha_desde', now()->format('Y-m-d'));
+        $fechaHasta = $request->get('fecha_hasta', now()->format('Y-m-d'));
+
+        $query->whereDate('fecha_pago', '>=', $fechaDesde);
+        $query->whereDate('fecha_pago', '<=', $fechaHasta);
+
+        $totalAcumulado = $query->sum('total');
+        $pagos          = $query->orderBy('created_at', 'desc')->paginate(15)->withQueryString();
+        $busqueda       = $request->q;
+
+        return view('admin.pagos.index', compact('pagos', 'busqueda', 'fechaDesde', 'fechaHasta', 'totalAcumulado'));
     }
 
     public function create()

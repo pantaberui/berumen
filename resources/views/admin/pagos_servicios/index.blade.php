@@ -33,19 +33,26 @@
                             </option>
                         @endforeach
                     </select>
-                    <input type="date" name="fecha_desde" value="{{ request('fecha_desde') }}"
-                           class="border-gray-300 rounded-md shadow-sm text-sm">
-                    <input type="date" name="fecha_hasta" value="{{ request('fecha_hasta') }}"
-                           class="border-gray-300 rounded-md shadow-sm text-sm">
-                    <div class="md:col-span-4 flex gap-2">
-                        <button type="submit"
-                                class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800 text-sm">
-                            Buscar
-                        </button>
-                        <a href="{{ route('admin.pagos-servicios.index') }}"
-                           class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
-                            ✕ Limpiar
-                        </a>
+                    <input type="date" name="fecha_desde" value="{{ $fechaDesde }}"
+                        class="border-gray-300 rounded-md shadow-sm text-sm">
+                    <input type="date" name="fecha_hasta" value="{{ $fechaHasta }}"
+                        class="border-gray-300 rounded-md shadow-sm text-sm">
+
+                    <div class="md:col-span-4 flex items-center justify-between">
+                        <div class="flex gap-2">
+                            <button type="submit"
+                                    class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800 text-sm">
+                                Buscar
+                            </button>
+                            <a href="{{ route('admin.pagos-servicios.index') }}"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
+                                ✕ Limpiar
+                            </a>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-gray-500">Total acumulado</p>
+                            <p class="text-xl font-bold text-green-700">${{ number_format($totalAcumulado, 2) }}</p>
+                        </div>
                     </div>
                 </form>
             </div>

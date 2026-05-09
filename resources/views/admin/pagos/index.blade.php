@@ -1,29 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800">Pagos</h2>
-            <div class="flex items-center gap-3">
-                <form action="{{ route('admin.pagos.buscar') }}" method="GET" class="flex gap-2">
-                    <input type="text" name="q" value="{{ $busqueda ?? '' }}"
-                        placeholder="Buscar por nombre..."
-                        class="border-gray-300 rounded-md shadow-sm text-sm"
-                        minlength="3">
-                    <button type="submit"
-                            class="px-3 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
-                        Buscar
-                    </button>
-                    @if(!empty($busqueda))
-                        <a href="{{ route('admin.pagos.index') }}"
-                        class="px-3 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
-                            ✕ Limpiar
-                        </a>
-                    @endif
-                </form>
-                <a href="{{ route('admin.pagos.create') }}"
-                class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-                    + Registrar Pago
-                </a>
-            </div>
+            <h2 class="font-semibold text-xl text-gray-800">Pagos Internet</h2>
+            <a href="{{ route('admin.pagos.create') }}"
+               class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                + Registrar Pago
+            </a>
         </div>
     </x-slot>
 
@@ -36,6 +18,38 @@
                 </div>
             @endif
 
+            {{-- Filtros --}}
+            <div class="bg-white shadow-sm rounded-lg p-4 mb-4">
+                <form method="GET" action="{{ route('admin.pagos.index') }}"
+                      class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                    <input type="text" name="q" value="{{ $busqueda ?? '' }}"
+                           placeholder="Buscar por nombre cliente..."
+                           class="border-gray-300 rounded-md shadow-sm text-sm"
+                           minlength="3">
+                    <input type="date" name="fecha_desde" value="{{ $fechaDesde }}"
+                           class="border-gray-300 rounded-md shadow-sm text-sm">
+                    <input type="date" name="fecha_hasta" value="{{ $fechaHasta }}"
+                           class="border-gray-300 rounded-md shadow-sm text-sm">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex gap-2">
+                            <button type="submit"
+                                    class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800 text-sm">
+                                Buscar
+                            </button>
+                            <a href="{{ route('admin.pagos.index') }}"
+                               class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
+                                ✕ Limpiar
+                            </a>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-xs text-gray-500">Total acumulado</p>
+                            <p class="text-xl font-bold text-green-700">${{ number_format($totalAcumulado, 2) }}</p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            {{-- Tabla --}}
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -81,7 +95,7 @@
                         @empty
                         <tr>
                             <td colspan="9" class="px-6 py-8 text-center text-gray-400">
-                                No hay pagos registrados aún.
+                                No hay pagos en el rango seleccionado.
                             </td>
                         </tr>
                         @endforelse
