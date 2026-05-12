@@ -10,6 +10,10 @@ use App\Http\Controllers\Admin\TipoServicioController;
 use App\Http\Controllers\Admin\PagoServicioController;
 use App\Http\Controllers\Admin\CodigoNetplusController;
 use App\Http\Controllers\Admin\FichaWifiController;
+use App\Http\Controllers\Admin\ProductoController;
+use App\Http\Controllers\Admin\VentaController;
+use App\Http\Controllers\Admin\CompraController;
+
 
 
 Route::get('/', function () {
@@ -64,6 +68,19 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('codigos-netplus/recientes',            [CodigoNetplusController::class, 'listarRecientes'])->name('codigos-netplus.recientes');
     Route::patch('codigos-netplus/{codigoNetplus}/cancelar', [CodigoNetplusController::class, 'cancelar'])->name('codigos-netplus.cancelar');
     Route::get('codigos-netplus/reporte', [CodigoNetplusController::class, 'reporte'])->name('codigos-netplus.reporte');
+
+    // Productos
+    Route::get('productos/buscar', [ProductoController::class, 'buscar'])->name('productos.buscar');
+    Route::resource('productos', ProductoController::class)->except(['show']);
+
+    // Ventas
+    Route::get('ventas/buscar-cliente',  [VentaController::class, 'buscarCliente'])->name('ventas.buscar-cliente');
+    Route::get('ventas/buscar-producto', [VentaController::class, 'buscarProducto'])->name('ventas.buscar-producto');
+    Route::post('ventas/{venta}/enviar-correo', [VentaController::class, 'enviarCorreo'])->name('ventas.enviar-correo');
+    Route::resource('ventas', VentaController::class);
+
+    // Compras
+    Route::resource('compras', CompraController::class);
     
 });
 
