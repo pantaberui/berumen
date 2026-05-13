@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="border-t border-dashed mt-4 pt-4 text-center text-gray-400 text-xs">
-                    <p>Atendido por: {{ $pagoServicio->cajero->name }}</p>
+                    <p>Atendido por: {{ $pagoServicio->cajero->name }} {{ $pagoServicio->cajero->apellido_paterno }}</p>
                     <p class="mt-2">¡Gracias por su pago!</p>
                 </div>
             </div>

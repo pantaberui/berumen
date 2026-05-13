@@ -13,6 +13,9 @@ use App\Http\Controllers\Admin\FichaWifiController;
 use App\Http\Controllers\Admin\ProductoController;
 use App\Http\Controllers\Admin\VentaController;
 use App\Http\Controllers\Admin\CompraController;
+use App\Http\Controllers\Admin\ControlTiemposController;
+use App\Http\Controllers\Admin\UsuarioController;
+
 
 
 
@@ -81,6 +84,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     // Compras
     Route::resource('compras', CompraController::class);
+
+    Route::prefix('control-tiempos')->name('control-tiempos.')->group(function () {
+        Route::get('/',                              [ControlTiemposController::class, 'index'])->name('index');
+        Route::post('iniciar',                       [ControlTiemposController::class, 'iniciarRenta'])->name('iniciar');
+        Route::post('pausar/{renta}',                [ControlTiemposController::class, 'pausarRenta'])->name('pausar');
+        Route::post('reanudar/{renta}',              [ControlTiemposController::class, 'reanudarRenta'])->name('reanudar');
+        Route::post('cambiar-equipo/{renta}',        [ControlTiemposController::class, 'cambiarEquipo'])->name('cambiar-equipo');
+        Route::post('agregar-producto/{renta}',      [ControlTiemposController::class, 'agregarProducto'])->name('agregar-producto');
+        Route::get('calcular-cobro/{renta}',         [ControlTiemposController::class, 'calcularCobro'])->name('calcular-cobro');
+        Route::post('cobrar/{renta}',                [ControlTiemposController::class, 'cobrar'])->name('cobrar');
+        Route::get('estado/{renta}',                 [ControlTiemposController::class, 'estadoActual'])->name('estado');
+        Route::get('reporte',                        [ControlTiemposController::class, 'reporte'])->name('reporte');
+    });
+
+    Route::resource('usuarios', UsuarioController::class)->except(['show']);
     
 });
 

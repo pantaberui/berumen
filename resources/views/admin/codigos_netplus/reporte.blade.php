@@ -18,13 +18,13 @@
                       class="grid grid-cols-1 md:grid-cols-4 gap-3">
                     <div>
                         <label class="block text-xs font-medium text-gray-500 mb-1">Fecha desde</label>
-                        <input type="date" name="fecha_desde" value="{{ request('fecha_desde') }}"
-                               class="w-full border-gray-300 rounded-md shadow-sm text-sm">
+                        <input type="date" name="fecha_desde" value="{{ $fechaDesde }}"
+                            class="border-gray-300 rounded-md shadow-sm text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-500 mb-1">Fecha hasta</label>
-                        <input type="date" name="fecha_hasta" value="{{ request('fecha_hasta') }}"
-                               class="w-full border-gray-300 rounded-md shadow-sm text-sm">
+                        <input type="date" name="fecha_hasta" value="{{ $fechaHasta }}"
+                            class="border-gray-300 rounded-md shadow-sm text-sm">
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-500 mb-1">Usuario</label>

@@ -137,17 +137,36 @@
                             <a href="{{ route('admin.compras.index') }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.compras.*') ? 'font-semibold text-indigo-600' : '' }}">
                                 Compras
-                            </a>
+                            </a>                            
                             @endif
                         </div>
                     </div>
 
+                    {{-- Control de Tiempos --}}
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" @click.outside="open = false"
+                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none">
+                            Control Tiempos
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            </svg>
+                        </button>
+                        <div x-show="open" x-transition
+                            class="absolute left-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-100 z-50">
+                            <a href="{{ route('admin.control-tiempos.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.control-tiempos.index') ? 'font-semibold text-indigo-600' : '' }}">
+                                Dashboard Equipos
+                            </a>
+                            <a href="{{ route('admin.control-tiempos.reporte') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.control-tiempos.reporte') ? 'font-semibold text-indigo-600' : '' }}">
+                                Reporte
+                            </a>
+                        </div>
+                    </div>
 
-                    {{-- Próximas fases --}}                                                            
-                    <span class="text-sm text-gray-300 cursor-not-allowed">Control de Tiempos</span>
+
+
                 </div>
-
-
 
 
             </div>
@@ -157,7 +176,12 @@
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
+                            <div class="flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd"/>
+                                </svg>
+                                <div>{{ Auth::user()->name }} {{ Auth::user()->apellido_paterno }}</div>
+                            </div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -168,6 +192,14 @@
                     </x-slot>
 
                     <x-slot name="content">
+
+                        @if(auth()->user()->hasRole('admin'))
+                        <a href="{{ route('admin.usuarios.index') }}"
+                        class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.usuarios.*') ? 'font-semibold text-indigo-600' : '' }}">
+                            Usuarios
+                        </a>
+                        @endif
+
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Profile') }}
                         </x-dropdown-link>

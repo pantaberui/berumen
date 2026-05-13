@@ -99,7 +99,8 @@
                 </div>
 
                 <div class="border-t border-dashed mt-4 pt-4 text-center text-gray-400 text-xs">
-                    <p>Atendido por: {{ $venta->vendedor->name }}</p>
+                    <p>Atendido por: {{ $venta->vendedor->name }} {{ $venta->vendedor->apellido_paterno }}</p>
+                    
                     <p class="mt-2">¡Gracias por su compra!</p>
                 </div>
             </div>

@@ -111,10 +111,14 @@ class CodigoNetplusController extends Controller
 
     public function reporte(Request $request)
     {
-        $usuarios = \App\Models\User::orderBy('name')->get();
+        $usuarios   = \App\Models\User::orderBy('name')->get();
+        $fechaDesde = $request->get('fecha_desde', now()->format('Y-m-d'));
+        $fechaHasta = $request->get('fecha_hasta', now()->format('Y-m-d'));       
 
-        $query = CodigoNetplus::where('estatus', 'vendido')
-            ->with('vendedor');
+         $query = CodigoNetplus::where('estatus', 'vendido')
+        ->with('vendedor')
+        ->whereDate('fecha_venta', '>=', $fechaDesde)
+        ->whereDate('fecha_venta', '<=', $fechaHasta);
 
         if ($request->filled('fecha_desde')) {
             $query->whereDate('fecha_venta', '>=', $request->fecha_desde);
