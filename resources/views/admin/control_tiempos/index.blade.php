@@ -62,7 +62,7 @@
                         <span class="font-mono font-medium" id="tiempo_inicio_{{ $equipo->id }}">--:--:--</span>
                     </div>
                     <div id="tiempo_trans_row_{{ $equipo->id }}" class="hidden">
-                        <span class="opacity-60" id="tiempo_trans_label_{{ $equipo->id }}">Transcurrido:</span>
+                        <span class="opacity-60">Transcurrido:</span>
                         <span class="font-mono font-bold text-sm" id="tiempo_trans_{{ $equipo->id }}">00:00:00</span>
                     </div>
                     <div id="tiempo_reserva_row_{{ $equipo->id }}" class="hidden">
@@ -78,11 +78,11 @@
                 {{-- Costo y productos --}}
                 <div class="text-center text-xs mt-2">
                     <p class="font-medium" id="status_label_{{ $equipo->id }}">Disponible</p>
-                    <p class="opacity-75 mt-1" id="costo_label_{{ $equipo->id }}">$0.00</p>
+                    <p class="font-bold mt-1" id="total_label_{{ $equipo->id }}"></p>
                     <p class="opacity-60 mt-1" id="productos_label_{{ $equipo->id }}"></p>
                 </div>
             </div>
-                
+
                 @endforeach
             </div>
 
@@ -135,10 +135,14 @@
             <p class="text-sm text-gray-500 mb-4" id="modal_opciones_tiempo"></p>
 
             <div class="space-y-2">
-                <button onclick="accionEquipo('pausar')"
-                        id="btn_pausar_reanudar"
+                <button id="btn_pausar_reanudar"
                         class="w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 text-sm font-medium">
                     ⏸ Pausar
+                </button>
+                <button onclick="abrirModalAsignarTiempo()"
+                        id="btn_asignar_tiempo"
+                        class="w-full py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium">
+                    ⏱ Asignar / Cambiar Tiempo
                 </button>
                 <button onclick="abrirModalProductos()"
                         class="w-full py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 text-sm font-medium">
@@ -248,11 +252,48 @@
         </div>
     </div>
 
+    {{-- Modal: Asignar / Cambiar tiempo --}}
+    <div id="modal_asignar_tiempo" class="hidden fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm mx-4">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">⏱ Asignar / Cambiar Tiempo</h3>
+            <p class="text-sm text-gray-500 mb-3" id="asignar_tiempo_info"></p>
+            <select id="tiempo_asignar_post" class="w-full border-gray-300 rounded-md shadow-sm text-sm mb-2">
+                <option value="">— Selecciona un tiempo —</option>
+                <option value="15">15 minutos</option>
+                <option value="30">30 minutos</option>
+                <option value="45">45 minutos</option>
+                <option value="60">1 hora</option>
+                <option value="90">1:30 horas</option>
+                <option value="120">2 horas</option>
+                <option value="180">3 horas</option>
+                <option value="240">4 horas</option>
+                <option value="300">5 horas</option>
+                <option value="360">6 horas</option>
+                <option value="420">7 horas</option>
+                <option value="480">8 horas</option>
+            </select>
+            {{-- Opción tiempo libre --}}
+            <button onclick="confirmarTiempoLibre()"
+                    id="btn_tiempo_libre"
+                    class="hidden w-full py-2 bg-gray-500 text-white rounded text-sm mb-2 hover:bg-gray-600">
+                ♾ Cambiar a Tiempo Libre (sin límite)
+            </button>
+            <div class="flex gap-3">
+                <button onclick="cerrarModal('modal_asignar_tiempo')"
+                        class="flex-1 py-2 bg-gray-200 text-gray-700 rounded text-sm">Cancelar</button>
+                <button onclick="confirmarAsignarTiempo()"
+                        class="flex-1 py-2 bg-indigo-600 text-white rounded text-sm font-medium">Asignar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
     const CSRF = '{{ csrf_token() }}';
-    const EQUIPOS_DATA = @json($equiposData);
+    const EQUIPOS_DATA = {!! json_encode($equiposData) !!};
     const SEGUNDOS_MAX = 8 * 3600;
-    const TOLERANCIA_SEGUNDOS = 3 * 60; // 3 minutos de tolerancia
+    const TOLERANCIA_SEGUNDOS = 3 * 60;
+
+    console.log('EQUIPOS_DATA:', JSON.stringify(EQUIPOS_DATA, null, 2));
 
     let equiposState = {};
     let timers = {};
@@ -268,22 +309,64 @@
         inactivo:   '#6b7280',
     };
 
+    
+    // =============================================
+    // INICIALIZACIÓN — calcula segundos correctos
+    // =============================================
     document.addEventListener('DOMContentLoaded', () => {
+        const ahora = Date.now();
+
         EQUIPOS_DATA.forEach(eq => {
+            // El servidor ya calculó los segundos acumulados correctamente
+            // incluyendo el tiempo desde hora_inicio si estaba activo
+            let segundosIniciales = parseInt(eq.segundos_acumulados) || 0;
+
             equiposState[eq.id] = {
                 ...eq,
-                segundos:   eq.segundos_acumulados,
-                horaInicio: eq.hora_inicio ? new Date(eq.hora_inicio) : null,
+                segundos:      segundosIniciales,
+                horaInicio:    eq.hora_inicio ? new Date(eq.hora_inicio) : null,
+                _cargadoEn:    ahora,
+                _alarmaEmitida: false,
             };
+
             renderEquipo(eq.id);
+
             if (eq.estatus === 'en_uso' && eq.renta_id) {
                 iniciarTimer(eq.id);
             }
         });
     });
 
+    // =============================================
+    // TIMER — incrementa segundos cada segundo
+    // =============================================
+    function iniciarTimer(id) {
+        if (timers[id]) clearInterval(timers[id]);
+
+        timers[id] = setInterval(() => {
+            const eq = equiposState[id];
+            if (!eq || eq.estatus !== 'en_uso') {
+                clearInterval(timers[id]);
+                return;
+            }
+
+            eq.segundos++;
+
+            // Alarma al terminar tiempo asignado
+            if (eq.tiempo_asignado && eq.segundos >= eq.tiempo_asignado && !eq._alarmaEmitida) {
+                eq._alarmaEmitida = true;
+                reproducirAlarma(id);
+            }
+
+            renderEquipo(id);
+        }, 1000);
+    }
+
+    // =============================================
+    // RENDER — actualiza el card cada segundo
+    // =============================================
     function renderEquipo(id) {
-        const eq  = equiposState[id];
+        const eq   = equiposState[id];
         const card = document.getElementById(`card_${id}`);
         if (!card) return;
 
@@ -299,8 +382,8 @@
         if (tiempoAgotado && !parpadeoTimers[id]) {
             parpadeoTimers[id] = setInterval(() => {
                 const c = document.getElementById(`card_${id}`);
-                c.style.backgroundColor = c.style.backgroundColor === 'rgb(239, 68, 68)'
-                    ? '#b91c1c' : '#ef4444';
+                if (c) c.style.backgroundColor =
+                    c.style.backgroundColor === 'rgb(239, 68, 68)' ? '#b91c1c' : '#ef4444';
             }, 500);
         } else if (!tiempoAgotado && parpadeoTimers[id]) {
             clearInterval(parpadeoTimers[id]);
@@ -310,36 +393,35 @@
         // Hora de inicio
         const inicioRow = document.getElementById(`tiempo_inicio_row_${id}`);
         if (eq.estatus !== 'disponible' && eq.horaInicio) {
-            inicioRow.classList.remove('hidden');
+            inicioRow?.classList.remove('hidden');
             document.getElementById(`tiempo_inicio_${id}`).textContent =
                 formatHora(new Date(eq.horaInicio));
         } else {
             inicioRow?.classList.add('hidden');
         }
 
-        // Tiempo transcurrido y restante
+        // Tiempos
         const transRow    = document.getElementById(`tiempo_trans_row_${id}`);
         const restanteRow = document.getElementById(`tiempo_restante_row_${id}`);
         const reservaRow  = document.getElementById(`tiempo_reserva_row_${id}`);
 
         if (eq.estatus !== 'disponible') {
-            transRow.classList.remove('hidden');
-            document.getElementById(`tiempo_trans_label_${id}`).textContent =
-                eq.tiempo_asignado ? 'Transcurrido:' : 'Transcurrido:';
+            transRow?.classList.remove('hidden');
             document.getElementById(`tiempo_trans_${id}`).textContent =
                 formatSegundos(eq.segundos);
 
             if (eq.tiempo_asignado) {
-                reservaRow.classList.remove('hidden');
-                restanteRow.classList.remove('hidden');
+                reservaRow?.classList.remove('hidden');
+                restanteRow?.classList.remove('hidden');
                 document.getElementById(`tiempo_reserva_${id}`).textContent =
                     formatSegundos(eq.tiempo_asignado);
+                // CORRECTO: Restante = Reservado - Transcurrido
                 const restante = Math.max(0, eq.tiempo_asignado - eq.segundos);
                 document.getElementById(`tiempo_restante_${id}`).textContent =
                     formatSegundos(restante);
             } else {
-                reservaRow.classList.add('hidden');
-                restanteRow.classList.add('hidden');
+                reservaRow?.classList.add('hidden');
+                restanteRow?.classList.add('hidden');
             }
         } else {
             transRow?.classList.add('hidden');
@@ -347,7 +429,7 @@
             reservaRow?.classList.add('hidden');
         }
 
-        // Texto del anillo central
+        // Anillo central
         const ringTime = eq.estatus !== 'disponible'
             ? (eq.tiempo_asignado
                 ? formatSegundos(Math.max(0, eq.tiempo_asignado - eq.segundos)).substring(0, 5)
@@ -360,24 +442,31 @@
             eq.tiempo_asignado          ? 'RESTA' : 'USO';
 
         // Status label
-        document.getElementById(`status_label_${id}`).textContent =
-            eq.estatus === 'disponible' ? 'Disponible' :
-            eq.estatus === 'en_uso'     ? 'En Uso'     :
-            eq.estatus === 'pausado'    ? 'Pausado'     : 'Inactivo';
-
-        // Costo con tolerancia
-        if (eq.estatus !== 'disponible') {
-            const costo = calcularCosto(eq.tipo, eq.segundos);
-            document.getElementById(`costo_label_${id}`).textContent = '$' + costo.toFixed(2);
+        const statusEl = document.getElementById(`status_label_${id}`);
+        if (eq.estatus === 'disponible') {
+            statusEl.textContent = 'Disponible';
+        } else if (eq.estatus === 'pausado') {
+            statusEl.textContent = 'Pausado';
         } else {
-            document.getElementById(`costo_label_${id}`).textContent = '$0.00';
+            statusEl.textContent = 'En Uso';
         }
 
-        // Productos
+        // Total (renta + productos) — mejora solicitada
+        const totalEl = document.getElementById(`total_label_${id}`);
+        if (eq.estatus !== 'disponible') {
+            const costoRenta     = calcularCosto(eq.tipo, eq.segundos);
+            const totalProductos = parseFloat(eq.total_productos) || 0;
+            const total          = costoRenta + totalProductos;
+            totalEl.textContent  = `Total: $${total.toFixed(2)}`;
+        } else {
+            totalEl.textContent = '';
+        }
+
+        // Productos label
         document.getElementById(`productos_label_${id}`).textContent =
             eq.num_productos > 0 ? `🛒 ${eq.num_productos} prod.` : '';
 
-        // Anillos
+        // Anillos SVG
         actualizarAnillos(id);
     }
 
@@ -396,31 +485,13 @@
             }
         }
 
-        document.getElementById(`ring_outer_${id}`).style.strokeDashoffset =
-            circOuter - (pct * circOuter);
+        const outerEl = document.getElementById(`ring_outer_${id}`);
+        const innerEl = document.getElementById(`ring_inner_${id}`);
+        if (outerEl) outerEl.style.strokeDashoffset = circOuter - (pct * circOuter);
 
         const maxProd = 100;
         const pctProd = Math.min((eq.total_productos || 0) / maxProd, 1);
-        document.getElementById(`ring_inner_${id}`).style.strokeDashoffset =
-            circInner - (pctProd * circInner);
-    }
-
-    function iniciarTimer(id) {
-        if (timers[id]) clearInterval(timers[id]);
-
-        timers[id] = setInterval(() => {
-            const eq = equiposState[id];
-            if (eq.estatus !== 'en_uso') { clearInterval(timers[id]); return; }
-
-            eq.segundos++;
-
-            if (eq.tiempo_asignado && eq.segundos >= eq.tiempo_asignado && !eq._alarmaEmitida) {
-                eq._alarmaEmitida = true;
-                reproducirAlarma(id);
-            }
-
-            renderEquipo(id);
-        }, 1000);
+        if (innerEl) innerEl.style.strokeDashoffset = circInner - (pctProd * circInner);
     }
 
     function reproducirAlarma(id) {
@@ -432,14 +503,13 @@
         }
     }
 
-    // ---- MEJORA 4: Cálculo con tolerancia de 3 minutos ----
+    // =============================================
+    // CÁLCULO DE COSTO con tolerancia 3 min
+    // =============================================
     function calcularCosto(tipo, segundos) {
         if (segundos <= 0) return 0;
-
-        // Aplicar tolerancia: descontar 3 minutos
         const segundosEfectivos = Math.max(0, segundos - TOLERANCIA_SEGUNDOS);
         if (segundosEfectivos === 0) return 0;
-
         const minutos = Math.ceil(segundosEfectivos / 60);
 
         if (tipo === 'computadora') {
@@ -457,6 +527,9 @@
         }
     }
 
+    // =============================================
+    // CLICK EN EQUIPO
+    // =============================================
     function clickEquipo(id) {
         const eq = equiposState[id];
         equipoActivo = id;
@@ -466,30 +539,35 @@
             document.getElementById('modal_iniciar').classList.remove('hidden');
         } else if (eq.estatus === 'en_uso' || eq.estatus === 'pausado') {
             rentaActiva = eq.renta_id;
+            const costoActual = calcularCosto(eq.tipo, eq.segundos);
             document.getElementById('modal_opciones_num').textContent = eq.numero;
             document.getElementById('modal_opciones_tiempo').textContent =
                 'Tiempo: ' + formatSegundos(eq.segundos) +
-                ' — Costo: $' + calcularCosto(eq.tipo, eq.segundos).toFixed(2);
+                ' — Costo: $' + costoActual.toFixed(2);
 
+            // Configurar botón pausar/reanudar
             const btnPR = document.getElementById('btn_pausar_reanudar');
             if (eq.estatus === 'pausado') {
                 btnPR.textContent = '▶ Reanudar';
                 btnPR.className = 'w-full py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm font-medium';
+                btnPR.onclick = () => accionEquipo('reanudar');
             } else {
                 btnPR.textContent = '⏸ Pausar';
                 btnPR.className = 'w-full py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 text-sm font-medium';
+                btnPR.onclick = () => accionEquipo('pausar');
             }
 
-            // Mostrar botón asignar tiempo si no tiene tiempo asignado
+            // Botón asignar tiempo: siempre visible (permite cambiar también)
             const btnAsignar = document.getElementById('btn_asignar_tiempo');
-            if (btnAsignar) {
-                btnAsignar.style.display = eq.tiempo_asignado ? 'none' : 'block';
-            }
+            if (btnAsignar) btnAsignar.style.display = 'block';
 
             document.getElementById('modal_opciones').classList.remove('hidden');
         }
     }
 
+    // =============================================
+    // INICIAR RENTA
+    // =============================================
     function confirmarIniciarRenta() {
         const tiempoMin = document.getElementById('tiempo_asignado').value;
 
@@ -520,9 +598,25 @@
         });
     }
 
-    // ---- MEJORA 3: Asignar tiempo después de iniciar ----
+    // =============================================
+    // ASIGNAR / CAMBIAR TIEMPO (incluyendo a libre)
+    // =============================================
     function abrirModalAsignarTiempo() {
         cerrarModal('modal_opciones');
+        const eq = equiposState[equipoActivo];
+
+        // Mostrar info actual
+        document.getElementById('asignar_tiempo_info').textContent =
+            eq.tiempo_asignado
+                ? `Tiempo actual reservado: ${formatSegundos(eq.tiempo_asignado)}. Transcurrido: ${formatSegundos(eq.segundos)}`
+                : 'Actualmente en tiempo libre. Selecciona un tiempo para asignar.';
+
+        // Mostrar botón "tiempo libre" solo si ya tiene tiempo asignado
+        const btnLibre = document.getElementById('btn_tiempo_libre');
+        if (btnLibre) {
+            btnLibre.style.display = eq.tiempo_asignado ? 'block' : 'none';
+        }
+
         document.getElementById('modal_asignar_tiempo').classList.remove('hidden');
     }
 
@@ -543,10 +637,33 @@
                 eq._alarmaEmitida  = false;
                 renderEquipo(equipoActivo);
                 cerrarModal('modal_asignar_tiempo');
+            } else {
+                alert(data.error || 'Error al asignar tiempo.');
             }
         });
     }
 
+    function confirmarTiempoLibre() {
+        fetch(`{{ url('admin/control-tiempos/asignar-tiempo') }}/${rentaActiva}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+            body: JSON.stringify({ minutos: 0 }), // 0 = sin límite
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const eq = equiposState[equipoActivo];
+                eq.tiempo_asignado = null;
+                eq._alarmaEmitida  = false;
+                renderEquipo(equipoActivo);
+                cerrarModal('modal_asignar_tiempo');
+            }
+        });
+    }
+
+    // =============================================
+    // PAUSAR / REANUDAR
+    // =============================================
     function accionEquipo(accion) {
         const url = accion === 'pausar'
             ? `{{ url('admin/control-tiempos/pausar') }}/${rentaActiva}`
@@ -563,25 +680,33 @@
                 const eq = equiposState[equipoActivo];
                 if (accion === 'pausar') {
                     eq.estatus  = 'pausado';
-                    eq.segundos = data.segundos;
+                    eq.segundos = parseInt(data.segundos) || eq.segundos;
                     clearInterval(timers[equipoActivo]);
                 } else {
+                    // Al reanudar: mantener segundos acumulados y continuar desde ahí
                     eq.estatus    = 'en_uso';
+                    eq.segundos   = parseInt(data.segundos) || eq.segundos;
                     eq.horaInicio = new Date();
                     iniciarTimer(equipoActivo);
                 }
                 renderEquipo(equipoActivo);
                 cerrarModal('modal_opciones');
+            } else {
+                alert(data.error || 'Error en la operación.');
             }
         });
     }
 
+    // =============================================
+    // AGREGAR PRODUCTO
+    // =============================================
     function abrirModalProductos() {
         cerrarModal('modal_opciones');
         cargarProductosRenta();
         document.getElementById('modal_productos').classList.remove('hidden');
 
         const buscarInput = document.getElementById('buscar_producto_renta');
+        buscarInput.value = '';
         buscarInput.oninput = function() {
             const q = this.value.trim();
             if (q.length < 2) {
@@ -595,7 +720,7 @@
                     div.classList.remove('hidden');
                     div.innerHTML = productos.map(p => `
                         <div class="p-2 hover:bg-blue-50 cursor-pointer text-sm flex justify-between"
-                            onclick="seleccionarProductoRenta(${p.id}, '${p.descripcion}', ${p.precio_unitario})">
+                            onclick="seleccionarProductoRenta(${p.id}, '${p.descripcion.replace(/'/g, "\\'")}', ${p.precio_unitario})">
                             <span><span class="font-mono text-xs text-gray-400">${p.clave}</span> ${p.descripcion}</span>
                             <span class="text-green-600">$${parseFloat(p.precio_unitario).toFixed(2)}</span>
                         </div>
@@ -615,6 +740,7 @@
     }
 
     function cargarProductosRenta() {
+        if (!rentaActiva) return;
         fetch(`{{ url('admin/control-tiempos/calcular-cobro') }}/${rentaActiva}`)
             .then(r => r.json())
             .then(data => {
@@ -647,7 +773,7 @@
         .then(data => {
             if (data.success) {
                 const eq = equiposState[equipoActivo];
-                eq.total_productos = data.total_productos;
+                eq.total_productos = parseFloat(data.total_productos) || 0;
                 eq.num_productos   = (eq.num_productos || 0) + 1;
                 renderEquipo(equipoActivo);
                 document.getElementById('producto_seleccionado_renta').classList.add('hidden');
@@ -660,6 +786,9 @@
         });
     }
 
+    // =============================================
+    // CAMBIAR EQUIPO
+    // =============================================
     function abrirModalCambioEquipo() {
         cerrarModal('modal_opciones');
         const lista = document.getElementById('lista_equipos_disponibles');
@@ -693,9 +822,10 @@
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                const eqAnt  = equiposState[equipoActivo];
+                const eqAnt   = equiposState[equipoActivo];
                 const eqNuevo = equiposState[nuevoEquipoId];
 
+                // Nuevo equipo hereda todo
                 eqNuevo.estatus         = 'en_uso';
                 eqNuevo.renta_id        = eqAnt.renta_id;
                 eqNuevo.segundos        = eqAnt.segundos;
@@ -703,19 +833,30 @@
                 eqNuevo.total_productos = eqAnt.total_productos;
                 eqNuevo.num_productos   = eqAnt.num_productos;
                 eqNuevo.horaInicio      = new Date();
+                eqNuevo._alarmaEmitida  = eqAnt._alarmaEmitida;
 
-                eqAnt.estatus         = 'disponible';
-                eqAnt.renta_id        = null;
-                eqAnt.segundos        = 0;
-                eqAnt.tiempo_asignado = null;
-                eqAnt.total_productos = 0;
-                eqAnt.num_productos   = 0;
+                // Limpiar equipo anterior completamente
+                const equipoOrigenId    = equipoActivo;
+                eqAnt.estatus           = 'disponible';
+                eqAnt.renta_id          = null;
+                eqAnt.segundos          = 0;
+                eqAnt.tiempo_asignado   = null;
+                eqAnt.total_productos   = 0;
+                eqAnt.num_productos     = 0;
+                eqAnt.horaInicio        = null;
+                eqAnt._alarmaEmitida    = false;
 
-                clearInterval(timers[equipoActivo]);
+                // Limpiar timers del equipo anterior
+                clearInterval(timers[equipoOrigenId]);
+                if (parpadeoTimers[equipoOrigenId]) {
+                    clearInterval(parpadeoTimers[equipoOrigenId]);
+                    delete parpadeoTimers[equipoOrigenId];
+                }
+
                 rentaActiva  = eqNuevo.renta_id;
                 equipoActivo = nuevoEquipoId;
 
-                renderEquipo(equipoActivo);
+                renderEquipo(equipoOrigenId);
                 renderEquipo(nuevoEquipoId);
                 iniciarTimer(nuevoEquipoId);
                 cerrarModal('modal_cambio');
@@ -725,18 +866,21 @@
         });
     }
 
-    // ---- MEJORA 5: Bug cobro total en cero ----
+    // =============================================
+    // COBRO
+    // =============================================
     function abrirModalCobro() {
         cerrarModal('modal_opciones');
         const eq = equiposState[equipoActivo];
 
+        // Detener timer mientras se muestra cobro
         if (timers[equipoActivo]) clearInterval(timers[equipoActivo]);
 
-        // Calcular costo localmente con los segundos actuales
-        const segundosActuales = eq.segundos;
-        const costoRenta       = calcularCosto(eq.tipo, segundosActuales);
-        const totalProductos   = eq.total_productos || 0;
-        const total            = costoRenta + totalProductos;
+        const segundosActuales  = eq.segundos;
+        const segundosEfectivos = Math.max(0, segundosActuales - TOLERANCIA_SEGUNDOS);
+        const costoRenta        = calcularCosto(eq.tipo, segundosActuales);
+        const totalProductos    = parseFloat(eq.total_productos) || 0;
+        const total             = costoRenta + totalProductos;
 
         document.getElementById('cobro_num').textContent    = eq.numero;
         document.getElementById('cobro_tiempo').textContent = 'Tiempo: ' + formatSegundos(segundosActuales);
@@ -744,11 +888,18 @@
         document.getElementById('cobro_total').textContent  = '$' + total.toFixed(2);
         document.getElementById('cobro_letras').textContent = numeroALetras(total);
 
-        // Cargar productos desde servidor para mostrar detalle
+        if (totalProductos > 0) {
+            document.getElementById('cobro_productos_div').classList.remove('hidden');
+            document.getElementById('cobro_productos_total').textContent = '$' + totalProductos.toFixed(2);
+        } else {
+            document.getElementById('cobro_productos_div').classList.add('hidden');
+        }
+
+        // Cargar detalle productos desde servidor
         fetch(`{{ url('admin/control-tiempos/calcular-cobro') }}/${rentaActiva}`)
             .then(r => r.json())
             .then(data => {
-                if (data.total_productos > 0 && data.productos.length > 0) {
+                if (data.productos && data.productos.length > 0) {
                     document.getElementById('cobro_productos_div').classList.remove('hidden');
                     document.getElementById('cobro_productos_total').textContent =
                         '$' + parseFloat(data.total_productos).toFixed(2);
@@ -756,8 +907,6 @@
                         data.productos.map(p =>
                             `${p.producto.descripcion} x${p.cantidad} = $${parseFloat(p.subtotal).toFixed(2)}`
                         ).join('<br>');
-                } else {
-                    document.getElementById('cobro_productos_div').classList.add('hidden');
                 }
             });
 
@@ -765,15 +914,16 @@
     }
 
     function confirmarCobro() {
+        const eq = equiposState[equipoActivo];
+
         fetch(`{{ url('admin/control-tiempos/cobrar') }}/${rentaActiva}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
-            body: JSON.stringify({}),
+            body: JSON.stringify({ segundos_frontend: eq.segundos }),
         })
         .then(r => r.json())
         .then(data => {
             if (data.success) {
-                const eq = equiposState[equipoActivo];
                 eq.estatus         = 'disponible';
                 eq.renta_id        = null;
                 eq.segundos        = 0;
@@ -790,20 +940,28 @@
                 cerrarModal('modal_cobro');
             } else {
                 alert(data.error || 'Error al cobrar.');
+                if (eq.estatus === 'en_uso') iniciarTimer(equipoActivo);
             }
         });
     }
 
+    // =============================================
+    // CERRAR MODAL
+    // =============================================
     function cerrarModal(id) {
-        document.getElementById(id).classList.add('hidden');
+        document.getElementById(id)?.classList.add('hidden');
+        // Si se cierra cobro sin confirmar, reanudar timer
         if (id === 'modal_cobro' && equipoActivo) {
             const eq = equiposState[equipoActivo];
             if (eq && eq.estatus === 'en_uso') iniciarTimer(equipoActivo);
         }
     }
 
+    // =============================================
+    // UTILIDADES
+    // =============================================
     function formatSegundos(seg) {
-        seg = Math.max(0, Math.floor(seg));
+        seg = Math.max(0, Math.floor(seg || 0));
         const h = Math.floor(seg / 3600);
         const m = Math.floor((seg % 3600) / 60);
         const s = seg % 60;
@@ -811,6 +969,7 @@
     }
 
     function formatHora(fecha) {
+        if (!fecha || isNaN(fecha)) return '--:--:--';
         const h = String(fecha.getHours()).padStart(2,'0');
         const m = String(fecha.getMinutes()).padStart(2,'0');
         const s = String(fecha.getSeconds()).padStart(2,'0');
@@ -818,7 +977,7 @@
     }
 
     function numeroALetras(num) {
-        const entero = Math.floor(num);
+        const entero   = Math.floor(num);
         const centavos = Math.round((num - entero) * 100);
         const unidades = ['','UN','DOS','TRES','CUATRO','CINCO','SEIS','SIETE','OCHO','NUEVE',
             'DIEZ','ONCE','DOCE','TRECE','CATORCE','QUINCE','DIECISÉIS','DIECISIETE','DIECIOCHO','DIECINUEVE','VEINTE'];
@@ -830,7 +989,9 @@
             if (n < 30)  return 'VEINTI' + unidades[n-20];
             if (n < 100) return decenas[Math.floor(n/10)] + (n%10 ? ' Y ' + unidades[n%10] : '');
             if (n < 200) return 'CIEN' + (n > 100 ? 'TO ' + convertir(n-100) : '');
-            if (n < 1000) return ['','DOSCIENTOS','TRESCIENTOS','CUATROCIENTOS','QUINIENTOS','SEISCIENTOS','SETECIENTOS','OCHOCIENTOS','NOVECIENTOS'][Math.floor(n/100)] + (n%100 ? ' ' + convertir(n%100) : '');
+            if (n < 1000) return ['','DOSCIENTOS','TRESCIENTOS','CUATROCIENTOS','QUINIENTOS',
+                'SEISCIENTOS','SETECIENTOS','OCHOCIENTOS','NOVECIENTOS'][Math.floor(n/100)] +
+                (n%100 ? ' ' + convertir(n%100) : '');
             if (n < 2000) return 'MIL' + (n > 1000 ? ' ' + convertir(n-1000) : '');
             return convertir(Math.floor(n/1000)) + ' MIL' + (n%1000 ? ' ' + convertir(n%1000) : '');
         }
@@ -843,6 +1004,5 @@
                 .forEach(m => cerrarModal(m));
     });
     </script>
-
 
 </x-app-layout>

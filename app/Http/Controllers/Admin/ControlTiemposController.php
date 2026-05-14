@@ -20,24 +20,35 @@ class ControlTiemposController extends Controller
             ->orderBy('numero')
             ->get();
 
-        // Preparar datos para el frontend
         $equiposData = $equipos->map(function ($equipo) {
-            $renta = $equipo->rentaActiva;
-            return [
-                'id'                      => $equipo->id,
-                'numero'                  => $equipo->numero,
-                'tipo'                    => $equipo->tipo,
-                'descripcion'             => $equipo->descripcion,
-                'estatus'                 => $equipo->estatus,
-                'renta_id'                => $renta?->id,
-                'segundos_acumulados'     => $renta?->segundos_acumulados ?? 0,
-                'hora_inicio'             => $renta?->hora_inicio?->toISOString(),
-                'estatus_renta'           => $renta?->estatus,
-                'tiempo_asignado'         => $renta?->tiempo_asignado_segundos,
-                'total_productos'         => $renta?->productos->sum('subtotal') ?? 0,
-                'num_productos'           => $renta?->productos->count() ?? 0,
-            ];
-        });
+        $renta = $equipo->rentaActiva;
+
+        $segundosActuales = 0;
+        if ($renta) {
+            $segundosActuales = (int) $renta->segundos_acumulados;
+            if ($renta->estatus === 'activa' && $renta->hora_inicio) {
+                $horaInicio = \Carbon\Carbon::parse($renta->hora_inicio->format('Y-m-d H:i:s'));
+                $ahora      = \Carbon\Carbon::now();                
+                $diff = max(0, (int) $horaInicio->diffInSeconds($ahora));
+                $segundosActuales += $diff;
+            }
+        }
+
+        return [
+            'id'                  => $equipo->id,
+            'numero'              => $equipo->numero,
+            'tipo'                => $equipo->tipo,
+            'descripcion'         => $equipo->descripcion,
+            'estatus'             => $equipo->estatus,
+            'renta_id'            => $renta?->id,
+            'segundos_acumulados' => max(0, $segundosActuales),
+            'hora_inicio'         => $renta?->hora_inicio?->format('Y-m-d H:i:s'),
+            'estatus_renta'       => $renta?->estatus,
+            'tiempo_asignado'     => $renta?->tiempo_asignado_segundos,
+            'total_productos'     => $renta?->productos->sum('subtotal') ?? 0,
+            'num_productos'       => $renta?->productos->count() ?? 0,
+        ];
+    });
 
         return view('admin.control_tiempos.index', compact('equipos', 'equiposData'));
     }
@@ -78,25 +89,27 @@ class ControlTiemposController extends Controller
         }
     }
 
-    public function pausarRenta(Request $request, Renta $renta)
+   public function pausarRenta(Request $request, Renta $renta)
     {
         if ($renta->estatus !== 'activa') {
             return response()->json(['error' => 'La renta no está activa.'], 422);
         }
 
-        $segundos = $renta->segundos_acumulados + now()->diffInSeconds($renta->hora_inicio);
+        $horaInicio = \Carbon\Carbon::parse($renta->hora_inicio)->utc();
+        $ahora      = \Carbon\Carbon::now()->utc();
+        $segundos   = $renta->segundos_acumulados + max(0, $ahora->diffInSeconds($horaInicio));
 
         $renta->update([
             'estatus'             => 'pausada',
             'hora_pausa'          => now(),
-            'segundos_acumulados' => $segundos,
+            'segundos_acumulados' => round($segundos),
         ]);
 
         $renta->equipo->update(['estatus' => 'pausado']);
 
         return response()->json([
             'success'  => true,
-            'segundos' => $segundos,
+            'segundos' => round($segundos),
         ]);
     }
 
@@ -108,13 +121,17 @@ class ControlTiemposController extends Controller
 
         $renta->update([
             'estatus'     => 'activa',
-            'hora_inicio' => now(),
+            'hora_inicio' => now(), // Nueva hora de inicio desde donde se reanuda
             'hora_pausa'  => null,
+            // segundos_acumulados ya tiene lo acumulado antes de la pausa
         ]);
 
         $renta->equipo->update(['estatus' => 'en_uso']);
 
-        return response()->json(['success' => true]);
+        return response()->json([
+            'success'  => true,
+            'segundos' => $renta->segundos_acumulados, // Devolver acumulado para que el frontend lo use
+        ]);
     }
 
     public function cambiarEquipo(Request $request, Renta $renta)
@@ -199,10 +216,12 @@ class ControlTiemposController extends Controller
 
     public function calcularCobro(Renta $renta)
     {
-        $segundos     = $renta->segundosTranscurridos();
-        $costoRenta   = Equipo::calcularCosto($renta->equipo->tipo, $segundos);
-        $totalProductos = $renta->productos->sum('subtotal');
-        $total        = $costoRenta + $totalProductos;
+        $segundos          = $renta->segundosTranscurridos();
+        $tolerancia        = 3 * 60;
+        $segundosEfectivos = max(0, $segundos - $tolerancia);
+        $costoRenta        = Equipo::calcularCosto($renta->equipo->tipo, $segundosEfectivos);
+        $totalProductos    = $renta->productos->sum('subtotal');
+        $total             = $costoRenta + $totalProductos;
 
         return response()->json([
             'segundos'        => $segundos,
@@ -215,30 +234,31 @@ class ControlTiemposController extends Controller
 
     public function cobrar(Request $request, Renta $renta)
     {
-        $segundos       = $renta->segundosTranscurridos();
-        $costoRenta     = Equipo::calcularCosto($renta->equipo->tipo, $segundos);
-        $totalProductos = $renta->productos->sum('subtotal');
-        $total          = $costoRenta + $totalProductos;
+        // Usar segundos del frontend si vienen, sino calcular del servidor
+        $segundos = $request->segundos_frontend
+            ? (int) $request->segundos_frontend
+            : $renta->segundosTranscurridos();
+
+        $tolerancia        = 3 * 60;
+        $segundosEfectivos = max(0, $segundos - $tolerancia);
+        $costoRenta        = Equipo::calcularCosto($renta->equipo->tipo, $segundosEfectivos);
+        $totalProductos    = $renta->productos->sum('subtotal');
+        $total             = $costoRenta + $totalProductos;
 
         DB::beginTransaction();
         try {
             $renta->update([
-                'estatus'          => 'cobrada',
-                'hora_fin'         => now(),
-                'hora_cobro'       => now(),
-                'total_renta'      => $costoRenta,
-                'total_productos'  => $totalProductos,
-                'total'            => $total,
+                'estatus'             => 'cobrada',
+                'hora_fin'            => now(),
+                'hora_cobro'          => now(),
+                'total_renta'         => $costoRenta,
+                'total_productos'     => $totalProductos,
+                'total'               => $total,
                 'segundos_acumulados' => $segundos,
             ]);
-
             $renta->equipo->update(['estatus' => 'disponible']);
-
             DB::commit();
-            return response()->json([
-                'success' => true,
-                'total'   => $total,
-            ]);
+            return response()->json(['success' => true, 'total' => $total]);
         } catch (\Exception $e) {
             DB::rollBack();
             return response()->json(['error' => $e->getMessage()], 500);
@@ -280,5 +300,16 @@ class ControlTiemposController extends Controller
             'rentas', 'usuarios', 'fechaDesde', 'fechaHasta',
             'totalRentas', 'totalProductos', 'totalGeneral'
         ));
+    }
+
+    public function asignarTiempo(Request $request, Renta $renta)
+    {
+        $request->validate(['minutos' => 'required|integer|min:15|max:480']);
+
+        $renta->update([
+            'tiempo_asignado_segundos' => $request->minutos * 60,
+        ]);
+
+        return response()->json(['success' => true]);
     }
 }

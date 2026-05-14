@@ -98,6 +98,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('reporte',                        [ControlTiemposController::class, 'reporte'])->name('reporte');
     });
 
+    Route::post('asignar-tiempo/{renta}', [ControlTiemposController::class, 'asignarTiempo'])->name('asignar-tiempo');
+
     Route::resource('usuarios', UsuarioController::class)->except(['show']);
     
 });
