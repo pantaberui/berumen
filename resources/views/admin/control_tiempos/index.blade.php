@@ -81,6 +81,40 @@
                     <p class="font-bold mt-1" id="total_label_{{ $equipo->id }}"></p>
                     <p class="opacity-60 mt-1" id="productos_label_{{ $equipo->id }}"></p>
                 </div>
+
+                {{-- Botones de acción rápida --}}
+                <div class="flex justify-center gap-2 mt-3" onclick="event.stopPropagation()">
+                    {{-- Play: solo visible si disponible --}}
+                    <button id="btn_play_{{ $equipo->id }}"
+                            onclick="accionRapida({{ $equipo->id }}, 'play')"
+                            title="Iniciar"
+                            class="w-8 h-8 rounded-full bg-white bg-opacity-30 hover:bg-opacity-50 flex items-center justify-center transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </button>
+                    {{-- Pause --}}
+                    <button id="btn_pause_{{ $equipo->id }}"
+                            onclick="accionRapida({{ $equipo->id }}, 'pause')"
+                            title="Pausar / Reanudar"
+                            class="w-8 h-8 rounded-full bg-white bg-opacity-30 hover:bg-opacity-50 flex items-center justify-center transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+                        </svg>
+                    </button>
+                    {{-- Stop / Cobrar --}}
+                    <button id="btn_stop_{{ $equipo->id }}"
+                            onclick="accionRapida({{ $equipo->id }}, 'stop')"
+                            title="Cobrar"
+                            class="w-8 h-8 rounded-full bg-white bg-opacity-30 hover:bg-opacity-50 flex items-center justify-center transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M6 6h12v12H6z"/>
+                        </svg>
+                    </button>
+                </div>
+
+
+
             </div>
 
                 @endforeach
@@ -468,6 +502,9 @@
 
         // Anillos SVG
         actualizarAnillos(id);
+
+        // Actualizar botones de acción rápida
+        actualizarBotonesCard(id);
     }
 
     function actualizarAnillos(id) {
@@ -664,7 +701,7 @@
     // =============================================
     // PAUSAR / REANUDAR
     // =============================================
-    function accionEquipo(accion) {
+    function accionEquipo(accion, silencioso = false) {
         const url = accion === 'pausar'
             ? `{{ url('admin/control-tiempos/pausar') }}/${rentaActiva}`
             : `{{ url('admin/control-tiempos/reanudar') }}/${rentaActiva}`;
@@ -678,6 +715,10 @@
         .then(data => {
             if (data.success) {
                 const eq = equiposState[equipoActivo];
+                //para botones acceso rapido
+                renderEquipo(equipoActivo);
+                if (!silencioso) cerrarModal('modal_opciones');
+
                 if (accion === 'pausar') {
                     eq.estatus  = 'pausado';
                     eq.segundos = parseInt(data.segundos) || eq.segundos;
@@ -1003,6 +1044,87 @@
             ['modal_iniciar','modal_opciones','modal_productos','modal_cambio','modal_cobro','modal_asignar_tiempo']
                 .forEach(m => cerrarModal(m));
     });
+
+    function accionRapida(id, accion) {
+        const eq = equiposState[id];
+        equipoActivo = id;
+        rentaActiva  = eq.renta_id;
+
+        if (accion === 'play') {
+            if (eq.estatus !== 'disponible') return;
+            // Iniciar sin tiempo asignado directamente
+            fetch('{{ route("admin.control-tiempos.iniciar") }}', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+                body: JSON.stringify({ equipo_id: id, tiempo_asignado_minutos: null }),
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    eq.estatus         = 'en_uso';
+                    eq.renta_id        = data.renta.id;
+                    eq.segundos        = 0;
+                    eq.tiempo_asignado = null;
+                    eq.horaInicio      = new Date();
+                    eq._alarmaEmitida  = false;
+                    rentaActiva        = data.renta.id;
+                    renderEquipo(id);
+                    iniciarTimer(id);
+                    actualizarBotonesCard(id);
+                } else {
+                    alert(data.error || 'Error al iniciar.');
+                }
+            });
+
+        } else if (accion === 'pause') {
+            if (eq.estatus === 'disponible') return;
+            if (eq.estatus === 'en_uso') {
+                accionEquipo('pausar', true);
+            } else if (eq.estatus === 'pausado') {
+                accionEquipo('reanudar', true);
+            }
+
+        } else if (accion === 'stop') {
+            if (eq.estatus === 'disponible') return;
+            abrirModalCobro();
+        }
+    }
+
+    function actualizarBotonesCard(id) {
+        const eq       = equiposState[id];
+        const btnPlay  = document.getElementById(`btn_play_${id}`);
+        const btnPause = document.getElementById(`btn_pause_${id}`);
+        const btnStop  = document.getElementById(`btn_stop_${id}`);
+
+        if (!btnPlay) return;
+
+        if (eq.estatus === 'disponible') {
+            btnPlay.style.opacity  = '1';
+            btnPause.style.opacity = '0.3';
+            btnStop.style.opacity  = '0.3';
+            btnPlay.disabled  = false;
+            btnPause.disabled = true;
+            btnStop.disabled  = true;
+        } else if (eq.estatus === 'en_uso') {
+            btnPlay.style.opacity  = '0.3';
+            btnPause.style.opacity = '1';
+            btnStop.style.opacity  = '1';
+            btnPlay.disabled  = true;
+            btnPause.disabled = false;
+            btnStop.disabled  = false;
+            // Cambiar icono pause a pause normal
+            btnPause.title = 'Pausar';
+        } else if (eq.estatus === 'pausado') {
+            btnPlay.style.opacity  = '0.3';
+            btnPause.style.opacity = '1';
+            btnStop.style.opacity  = '1';
+            btnPlay.disabled  = true;
+            btnPause.disabled = false;
+            btnStop.disabled  = false;
+            btnPause.title = 'Reanudar';
+        }
+    }
+
     </script>
 
 </x-app-layout>

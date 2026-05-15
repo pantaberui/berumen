@@ -304,10 +304,10 @@ class ControlTiemposController extends Controller
 
     public function asignarTiempo(Request $request, Renta $renta)
     {
-        $request->validate(['minutos' => 'required|integer|min:15|max:480']);
+        $request->validate(['minutos' => 'required|integer|min:0|max:480']);
 
         $renta->update([
-            'tiempo_asignado_segundos' => $request->minutos * 60,
+            'tiempo_asignado_segundos' => $request->minutos > 0 ? $request->minutos * 60 : null,
         ]);
 
         return response()->json(['success' => true]);

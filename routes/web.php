@@ -96,11 +96,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('cobrar/{renta}',                [ControlTiemposController::class, 'cobrar'])->name('cobrar');
         Route::get('estado/{renta}',                 [ControlTiemposController::class, 'estadoActual'])->name('estado');
         Route::get('reporte',                        [ControlTiemposController::class, 'reporte'])->name('reporte');
+        Route::post('asignar-tiempo/{renta}', [ControlTiemposController::class, 'asignarTiempo'])->name('asignar-tiempo');         
     });
 
-    Route::post('asignar-tiempo/{renta}', [ControlTiemposController::class, 'asignarTiempo'])->name('asignar-tiempo');
-
     Route::resource('usuarios', UsuarioController::class)->except(['show']);
+
+    
     
 });
 
