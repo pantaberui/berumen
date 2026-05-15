@@ -582,7 +582,6 @@
                 'Tiempo: ' + formatSegundos(eq.segundos) +
                 ' — Costo: $' + costoActual.toFixed(2);
 
-            // Configurar botón pausar/reanudar
             const btnPR = document.getElementById('btn_pausar_reanudar');
             if (eq.estatus === 'pausado') {
                 btnPR.textContent = '▶ Reanudar';
@@ -594,7 +593,6 @@
                 btnPR.onclick = () => accionEquipo('pausar');
             }
 
-            // Botón asignar tiempo: siempre visible (permite cambiar también)
             const btnAsignar = document.getElementById('btn_asignar_tiempo');
             if (btnAsignar) btnAsignar.style.display = 'block';
 
@@ -1105,23 +1103,15 @@
             btnPlay.disabled  = false;
             btnPause.disabled = true;
             btnStop.disabled  = true;
-        } else if (eq.estatus === 'en_uso') {
+        } else {
+            // En uso, pausado, o tiempo agotado — habilitar pause y stop
             btnPlay.style.opacity  = '0.3';
             btnPause.style.opacity = '1';
             btnStop.style.opacity  = '1';
             btnPlay.disabled  = true;
             btnPause.disabled = false;
             btnStop.disabled  = false;
-            // Cambiar icono pause a pause normal
-            btnPause.title = 'Pausar';
-        } else if (eq.estatus === 'pausado') {
-            btnPlay.style.opacity  = '0.3';
-            btnPause.style.opacity = '1';
-            btnStop.style.opacity  = '1';
-            btnPlay.disabled  = true;
-            btnPause.disabled = false;
-            btnStop.disabled  = false;
-            btnPause.title = 'Reanudar';
+            btnPause.title = eq.estatus === 'pausado' ? 'Reanudar' : 'Pausar';
         }
     }
 

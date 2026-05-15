@@ -34,6 +34,7 @@ class ControlTiemposController extends Controller
             }
         }
 
+        
         return [
             'id'                  => $equipo->id,
             'numero'              => $equipo->numero,
