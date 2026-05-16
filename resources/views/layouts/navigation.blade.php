@@ -75,7 +75,24 @@
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.pagos-servicios.index') ? 'font-semibold text-indigo-600' : '' }}">
                                 Consultar Pagos
                             </a>
-                        </div>
+
+                            <a href="{{ route('admin.tramites.create') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.tramites.create') ? 'font-semibold text-indigo-600' : '' }}">
+                                Registrar Trámite
+                            </a>
+                            <a href="{{ route('admin.tramites.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.tramites.index') ? 'font-semibold text-indigo-600' : '' }}">
+                                Consultar Trámites
+                            </a>
+                            @if(auth()->user()->hasRole('admin'))
+                            <a href="{{ route('admin.tipo-tramites.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.tipo-tramites.*') ? 'font-semibold text-indigo-600' : '' }}">
+                                Tipos de Trámite
+                            </a>
+                            @endif                        
+
+                        </div>                            
+
                     </div>
 
                     {{-- Fichas WiFi  Netplus --}}

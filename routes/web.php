@@ -15,6 +15,8 @@ use App\Http\Controllers\Admin\VentaController;
 use App\Http\Controllers\Admin\CompraController;
 use App\Http\Controllers\Admin\ControlTiemposController;
 use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Admin\TipoTramiteController;
+use App\Http\Controllers\Admin\TramiteController;
 
 
 
@@ -101,7 +103,13 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::resource('usuarios', UsuarioController::class)->except(['show']);
 
-    
+    // Tipo Trámites
+    Route::resource('tipo-tramites', TipoTramiteController::class)->except(['show']);
+
+    // Trámites
+    Route::get('tramites/buscar-cliente', [TramiteController::class, 'buscarCliente'])->name('tramites.buscar-cliente');
+    Route::post('tramites/{tramite}/enviar-correo', [TramiteController::class, 'enviarCorreo'])->name('tramites.enviar-correo');
+    Route::resource('tramites', TramiteController::class);
     
 });
 
