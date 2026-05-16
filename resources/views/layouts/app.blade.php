@@ -76,23 +76,31 @@
 
     </script>
 
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+    <body class="font-sans antialiased min-h-screen flex flex-col">
+        <div class="flex-1">
+            {{-- Navegación --}}
             @include('layouts.navigation')
 
-            <!-- Page Heading -->
-            @isset($header)
+            {{-- Header --}}
+            @if (isset($header))
                 <header class="bg-white shadow">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
-            @endisset
+            @endif
 
-            <!-- Page Content -->
+            {{-- Contenido --}}
             <main>
                 {{ $slot }}
             </main>
         </div>
+
+        {{-- Footer --}}
+        <footer class="py-4 border-t border-gray-200 text-center text-xs text-gray-400">
+            © {{ date('Y') }} Entretenimiento Berumen — Todos los derechos reservados.
+            Desarrollado por <span class="text-gray-500 font-medium">EC</span>
+        </footer>
     </body>
+
 </html>

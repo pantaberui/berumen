@@ -67,7 +67,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Dirección IP</label>
                             <input type="text" name="ip" id="ip"
-                                value="{{ old('ip') }}"
+                                value="{{ old('ip', $contrato->ip) }}"
                                 placeholder="192.168.001.001"
                                 class="mt-1 w-full border-gray-300 rounded-md shadow-sm"
                                 maxlength="15">

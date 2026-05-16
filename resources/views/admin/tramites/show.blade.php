@@ -53,22 +53,27 @@
                     @endif
                 </div>
 
-                <div class="border-t border-dashed mt-4 pt-4 space-y-1">
-                    <div class="flex justify-between text-xs text-gray-500">
-                        <span>Importe unitario:</span>
-                        <span>${{ number_format($tramite->importe, 2) }}</span>
-                    </div>
-                    <div class="flex justify-between text-xs text-gray-500">
-                        <span>Cantidad:</span>
-                        <span>{{ $tramite->cantidad }}</span>
-                    </div>
-                    <div class="flex justify-between font-bold text-lg border-t pt-2 mt-2">
-                        <span>TOTAL:</span>
-                        <span>${{ number_format($tramite->subtotal, 2) }}</span>
-                    </div>
-                    <div class="text-xs text-gray-500 italic mt-1">
-                        {{ \App\Helpers\NumeroALetras::convertir($tramite->subtotal) }}
-                    </div>
+                <div class="border-t border-dashed mt-4 pt-4">
+                    <table class="w-full text-xs">
+                        <thead>
+                            <tr class="text-gray-500">
+                                <td class="pb-2">Trámite</td>
+                                <td class="pb-2 text-center">Cant.</td>
+                                <td class="pb-2 text-right">Importe</td>
+                                <td class="pb-2 text-right">Subtotal</td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($tramite->detalles as $detalle)
+                            <tr>
+                                <td class="py-1">{{ $detalle->tipoTramite->nombre }}</td>
+                                <td class="py-1 text-center">{{ $detalle->cantidad }}</td>
+                                <td class="py-1 text-right">${{ number_format($detalle->importe, 2) }}</td>
+                                <td class="py-1 text-right font-medium">${{ number_format($detalle->subtotal, 2) }}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
 
                 @if($tramite->observaciones)

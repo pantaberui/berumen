@@ -4,7 +4,7 @@
     </x-slot>
 
     <div class="py-6">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
             @if($errors->any())
                 <div class="bg-red-100 text-red-800 px-4 py-3 rounded">
@@ -33,83 +33,108 @@
                         </button>
                     </div>
                     <div id="resultados_clientes" class="mt-2 hidden"></div>
-                    <div id="cliente_badge" class="mt-2 inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded px-3 py-2 text-sm text-blue-800">
+                    <div class="mt-2 inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded px-3 py-2 text-sm text-blue-800">
                         👤 <span id="cliente_badge_nombre">PÚBLICO EN GENERAL</span>
                         <button type="button" onclick="limpiarCliente()" class="text-blue-400 hover:text-blue-600">✕</button>
                     </div>
                 </div>
 
-                <form action="{{ route('admin.tramites.store') }}" method="POST" id="form_tramite">
-                    @csrf
-                    <input type="hidden" name="cliente_id" id="cliente_id_input">
-                    <input type="hidden" name="cliente_nombre" id="cliente_nombre_input" value="PÚBLICO EN GENERAL">
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
+                {{-- Agregar trámite --}}
+                <div class="border-t pt-4 mb-4">
+                    <h3 class="text-base font-medium text-gray-800 mb-3">Agregar Trámite</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 items-end">
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700">Tipo de Trámite *</label>
-                            <select name="tipo_tramite_id" id="tipo_tramite_id"
-                                    class="mt-1 w-full border-gray-300 rounded-md shadow-sm"
-                                    onchange="cargarPrecioSugerido(this)">
-                                <option value="">— Selecciona un trámite —</option>
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Tipo de Trámite</label>
+                            <select id="sel_tipo_tramite"
+                                    class="w-full border-gray-300 rounded-md shadow-sm text-sm"
+                                    onchange="cargarPrecio(this)">
+                                <option value="">— Selecciona —</option>
                                 @foreach($tiposTramite as $tipo)
                                     <option value="{{ $tipo->id }}"
-                                            data-precio="{{ $tipo->precio_sugerido }}"
-                                        {{ old('tipo_tramite_id') == $tipo->id ? 'selected' : '' }}>
+                                            data-nombre="{{ $tipo->nombre }}"
+                                            data-precio="{{ $tipo->precio_sugerido }}">
                                         {{ $tipo->nombre }}
                                         {{ $tipo->precio_sugerido ? '— $'.number_format($tipo->precio_sugerido, 2) : '' }}
                                     </option>
                                 @endforeach
                             </select>
                         </div>
-
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Cantidad *</label>
-                            <input type="number" name="cantidad" id="cantidad" min="1"
-                                   value="{{ old('cantidad', 1) }}"
-                                   class="mt-1 w-full border-gray-300 rounded-md shadow-sm"
-                                   oninput="calcularSubtotal()">
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Cantidad</label>
+                            <input type="number" id="sel_cantidad" value="1" min="1"
+                                   class="w-full border-gray-300 rounded-md shadow-sm text-sm"
+                                   oninput="calcularSubtotalPreview()">
                         </div>
-
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">
-                                Importe * <span class="text-xs text-gray-400">(editable)</span>
-                            </label>
-                            <input type="number" name="importe" id="importe" step="0.01" min="0"
-                                   value="{{ old('importe', 0) }}"
-                                   class="mt-1 w-full border-gray-300 rounded-md shadow-sm"
-                                   oninput="calcularSubtotal()">
-                            <p class="text-xs text-gray-400 mt-1" id="precio_sugerido_text"></p>
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Importe unitario</label>
+                            <input type="number" id="sel_importe" value="0" step="0.01" min="0"
+                                   class="w-full border-gray-300 rounded-md shadow-sm text-sm"
+                                   oninput="calcularSubtotalPreview()">
                         </div>
+                    </div>
+                    <div class="flex items-center gap-4 mt-2">
+                        <span class="text-sm text-gray-500">
+                            Subtotal: <strong id="preview_subtotal" class="text-green-700">$0.00</strong>
+                        </span>
+                        <button type="button" onclick="agregarTramite()"
+                                class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm">
+                            + Agregar a la lista
+                        </button>
+                    </div>
+                </div>
 
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700">Subtotal</label>
-                            <div id="subtotal_display"
-                                 class="mt-1 w-full border border-gray-300 rounded-md px-3 py-2 bg-gray-50 font-bold text-lg text-green-700">
-                                $0.00
-                            </div>
-                            <p class="text-xs text-gray-500 italic mt-1" id="subtotal_letras"></p>
-                        </div>
+                {{-- Tabla de trámites --}}
+                <form action="{{ route('admin.tramites.store') }}" method="POST" id="form_tramite">
+                    @csrf
+                    <input type="hidden" name="cliente_id" id="cliente_id_input">
+                    <input type="hidden" name="cliente_nombre" id="cliente_nombre_input" value="PÚBLICO EN GENERAL">
 
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700">Observaciones</label>
-                            <textarea name="observaciones" rows="2"
-                                      class="mt-1 w-full border-gray-300 rounded-md shadow-sm">{{ old('observaciones') }}</textarea>
-                        </div>
-
+                    <div class="overflow-x-auto mb-4">
+                        <table class="min-w-full divide-y divide-gray-200" id="tabla_tramites">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Trámite</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Cant.</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Importe</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Subtotal</th>
+                                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase">Acc.</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody_tramites">
+                                <tr id="fila_vacia">
+                                    <td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">
+                                        Agrega trámites usando el formulario de arriba
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr class="bg-gray-50">
+                                    <td colspan="3" class="px-4 py-3 text-right text-sm font-medium text-gray-700">Total:</td>
+                                    <td class="px-4 py-3 text-lg font-bold text-green-700" id="total_tramites">$0.00</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5" class="px-4 py-1 text-xs text-gray-500 italic" id="total_letras"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
                     </div>
 
-                    <div class="mt-6 flex justify-end gap-3">
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700">Observaciones</label>
+                        <textarea name="observaciones" rows="2"
+                                  class="mt-1 w-full border-gray-300 rounded-md shadow-sm">{{ old('observaciones') }}</textarea>
+                    </div>
+
+                    <div class="flex justify-end gap-3">
                         <a href="{{ route('admin.tramites.index') }}"
                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
                             Cancelar
                         </a>
-                        {{-- Solo cobrar sin ticket --}}
                         <button type="submit"
                                 class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800">
                             ✓ Solo Cobrar
                         </button>
-                        {{-- Cobrar e imprimir ticket --}}
                         <button type="submit" name="imprimir" value="1"
                                 class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                             🖨 Cobrar e Imprimir Ticket
@@ -121,7 +146,10 @@
     </div>
 
     <script>
-        // Cliente
+        let tramitesLista = [];
+        let filaIndex = 0;
+
+        // ---- Cliente ----
         document.getElementById('buscar_cliente').addEventListener('keypress', e => {
             if (e.key === 'Enter') { e.preventDefault(); buscarCliente(); }
         });
@@ -135,13 +163,10 @@
                 .then(clientes => {
                     const div = document.getElementById('resultados_clientes');
                     div.classList.remove('hidden');
-
                     if (clientes.length === 0) {
-                        div.innerHTML = `<div class="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-700">
-                            No se encontró ningún cliente.</div>`;
+                        div.innerHTML = `<div class="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-700">No se encontró ningún cliente.</div>`;
                         return;
                     }
-
                     div.innerHTML = `<div class="space-y-1 max-h-40 overflow-y-auto">
                         ${clientes.map(c => `
                             <div class="flex items-center justify-between border rounded p-2 hover:bg-blue-50 cursor-pointer text-sm"
@@ -172,30 +197,91 @@
             document.getElementById('buscar_cliente').value = '';
         }
 
-        // Precio sugerido
-        function cargarPrecioSugerido(select) {
-            const option  = select.options[select.selectedIndex];
-            const precio  = option.dataset.precio;
-            const txt     = document.getElementById('precio_sugerido_text');
-
-            if (precio && precio !== 'null') {
-                document.getElementById('importe').value = parseFloat(precio).toFixed(2);
-                txt.textContent = `Precio sugerido: $${parseFloat(precio).toFixed(2)}`;
-            } else {
-                document.getElementById('importe').value = '0.00';
-                txt.textContent = 'Este trámite no tiene precio fijo — ingresa el importe manualmente.';
-            }
-            calcularSubtotal();
+        // ---- Trámites ----
+        function cargarPrecio(select) {
+            const option = select.options[select.selectedIndex];
+            const precio = option.dataset.precio;
+            document.getElementById('sel_importe').value =
+                precio && precio !== 'null' ? parseFloat(precio).toFixed(2) : '0.00';
+            calcularSubtotalPreview();
         }
 
-        // Cálculo subtotal
-        function calcularSubtotal() {
-            const importe  = parseFloat(document.getElementById('importe').value) || 0;
-            const cantidad = parseInt(document.getElementById('cantidad').value) || 1;
+        function calcularSubtotalPreview() {
+            const importe  = parseFloat(document.getElementById('sel_importe').value) || 0;
+            const cantidad = parseInt(document.getElementById('sel_cantidad').value) || 1;
+            document.getElementById('preview_subtotal').textContent = '$' + (importe * cantidad).toFixed(2);
+        }
+
+        function agregarTramite() {
+            const select   = document.getElementById('sel_tipo_tramite');
+            const tipoId   = select.value;
+            const nombre   = select.options[select.selectedIndex]?.dataset.nombre;
+            const cantidad = parseInt(document.getElementById('sel_cantidad').value) || 1;
+            const importe  = parseFloat(document.getElementById('sel_importe').value) || 0;
+
+            if (!tipoId) { alert('Selecciona un tipo de trámite.'); return; }
+
+            document.getElementById('fila_vacia')?.remove();
+
+            const idx      = filaIndex++;
             const subtotal = importe * cantidad;
-            document.getElementById('subtotal_display').textContent = '$' + subtotal.toFixed(2);
-            document.getElementById('subtotal_letras').textContent  = numeroALetras(subtotal);
+            const fila     = document.createElement('tr');
+            fila.id        = `fila_${idx}`;
+            fila.className = 'hover:bg-gray-50';
+            fila.innerHTML = `
+                <td class="px-4 py-2 text-sm text-gray-700">${nombre}
+                    <input type="hidden" name="tramites[${idx}][tipo_tramite_id]" value="${tipoId}">
+                </td>
+                <td class="px-4 py-2 text-sm text-gray-500">${cantidad}
+                    <input type="hidden" name="tramites[${idx}][cantidad]" value="${cantidad}">
+                </td>
+                <td class="px-4 py-2 text-sm text-gray-500">$${importe.toFixed(2)}
+                    <input type="hidden" name="tramites[${idx}][importe]" value="${importe}">
+                </td>
+                <td class="px-4 py-2 text-sm font-medium text-gray-900">$${subtotal.toFixed(2)}</td>
+                <td class="px-4 py-2">
+                    <button type="button" onclick="eliminarFila(${idx})"
+                            class="text-red-500 hover:text-red-700 text-lg">✕</button>
+                </td>
+            `;
+
+            document.getElementById('tbody_tramites').appendChild(fila);
+            tramitesLista.push({ idx, subtotal });
+            actualizarTotal();
+
+            // Limpiar selector
+            select.value = '';
+            document.getElementById('sel_cantidad').value = '1';
+            document.getElementById('sel_importe').value  = '0.00';
+            document.getElementById('preview_subtotal').textContent = '$0.00';
         }
+
+        function eliminarFila(idx) {
+            document.getElementById(`fila_${idx}`)?.remove();
+            tramitesLista = tramitesLista.filter(t => t.idx !== idx);
+
+            if (tramitesLista.length === 0) {
+                const fila = document.createElement('tr');
+                fila.id = 'fila_vacia';
+                fila.innerHTML = `<td colspan="5" class="px-4 py-6 text-center text-gray-400 text-sm">Agrega trámites usando el formulario de arriba</td>`;
+                document.getElementById('tbody_tramites').appendChild(fila);
+            }
+            actualizarTotal();
+        }
+
+        function actualizarTotal() {
+            const total = tramitesLista.reduce((sum, t) => sum + t.subtotal, 0);
+            document.getElementById('total_tramites').textContent = '$' + total.toFixed(2);
+            document.getElementById('total_letras').textContent   = numeroALetras(total);
+        }
+
+        // Validar antes de enviar
+        document.getElementById('form_tramite').addEventListener('submit', function(e) {
+            if (tramitesLista.length === 0) {
+                e.preventDefault();
+                alert('Agrega al menos un trámite a la lista.');
+            }
+        });
 
         function numeroALetras(num) {
             const entero   = Math.floor(num);

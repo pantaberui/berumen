@@ -93,11 +93,20 @@
                             <td class="px-4 py-3 text-sm font-medium text-gray-900">
                                 #{{ str_pad($tramite->id, 6, '0', STR_PAD_LEFT) }}
                             </td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $tramite->tipoTramite->nombre }}</td>
+                            
+                            <td class="px-4 py-3 text-sm text-gray-700">
+                                @foreach($tramite->detalles as $detalle)
+                                    <span class="block">{{ $detalle->tipoTramite->nombre }}</span>
+                                @endforeach
+                            </td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $tramite->cliente_nombre }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">{{ $tramite->cantidad }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">${{ number_format($tramite->importe, 2) }}</td>
+                            <td class="px-4 py-3 text-sm text-gray-500">
+                                {{ $tramite->detalles->sum('cantidad') }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500">—</td>
                             <td class="px-4 py-3 text-sm font-medium text-gray-900">${{ number_format($tramite->subtotal, 2) }}</td>
+
+
                             <td class="px-4 py-3 text-sm">
                                 @if($tramite->estatus === 'cobrado')
                                     <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Cobrado</span>

@@ -8,12 +8,13 @@ use App\Models\TipoTramite;
 use App\Models\Cliente;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\TramiteDetalle;
 
 class TramiteController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Tramite::with('tipoTramite', 'cajero', 'cliente');
+        $query = Tramite::with('cajero', 'cliente', 'detalles.tipoTramite');
 
         $fechaDesde = $request->get('fecha_desde', now()->format('Y-m-d'));
         $fechaHasta = $request->get('fecha_hasta', now()->format('Y-m-d'));
@@ -50,28 +51,42 @@ class TramiteController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'tipo_tramite_id' => 'required|exists:tipo_tramites,id',
-            'cantidad'        => 'required|integer|min:1',
-            'importe'         => 'required|numeric|min:0',
-            'observaciones'   => 'nullable|string',
+            'tramites'                => 'required|array|min:1',
+            'tramites.*.tipo_tramite_id' => 'required|exists:tipo_tramites,id',
+            'tramites.*.cantidad'     => 'required|integer|min:1',
+            'tramites.*.importe'      => 'required|numeric|min:0',
+            'observaciones'           => 'nullable|string',
         ]);
 
-        $subtotal = $request->importe * $request->cantidad;
+        $subtotalTotal = 0;
+        $detalles      = [];
+
+        foreach ($request->tramites as $item) {
+            $subtotal       = $item['importe'] * $item['cantidad'];
+            $subtotalTotal += $subtotal;
+            $detalles[]     = [
+                'tipo_tramite_id' => $item['tipo_tramite_id'],
+                'cantidad'        => $item['cantidad'],
+                'importe'         => $item['importe'],
+                'subtotal'        => $subtotal,
+            ];
+        }
 
         $tramite = Tramite::create([
-            'tipo_tramite_id' => $request->tipo_tramite_id,
-            'user_id'         => auth()->id(),
-            'cliente_id'      => $request->cliente_id ?: null,
-            'cliente_nombre'  => $request->cliente_nombre ?: 'PÚBLICO EN GENERAL',
-            'cantidad'        => $request->cantidad,
-            'importe'         => $request->importe,
-            'subtotal'        => $subtotal,
-            'observaciones'   => $request->observaciones,
-            'fecha_hora_cobro'=> now(),
-            'estatus'         => 'cobrado',
+            'user_id'          => auth()->id(),
+            'cliente_id'       => $request->cliente_id ?: null,
+            'cliente_nombre'   => $request->cliente_nombre ?: 'PÚBLICO EN GENERAL',
+            'subtotal'         => $subtotalTotal,
+            'observaciones'    => $request->observaciones,
+            'fecha_hora_cobro' => now(),
+            'estatus'          => 'cobrado',
         ]);
 
-        // Si solicitó ticket redirigir al show, sino al index
+        foreach ($detalles as $detalle) {
+            $detalle['tramite_id'] = $tramite->id;
+            TramiteDetalle::create($detalle);
+        }
+
         if ($request->has('imprimir')) {
             return redirect()->route('admin.tramites.show', $tramite)
                 ->with('success', 'Trámite registrado correctamente.');
@@ -83,7 +98,7 @@ class TramiteController extends Controller
 
     public function show(Tramite $tramite)
     {
-        $tramite->load('tipoTramite', 'cajero', 'cliente', 'canceladoPor');
+        $tramite->load('tipoTramite', 'cajero', 'cliente', 'canceladoPor', 'detalles.tipoTramite');
         return view('admin.tramites.show', compact('tramite'));
     }
 
