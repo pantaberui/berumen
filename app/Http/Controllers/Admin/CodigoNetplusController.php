@@ -143,7 +143,7 @@ class CodigoNetplusController extends Controller
         });
 
         return view('admin.codigos_netplus.reporte', compact(
-            'ventas', 'total', 'cantidad', 'porTipo', 'usuarios'
+            'ventas', 'total', 'cantidad', 'porTipo', 'usuarios','fechaDesde', 'fechaHasta'
         ));
     }
 }

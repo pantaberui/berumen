@@ -27,7 +27,7 @@
                          alt="Entretenimiento Berumen" class="mx-auto mb-3"
                          style="width:75%;max-width:400px;height:120px;object-fit:contain;">
                     <p class="font-bold text-lg">ENTRETENIMIENTO BERUMEN</p>
-                    <p class="text-gray-600 text-sm">Tamaulipas 4, San José de Mojarras</p>
+                    <p class="text-gray-600 text-sm">Tamaulipas 3, San José de Mojarras</p>
                     <p class="text-gray-600 text-sm">Nayarit, México. Tel. (311) 352-2645</p>
                     <p class="text-gray-600 text-sm">entretenimientoberumen@hotmail.com</p>
                     <p class="text-gray-400 text-xs mt-1">{{ $tramite->fecha_hora_cobro?->format('d/m/Y H:i') }}</p>
@@ -38,10 +38,12 @@
                         <span class="text-gray-500">Folio:</span>
                         <span class="font-bold">#{{ str_pad($tramite->id, 6, '0', STR_PAD_LEFT) }}</span>
                     </div>
+                    @foreach($tramite->detalles as $detalle)
                     <div class="flex justify-between">
                         <span class="text-gray-500">Trámite:</span>
-                        <span class="font-medium text-right max-w-xs">{{ $tramite->tipoTramite->nombre }}</span>
+                        <span class="font-medium text-right max-w-xs">{{ $detalle->tipoTramite->nombre }}</span>
                     </div>
+                    @endforeach
                     <div class="flex justify-between">
                         <span class="text-gray-500">Cliente:</span>
                         <span>{{ $tramite->cliente_nombre }}</span>
@@ -197,7 +199,7 @@
 
             const datos = {
                 folio:   '{{ str_pad($tramite->id, 6, "0", STR_PAD_LEFT) }}',
-                tramite: @json($tramite->tipoTramite->nombre),
+                tramite: @json($detalle->tipoTramite->nombre),
                 cliente: @json($tramite->cliente_nombre),
                 fecha:   '{{ $tramite->fecha_hora_cobro?->format("d/m/Y H:i") }}',
                 total:   '${{ number_format($tramite->subtotal, 2) }}',
