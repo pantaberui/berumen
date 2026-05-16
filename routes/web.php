@@ -17,9 +17,7 @@ use App\Http\Controllers\Admin\ControlTiemposController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\TipoTramiteController;
 use App\Http\Controllers\Admin\TramiteController;
-
-
-
+use App\Http\Controllers\Admin\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -111,6 +109,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('tramites/{tramite}/enviar-correo', [TramiteController::class, 'enviarCorreo'])->name('tramites.enviar-correo');
     Route::resource('tramites', TramiteController::class);
     
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/exportar', [DashboardController::class, 'exportarExcel'])->name('dashboard.exportar');
 });
 
 // Panel Cajero

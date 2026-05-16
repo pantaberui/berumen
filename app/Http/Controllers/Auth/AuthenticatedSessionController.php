@@ -34,6 +34,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('cajero.dashboard');
         }
 
+
         return redirect()->intended(route('dashboard', absolute: false));
         
     }

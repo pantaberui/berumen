@@ -99,7 +99,7 @@
         {{-- Footer --}}
         <footer class="py-4 border-t border-gray-200 text-center text-xs text-gray-400">
             © {{ date('Y') }} Entretenimiento Berumen — Todos los derechos reservados.
-            Desarrollado por <span class="text-gray-500 font-medium">EC</span>
+            Desarrollado por <span class="text-gray-500 font-medium">EB</span>
         </footer>
     </body>
 

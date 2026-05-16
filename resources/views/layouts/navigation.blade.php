@@ -174,6 +174,11 @@
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.control-tiempos.index') ? 'font-semibold text-indigo-600' : '' }}">
                                 Dashboard Equipos
                             </a>
+                            <a href="{{ route('admin.control-tiempos.index') }}" target="_blank"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50">
+                                Dashboard Equipos ↗ (nueva pestaña)
+                            </a>
+
                             <a href="{{ route('admin.control-tiempos.reporte') }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.control-tiempos.reporte') ? 'font-semibold text-indigo-600' : '' }}">
                                 Reporte
