@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('admin.dashboard') }}">
-                        <img src="{{ asset('images/logoTexto.png') }}"
+                        <img src="{{ asset('images/logo_hor.png') }}"
                             alt="Entretenimiento Berumen"
                             style="height: 45px; width: auto;">
                     </a>
@@ -89,9 +89,9 @@
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.tipo-tramites.*') ? 'font-semibold text-indigo-600' : '' }}">
                                 Tipos de Trámite
                             </a>
-                            @endif                        
+                            @endif
 
-                        </div>                            
+                        </div>
 
                     </div>
 
@@ -154,7 +154,7 @@
                             <a href="{{ route('admin.compras.index') }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.compras.*') ? 'font-semibold text-indigo-600' : '' }}">
                                 Compras
-                            </a>                            
+                            </a>
                             @endif
                         </div>
                     </div>

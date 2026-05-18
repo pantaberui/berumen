@@ -2,6 +2,108 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <link href="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/css/tom-select.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.3.1/dist/js/tom-select.complete.min.js"></script>
+
+
+    <style>
+        /* Paleta de colores del sistema */
+        :root {
+            --color-primary:     #1e40af;
+            --color-primary-dark:#1e3a8a;
+            --color-accent:      #0ea5e9;
+            --color-bg-light:    #f0f7ff;
+            --color-bg-dark:     #1e293b;
+            --color-text-dark:   #1e293b;
+        }
+
+        /* Labels de formularios */
+        label.block {
+            font-weight: 600;
+            color: var(--color-text-dark);
+            letter-spacing: 0.01em;
+        }
+
+        /* Inputs y selects */
+        input[type="text"],
+        input[type="email"],
+        input[type="number"],
+        input[type="date"],
+        input[type="password"],
+        input[type="datetime-local"],
+        select,
+        textarea {
+            border-radius: 0.5rem !important;
+            border-color: #cbd5e1 !important;
+            background-color: #f8fafc;
+            color: #1e293b;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--color-primary) !important;
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(30,64,175,0.12) !important;
+            outline: none;
+        }
+
+        /* Cards / secciones de formulario */
+        .bg-white.shadow-sm.rounded-lg {
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03) !important;
+        }
+
+        /* Headers de sección */
+        .font-semibold.text-xl {
+            color: var(--color-text-dark);
+            font-size: 1.15rem;
+        }
+
+        /* Botones primarios */
+        .bg-blue-600 { background-color: var(--color-primary) !important; }
+        .hover\:bg-blue-700:hover { background-color: var(--color-primary-dark) !important; }
+
+        /* Filas de tabla alternadas */
+        tbody tr:nth-child(odd)  { background-color: #ffffff; }
+        tbody tr:nth-child(even) { background-color: #f0f7ff; }
+        tbody tr:hover           { background-color: #e0f0ff !important; }
+
+        /* Encabezados de tabla */
+        thead th {
+            background-color: var(--color-bg-dark) !important;
+            color: #ffffff !important;
+            letter-spacing: 0.05em;
+            font-size: 0.7rem;
+        }
+
+        /* Badges de estatus */
+        .rounded-full { font-weight: 600; letter-spacing: 0.03em; }
+
+        /* Navbar */
+        nav {
+            background: linear-gradient(135deg, #1e293b 0%, #1e40af 100%) !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        nav a, nav button, nav .text-gray-500 {
+            color: #cbd5e1 !important;
+        }
+
+        nav a:hover, nav button:hover {
+            color: #ffffff !important;
+        }
+
+        /* Footer */
+        footer {
+            background-color: #1e293b;
+            color: #94a3b8 !important;
+            border-top: none !important;
+        }
+
+        footer span { color: #60a5fa !important; }
+    </style>
+
+
+
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
