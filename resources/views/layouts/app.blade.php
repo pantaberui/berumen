@@ -22,6 +22,28 @@
             letter-spacing: 0.01em;
         }
 
+        /* Menús desplegables */
+        nav .absolute {
+            background: #1e293b !important;
+            border: 1px solid #334155 !important;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3) !important;
+        }
+
+        nav .absolute a {
+            color: #cbd5e1 !important;
+            transition: all 0.15s ease;
+        }
+
+        nav .absolute a:hover {
+            background-color: #1e40af !important;
+            color: #ffffff !important;
+        }
+
+        nav .absolute a.font-semibold {
+            color: #60a5fa !important;
+            background-color: rgba(30,64,175,0.3) !important;
+        }
+
         /* Inputs y selects */
         input[type="text"],
         input[type="email"],

@@ -28,9 +28,8 @@
                     <img src="{{ asset('images/logo.jpg') }}"
                          alt="Entretenimiento Berumen"
                          class="mx-auto mb-3"
-                         style="width:75%;max-width:400px;height:180px;object-fit:contain;">
-                    <p class="font-bold text-lg">ENTRETENIMIENTO BERUMEN</p>
-                    <p class="text-gray-600 text-sm">Tamaulipas 3, San José de Mojarras,</p>
+                         style="width:75%;max-width:800px;height:250px;object-fit:contain;">                    
+                    <p class="text-gray-600 text-sm">Tamaulipas 3, San José de Mojarras</p>
                     <p class="text-gray-600 text-sm">Nayarit, México. Tel. (311) 352-2645</p>
                     <p class="text-gray-600 text-sm">entretenimientoberumen@hotmail.com</p>
                     <p class="text-gray-600 text-sm">Síguenos en Facebook: /berumen.entretenimiento</p>

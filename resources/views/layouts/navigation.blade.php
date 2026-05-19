@@ -5,10 +5,10 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('admin.dashboard') }}">
+                    <a href="{{ route('admin.dashboard') }}" class="flex items-center">
                         <img src="{{ asset('images/logo_hor.png') }}"
                             alt="Entretenimiento Berumen"
-                            style="height: 45px; width: auto;">
+                            style="height: 52px; width: 200px; background: white; padding: 2px 2px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3);">
                     </a>
                 </div>
 
@@ -223,7 +223,7 @@
                         @endif
 
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            {{ __('Perfil') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -233,7 +233,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('Cerrar Sesión') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -254,32 +254,122 @@
 
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
+        <div class="pt-2 pb-3 space-y-1" style="background: #1e293b;">
+            <x-responsive-nav-link :href="route('admin.dashboard')"
+                :active="request()->routeIs('admin.dashboard')"
+                style="color: #cbd5e1;">
+                Dashboard
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.clientes.index')"
+                :active="request()->routeIs('admin.clientes.*')"
+                style="color: #cbd5e1;">
+                Clientes
+            </x-responsive-nav-link>
+
+            {{-- Internet --}}
+            <div style="padding: 0.5rem 1rem; color: #60a5fa; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;">
+                INTERNET
+            </div>
+            <x-responsive-nav-link :href="route('admin.contratos.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Contratos
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.pagos.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Pagos
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.incidencias.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Incidencias
+            </x-responsive-nav-link>
+
+            {{-- Pago de Servicios --}}
+            <div style="padding: 0.5rem 1rem; color: #60a5fa; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;">
+                PAGO DE SERVICIOS
+            </div>
+            <x-responsive-nav-link :href="route('admin.pagos-servicios.create')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Registrar Pago
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.pagos-servicios.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Consultar Pagos
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.tramites.create')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Registrar Trámite
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.tramites.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Consultar Trámites
+            </x-responsive-nav-link>
+            @if(auth()->user()->hasRole('admin'))
+            <x-responsive-nav-link :href="route('admin.tipo-servicios.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Tipos de Servicio
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.tipo-tramites.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Tipos de Trámite
+            </x-responsive-nav-link>
+            @endif
+
+            {{-- Fichas WiFi --}}
+            <div style="padding: 0.5rem 1rem; color: #60a5fa; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;">
+                FICHAS WIFI
+            </div>
+            <x-responsive-nav-link :href="route('admin.fichas-wifi.create')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Vender Ficha
+            </x-responsive-nav-link>
+            @if(auth()->user()->hasRole('admin'))
+            <x-responsive-nav-link :href="route('admin.codigos-netplus.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Gestión de Códigos
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.codigos-netplus.reporte')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Reporte de Ventas
+            </x-responsive-nav-link>
+            @endif
+
+            {{-- Ventas --}}
+            <div style="padding: 0.5rem 1rem; color: #60a5fa; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;">
+                VENTAS
+            </div>
+            <x-responsive-nav-link :href="route('admin.ventas.create')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Nueva Venta
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.ventas.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Consultar Ventas
+            </x-responsive-nav-link>
+            @if(auth()->user()->hasRole('admin'))
+            <x-responsive-nav-link :href="route('admin.productos.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Catálogo
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.compras.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Compras
+            </x-responsive-nav-link>
+            @endif
+
+            {{-- Control Tiempos --}}
+            <div style="padding: 0.5rem 1rem; color: #60a5fa; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;">
+                CONTROL TIEMPOS
+            </div>
+            <x-responsive-nav-link :href="route('admin.control-tiempos.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Dashboard Equipos
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.control-tiempos.reporte')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Reporte
             </x-responsive-nav-link>
         </div>
 
         <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
+        <div class="pt-4 pb-1 border-t border-gray-700" style="background: #1e293b;">
             <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                <div class="font-medium text-base text-white">
+                    {{ Auth::user()->name }} {{ Auth::user()->apellido_paterno }}
+                </div>
+                <div class="font-medium text-sm text-gray-400">{{ Auth::user()->email }}</div>
             </div>
-
             <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+                <x-responsive-nav-link :href="route('profile.edit')" style="color: #cbd5e1;">
+                    Perfil
                 </x-responsive-nav-link>
-
-                <!-- Authentication -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-
                     <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                        onclick="event.preventDefault(); this.closest('form').submit();"
+                        style="color: #f87171;">
+                        Cerrar Sesión
                     </x-responsive-nav-link>
                 </form>
             </div>

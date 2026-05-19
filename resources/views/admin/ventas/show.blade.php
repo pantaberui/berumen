@@ -27,9 +27,8 @@
                 <div class="text-center mb-4">
                     <img src="{{ asset('images/logo.jpg') }}"
                          alt="Entretenimiento Berumen" class="mx-auto mb-3"
-                         style="width:75%;max-width:400px;height:120px;object-fit:contain;">
-                    <p class="font-bold text-lg">ENTRETENIMIENTO BERUMEN</p>
-                    <p class="text-gray-600 text-sm">Tamaulipas 4, San José de Mojarras</p>
+                         style="width:75%;max-width:800px;height:250px;object-fit:contain;">                    
+                    <p class="text-gray-600 text-sm">Tamaulipas 3, San José de Mojarras</p>
                     <p class="text-gray-600 text-sm">Nayarit, México. Tel. (311) 352-2645</p>
                     <p class="text-gray-400 text-xs mt-1">{{ $venta->fecha_hora_venta?->format('d/m/Y H:i') }}</p>
                 </div>

@@ -2,6 +2,21 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800">Clientes</h2>
+
+            
+            <form method="GET" action="{{ route('admin.clientes.index') }}" class="flex gap-2 items-center">
+                {{-- ... inputs existentes ... --}}
+                <select name="por_pagina" onchange="this.form.submit()"
+                        class="border-gray-300 rounded-md shadow-sm text-sm">
+                    <option value="15"  {{ $porPagina == 15  ? 'selected' : '' }}>15 por página</option>
+                    <option value="25"  {{ $porPagina == 25  ? 'selected' : '' }}>25 por página</option>
+                    <option value="50"  {{ $porPagina == 50  ? 'selected' : '' }}>50 por página</option>
+                    <option value="100" {{ $porPagina == 100 ? 'selected' : '' }}>100 por página</option>
+                </select>
+            </form>
+
+
+
             <div class="flex items-center gap-3">
                 <form method="GET" action="{{ route('admin.clientes.index') }}" class="flex gap-2">
                     <input type="text" name="q" value="{{ $busqueda ?? '' }}"
@@ -26,6 +41,7 @@
             </div>
         </div>
     </x-slot>
+
 
     <div class="py-6">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">

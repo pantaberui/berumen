@@ -36,14 +36,19 @@ class ClienteController extends Controller
         if (!in_array($orden, $columnas)) $orden = 'apellido_paterno';
         if (!in_array($direccion, ['asc', 'desc'])) $direccion = 'asc';
 
+        $porPagina = $request->get('por_pagina', 15);
+        $porPagina = in_array($porPagina, [15, 25, 50, 100]) ? $porPagina : 15;
+
         $clientes = $query->orderBy($orden, $direccion)
                         ->orderBy('apellido_paterno')
-                        ->paginate(15)
+                        ->orderBy('apellido_materno')
+                        ->orderBy('nombre')
+                        ->paginate($porPagina)
                         ->withQueryString();
 
         $busqueda = $request->q;
 
-        return view('admin.clientes.index', compact('clientes', 'busqueda', 'orden', 'direccion'));
+        return view('admin.clientes.index', compact('clientes', 'busqueda', 'orden', 'direccion', 'porPagina'));
     }
 
     public function create()
