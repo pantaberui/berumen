@@ -1,0 +1,54 @@
+services:
+
+  app:
+    build: .
+    container_name: berumen_app
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    environment:
+      - APP_NAME=Entretenimiento Berumen
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=http://localhost
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=berumen_db
+      - DB_USERNAME=berumen
+      - DB_PASSWORD=Berumen2024Secure!
+      - MAIL_MAILER=smtp
+      - MAIL_HOST=smtp.gmail.com
+      - MAIL_PORT=587
+      - MAIL_ENCRYPTION=tls
+      - MAIL_USERNAME=ecberumen2015@gmail.com
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_FROM_ADDRESS=ecberumen2015@gmail.com
+      - MAIL_FROM_NAME="Entretenimiento Berumen"
+    volumes:
+      - app_storage:/var/www/html/storage
+      - ./public/images:/var/www/html/public/images
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.4
+    container_name: berumen_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: berumen_db
+      MYSQL_USER: berumen
+      MYSQL_PASSWORD: Berumen2024Secure!
+      MYSQL_ROOT_PASSWORD: Root2024Secure!
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uberumen", "-pBerumen2024Secure!"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  app_storage:
+  db_data:

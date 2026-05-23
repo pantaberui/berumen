@@ -8,7 +8,7 @@
                     <a href="{{ route('admin.dashboard') }}" class="flex items-center">
                         <img src="{{ asset('images/logo_hor.png') }}"
                             alt="Entretenimiento Berumen"
-                            style="height: 52px; width: 200px; background: white; padding: 2px 2px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3);">
+                            style="height: 52px; width: 200px; background: white; padding: 1px 2px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3);">
                     </a>
                 </div>
 
