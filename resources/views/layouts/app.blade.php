@@ -15,6 +15,25 @@
             --color-text-dark:   #1e293b;
         }
 
+
+
+        /* ==========================================
+        IMPRESIÓN OPTIMIZADA DE TICKETS
+        ========================================== */
+        @media print {
+            @page {
+                margin: 3mm 4mm;
+                size: 80mm auto;
+            }
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 11px !important;
+                font-family: monospace !important;
+            }
+        }
+
+
         /* Labels de formularios */
         label.block {
             font-weight: 600;
@@ -225,6 +244,8 @@
             © {{ date('Y') }} Entretenimiento Berumen — Todos los derechos reservados.
             Desarrollado por <span class="text-gray-500 font-medium">EB</span>
         </footer>
+
+        @vite('resources/js/ticket-print.js')
     </body>
 
 </html>

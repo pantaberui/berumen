@@ -14,8 +14,7 @@ class VentaController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Venta::with('vendedor', 'cliente');
-
+        $query = Venta::with('vendedor', 'cliente');                
         $fechaDesde = $request->get('fecha_desde', now()->format('Y-m-d'));
         $fechaHasta = $request->get('fecha_hasta', now()->format('Y-m-d'));
 
@@ -29,7 +28,12 @@ class VentaController extends Controller
         }
 
         $totalAcumulado = $query->sum('total');
-        $ventas         = $query->orderBy('fecha_hora_venta', 'desc')->paginate(15)->withQueryString();
+        $ventas = $query->with(['vendedor', 'cliente', 'detalles.producto'])
+                ->orderBy('fecha_hora_venta', 'desc')
+                ->paginate(15)
+                ->withQueryString();
+
+        //$ventas         = $query->orderBy('fecha_hora_venta', 'desc')->paginate(15)->withQueryString();
         $usuarios       = \App\Models\User::orderBy('name')->get();
 
         return view('admin.ventas.index', compact('ventas', 'usuarios', 'fechaDesde', 'fechaHasta', 'totalAcumulado'));

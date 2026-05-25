@@ -64,6 +64,10 @@
                         <tr>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Folio</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cliente</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto/Servicio</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cant.</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subtotal</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo Pago</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estatus</th>
@@ -73,32 +77,79 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse($ventas as $venta)
+                       @forelse($ventas as $venta)
                         <tr class="hover:bg-gray-50 {{ $venta->estatus === 'cancelada' ? 'opacity-60' : '' }}">
-                            <td class="px-4 py-3 text-sm font-medium text-gray-900">
+                            <td class="px-4 py-3 text-sm font-medium text-gray-900" rowspan="{{ max(1, $venta->detalles->count()) }}">
                                 #{{ str_pad($venta->id, 6, '0', STR_PAD_LEFT) }}
                             </td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $venta->cliente_nombre }}</td>
-                            <td class="px-4 py-3 text-sm font-medium text-gray-900">${{ number_format($venta->total, 2) }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-500 capitalize">{{ $venta->tipo_pago }}</td>
-                            <td class="px-4 py-3 text-sm">
+                            <td class="px-4 py-3 text-sm text-gray-700" rowspan="{{ max(1, $venta->detalles->count()) }}">
+                                {{ $venta->cliente_nombre }}
+                            </td>
+
+                            {{-- Primera línea de detalle --}}
+                            @if($venta->detalles->count() > 0)
+                                <td class="px-4 py-3 text-sm text-gray-700">
+                                    {{ $venta->detalles->first()->producto->descripcion }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-center text-gray-500">
+                                    {{ $venta->detalles->first()->cantidad }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500">
+                                    ${{ number_format($venta->detalles->first()->precio_unitario, 2) }}
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-900">
+                                    ${{ number_format($venta->detalles->first()->subtotal, 2) }}
+                                </td>
+                            @else
+                                <td colspan="4" class="px-4 py-3 text-sm text-gray-400">Sin detalle</td>
+                            @endif
+
+                            <td class="px-4 py-3 text-sm font-bold text-green-700" rowspan="{{ max(1, $venta->detalles->count()) }}">
+                                ${{ number_format($venta->total, 2) }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500 capitalize" rowspan="{{ max(1, $venta->detalles->count()) }}">
+                                {{ $venta->tipo_pago }}
+                            </td>
+                            <td class="px-4 py-3 text-sm" rowspan="{{ max(1, $venta->detalles->count()) }}">
                                 @if($venta->estatus === 'completada')
                                     <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">Completada</span>
                                 @else
                                     <span class="bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">Cancelada</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-sm text-gray-500">{{ $venta->vendedor->name }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-500">{{ $venta->fecha_hora_venta?->format('d/m/Y H:i') }}</td>
-                            <td class="px-4 py-3 text-sm space-x-2">
+                            <td class="px-4 py-3 text-sm text-gray-500" rowspan="{{ max(1, $venta->detalles->count()) }}">
+                                {{ $venta->vendedor->name }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500" rowspan="{{ max(1, $venta->detalles->count()) }}">
+                                {{ $venta->fecha_hora_venta?->format('d/m/Y H:i') }}
+                            </td>
+                            <td class="px-4 py-3 text-sm space-x-2" rowspan="{{ max(1, $venta->detalles->count()) }}">
                                 <a href="{{ route('admin.ventas.show', $venta) }}"
-                                   class="text-blue-600 hover:underline">Ver</a>
+                                class="text-blue-600 hover:underline">Ver</a>
                                 @if($venta->estatus !== 'cancelada')
                                 <a href="{{ route('admin.ventas.edit', $venta) }}"
-                                   class="text-yellow-600 hover:underline">Editar</a>
+                                class="text-yellow-600 hover:underline">Editar</a>
                                 @endif
                             </td>
                         </tr>
+
+                        {{-- Líneas adicionales de detalle --}}
+                        @foreach($venta->detalles->skip(1) as $detalle)
+                        <tr class="hover:bg-gray-50 {{ $venta->estatus === 'cancelada' ? 'opacity-60' : '' }}">
+                            <td class="px-4 py-3 text-sm text-gray-700">
+                                {{ $detalle->producto->descripcion }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-center text-gray-500">
+                                {{ $detalle->cantidad }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-500">
+                                ${{ number_format($detalle->precio_unitario, 2) }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-gray-900">
+                                ${{ number_format($detalle->subtotal, 2) }}
+                            </td>
+                        </tr>
+                        @endforeach                       
                         @empty
                         <tr>
                             <td colspan="8" class="px-6 py-8 text-center text-gray-400">
