@@ -14,6 +14,12 @@
                 </div>
             @endif
 
+            @if($errors->has('stock'))
+                <div class="bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded mb-4">
+                    ⚠️ {{ $errors->first('stock') }}
+                </div>
+            @endif
+
             <div class="bg-white shadow-sm rounded-lg p-6">
                 <form action="{{ route('admin.ventas.store') }}" method="POST" id="form_venta">
                     @csrf

@@ -47,15 +47,24 @@ class VentaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'productos'           => 'required|array|min:1',
-            'productos.*.id'      => 'required|exists:productos,id',
-            'productos.*.cantidad'=> 'required|integer|min:1',
-            'productos.*.descuento' => 'nullable|numeric|min:0',
-            'tipo_pago'           => 'required|in:efectivo,transferencia,tarjeta',
+            'productos'                 => 'required|array|min:1',
+            'productos.*.id'            => 'required|exists:productos,id',
+            'productos.*.cantidad'      => 'required|integer|min:1',
+            'productos.*.descuento'     => 'nullable|numeric|min:0',
+            'tipo_pago'                 => 'required|in:efectivo,transferencia,tarjeta',
         ]);
 
-        DB::beginTransaction();
+        // Validar stock ANTES de iniciar la transacción
+        foreach ($request->productos as $item) {
+            $producto = Producto::findOrFail($item['id']);
+            if (!$producto->tieneStockSuficiente($item['cantidad'])) {
+                return back()->withErrors([
+                    'stock' => "Stock insuficiente para \"{$producto->descripcion}\". Stock disponible: {$producto->stock}, solicitado: {$item['cantidad']}."
+                ])->withInput();
+            }
+        }
 
+        DB::beginTransaction();
         try {
             $subtotal       = 0;
             $descuentoTotal = 0;
@@ -63,12 +72,6 @@ class VentaController extends Controller
 
             foreach ($request->productos as $item) {
                 $producto = Producto::findOrFail($item['id']);
-
-                if (!$producto->tieneStockSuficiente($item['cantidad'])) {
-                    return back()->withErrors([
-                        'stock' => "Stock insuficiente para {$producto->descripcion}. Disponible: {$producto->stock}"
-                    ])->withInput();
-                }
 
                 $precioUnitario = $producto->precio_unitario;
                 $descuento      = $item['descuento'] ?? 0;
@@ -85,7 +88,6 @@ class VentaController extends Controller
                     'subtotal'       => $itemSubtotal,
                 ];
 
-                // Descontar stock
                 if ($producto->categoria === 'producto') {
                     $producto->decrement('stock', $item['cantidad']);
                 }

@@ -1,4 +1,11 @@
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
+
+    @if(session('error'))
+        <div class="bg-red-100 text-red-800 px-4 py-3 text-sm text-center">
+            ⚠️ {{ session('error') }}
+        </div>
+    @endif
+
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -225,6 +232,13 @@
                         <x-dropdown-link :href="route('profile.edit')">
                             {{ __('Perfil') }}
                         </x-dropdown-link>
+
+                        @if(auth()->user()->hasRole('admin'))
+                        <x-dropdown-link :href="route('admin.backup.descargar')"
+                            class="text-yellow-600 font-medium">
+                            💾 Descargar Respaldo BD
+                        </x-dropdown-link>
+                        @endif
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">

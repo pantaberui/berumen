@@ -18,6 +18,7 @@ use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\TipoTramiteController;
 use App\Http\Controllers\Admin\TramiteController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\BackupController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -111,6 +112,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/exportar', [DashboardController::class, 'exportarExcel'])->name('dashboard.exportar');
+
+    //Respaldos
+    Route::get('backup/descargar', [BackupController::class, 'descargar'])->name('backup.descargar');
 });
 
 // Panel Cajero

@@ -5,12 +5,12 @@ services:
     container_name: berumen_app
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8080:80"
     environment:
       - APP_NAME=Entretenimiento Berumen
       - APP_ENV=production
       - APP_DEBUG=false
-      - APP_URL=http://localhost
+      - APP_URL=http://localhost:8080
       - DB_CONNECTION=mysql
       - DB_HOST=db
       - DB_PORT=3306
@@ -26,7 +26,11 @@ services:
       - MAIL_FROM_ADDRESS=ecberumen2015@gmail.com
       - MAIL_FROM_NAME="Entretenimiento Berumen"
     volumes:
+      # Código fuente montado desde la carpeta local — git pull aquí se refleja al reiniciar
+      - .:/var/www/html
+      # Persistir storage (uploads, logs, backups)
       - app_storage:/var/www/html/storage
+      # Persistir logo y assets públicos
       - ./public/images:/var/www/html/public/images
     depends_on:
       db:
