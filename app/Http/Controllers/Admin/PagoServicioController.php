@@ -55,10 +55,13 @@ class PagoServicioController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $request->validate([
+    {   // Convertir string vacío a null
+    if ($request->cliente_id === '') {
+        $request->merge(['cliente_id' => null]);
+    }
+        $request->validate([            
+            'cliente_id'       => 'nullable|exists:clientes,id',
             'tipo_servicio_id' => 'required|exists:tipo_servicios,id',
-            'cliente_id'       => 'required|exists:clientes,id',
             'referencia'       => 'required|string|max:100',
             'importe'          => 'required|numeric|min:1',
             'comision'         => 'required|numeric|min:10|max:100',
@@ -73,7 +76,8 @@ class PagoServicioController extends Controller
 
         $pago = PagoServicio::create([
             'tipo_servicio_id'    => $request->tipo_servicio_id,
-            'cliente_id'          => $request->cliente_id,
+            'cliente_id'          => $request->cliente_id ?? null,
+            'cliente_nombre'      => $request->cliente_nombre ?? 'PÚBLICO EN GENERAL',
             'user_id'             => auth()->id(),
             'referencia'          => strtoupper($request->referencia),
             'importe'             => $request->importe,
@@ -82,7 +86,7 @@ class PagoServicioController extends Controller
             'tipo_pago'           => $request->tipo_pago,
             'estatus'             => 'pagado',
             'fecha_hora_registro' => now(),
-            'observaciones'       => $request->observaciones,
+            'observaciones'       => $request->observaciones,                        
         ]);
 
         return redirect()->route('admin.pagos-servicios.show', $pago)

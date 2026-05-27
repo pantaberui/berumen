@@ -6,14 +6,6 @@
     <div class="py-6">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if($errors->any())
-                <div class="bg-red-100 text-red-800 px-4 py-3 rounded">
-                    <ul class="list-disc list-inside">
-                        @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
-                    </ul>
-                </div>
-            @endif
-
             @if($errors->has('stock'))
                 <div class="bg-red-100 border border-red-300 text-red-800 px-4 py-3 rounded mb-4">
                     ⚠️ {{ $errors->first('stock') }}
@@ -51,6 +43,29 @@
                             <button type="button" onclick="limpiarCliente()" class="text-blue-400 hover:text-blue-600 ml-1">✕</button>
                         </div>
                     </div>
+
+                    {{-- Venta rápida --}}
+                    <div class="mb-4 border rounded-lg p-4 bg-indigo-50">
+                        <h3 class="text-sm font-medium text-indigo-800 mb-2">
+                            ⚡ Venta Rápida
+                            <span class="text-xs font-normal text-indigo-500 ml-1">
+                                Formato: cantidad+CLAVE (ej: 3DOR+RCH+5CPN)
+                            </span>
+                        </h3>
+                        <div class="flex gap-3">
+                            <input type="text" id="venta_rapida_input"
+                                placeholder="Ej: 3DOR+RCH+5CPN"
+                                class="flex-1 border-indigo-300 rounded-md shadow-sm text-sm bg-white"
+                                onkeypress="if(event.key==='Enter'){event.preventDefault();procesarVentaRapida();}">
+                            <button type="button" onclick="procesarVentaRapida()"
+                                    class="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 text-sm">
+                                ⚡ Agregar
+                            </button>
+                        </div>
+                        <div id="errores_venta_rapida" class="hidden mt-2 bg-red-50 border border-red-200 rounded p-2 text-sm text-red-700"></div>
+                    </div>
+
+
 
                     {{-- Buscador de productos --}}
                     <div class="mb-4 border-t pt-4">
@@ -194,6 +209,77 @@
             document.getElementById('buscar_cliente').value = '';
         }
 
+        function procesarVentaRapida() {
+        const input  = document.getElementById('venta_rapida_input').value.trim().toUpperCase();
+        const errDiv = document.getElementById('errores_venta_rapida');
+
+        if (!input) return;
+
+        // Separar por +
+        const partes  = input.split('+').filter(p => p.trim());
+        const errores = [];
+        const validos = [];
+
+        // Procesar cada parte
+        const promesas = partes.map(parte => {
+            // Detectar cantidad al inicio (ej: 3DOR → cantidad=3, clave=DOR)
+            const match    = parte.match(/^(\d+)?([A-Z0-9]+)$/);
+            if (!match) {
+                errores.push(`"${parte}" — formato inválido`);
+                return Promise.resolve(null);
+            }
+
+            const cantidad = parseInt(match[1] || '1');
+            const clave    = match[2];
+
+            return fetch(`{{ route('admin.ventas.buscar-producto') }}?q=${encodeURIComponent(clave)}`)
+                .then(r => r.json())
+                .then(productos => {
+                    // Buscar coincidencia exacta por clave
+                    const producto = productos.find(p =>
+                        p.clave.toUpperCase() === clave.toUpperCase()
+                    );
+
+                    if (!producto) {
+                        errores.push(`Clave "${clave}" — no encontrada`);
+                        return null;
+                    }
+
+                    return { producto, cantidad };
+                });
+        });
+
+        Promise.all(promesas).then(resultados => {
+            // Mostrar errores
+            if (errores.length > 0) {
+                errDiv.classList.remove('hidden');
+                errDiv.innerHTML = '⚠️ ' + errores.join(' | ');
+            } else {
+                errDiv.classList.add('hidden');
+            }
+
+            // Agregar los válidos a la tabla
+            resultados.forEach(r => {
+                if (r) {
+                    agregarProducto(
+                        r.producto.id,
+                        r.producto.clave,
+                        r.producto.descripcion,
+                        r.producto.precio_unitario,
+                        r.producto.categoria,
+                        r.producto.stock,
+                        r.cantidad
+                    );
+                }
+            });
+
+            // Limpiar input si todos fueron válidos
+            if (errores.length === 0) {
+                document.getElementById('venta_rapida_input').value = '';
+            }
+        });
+    }
+
         // ---- Productos ----
         document.getElementById('buscar_producto').addEventListener('keypress', e => {
             if (e.key === 'Enter') { e.preventDefault(); buscarProducto(); }
@@ -226,14 +312,15 @@
                 });
         }
 
-        function agregarProducto(id, clave, descripcion, precio, categoria, stock) {
+        function agregarProducto(id, clave, descripcion, precio, categoria, stock, cantidadInicial = 1) {
             document.getElementById('resultados_productos').classList.add('hidden');
             document.getElementById('buscar_producto').value = '';
             document.getElementById('fila_vacia')?.remove();
 
-            const idx = filaIndex++;
-            const fila = document.createElement('tr');
-            fila.id = `fila_${idx}`;
+            const idx      = filaIndex++;
+            const subtotal = precio * cantidadInicial;
+            const fila     = document.createElement('tr');
+            fila.id        = `fila_${idx}`;
             fila.className = 'hover:bg-gray-50';
             fila.innerHTML = `
                 <td class="px-4 py-2 text-sm font-mono text-gray-500">${clave}</td>
@@ -241,31 +328,31 @@
                 <td class="px-4 py-2 text-sm text-gray-900">$${parseFloat(precio).toFixed(2)}</td>
                 <td class="px-4 py-2">
                     <input type="number" min="1" ${categoria === 'producto' ? `max="${stock}"` : ''}
-                           value="1" class="w-20 border-gray-300 rounded text-sm text-center"
-                           onchange="recalcularFila(${idx}, ${precio})"
-                           id="cantidad_${idx}">
+                        value="${cantidadInicial}" class="w-20 border-gray-300 rounded text-sm text-center"
+                        onchange="recalcularFila(${idx}, ${precio})"
+                        id="cantidad_${idx}">
                     ${categoria === 'producto' ? `<span class="text-xs text-gray-400 ml-1">/${stock}</span>` : ''}
                 </td>
                 <td class="px-4 py-2">
                     <input type="number" min="0" step="0.01" value="0"
-                           class="w-24 border-gray-300 rounded text-sm text-center"
-                           onchange="recalcularFila(${idx}, ${precio})"
-                           id="descuento_${idx}">
+                        class="w-24 border-gray-300 rounded text-sm text-center"
+                        onchange="recalcularFila(${idx}, ${precio})"
+                        id="descuento_${idx}">
                 </td>
                 <td class="px-4 py-2 text-sm font-medium text-gray-900" id="subtotal_${idx}">
-                    $${parseFloat(precio).toFixed(2)}
+                    $${subtotal.toFixed(2)}
                 </td>
                 <td class="px-4 py-2">
-                    <button type="button" onclick="eliminarFila(${idx}, ${id})"
+                    <button type="button" onclick="eliminarFila(${idx})"
                             class="text-red-500 hover:text-red-700 text-lg">✕</button>
                 </td>
                 <input type="hidden" name="productos[${idx}][id]" value="${id}">
-                <input type="hidden" name="productos[${idx}][cantidad]" id="h_cantidad_${idx}" value="1">
+                <input type="hidden" name="productos[${idx}][cantidad]" id="h_cantidad_${idx}" value="${cantidadInicial}">
                 <input type="hidden" name="productos[${idx}][descuento]" id="h_descuento_${idx}" value="0">
             `;
 
             document.getElementById('tbody_venta').appendChild(fila);
-            productosVenta.push({ idx, id, precio });
+            productosVenta.push({ idx, id, precio, cantidad: cantidadInicial, subtotal });
             actualizarTotales();
         }
 

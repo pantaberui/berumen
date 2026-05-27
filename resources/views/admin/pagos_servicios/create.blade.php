@@ -6,23 +6,32 @@
     <div class="py-6">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            {{-- Buscador de cliente --}}
-            <div class="bg-white shadow-sm rounded-lg p-6" id="buscador_section">
-                <h3 class="text-base font-medium text-gray-800 mb-4">Buscar cliente</h3>
-                <div class="flex gap-3">
-                    <input type="text" id="buscar_input"
-                           placeholder="Escribe nombre o apellido (mínimo 3 caracteres)..."
-                           class="flex-1 border-gray-300 rounded-md shadow-sm">
-                    <button onclick="buscarCliente()"
-                            class="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-800">
+            {{-- Cliente --}}
+            <div class="mb-4">
+                <h3 class="text-base font-medium text-gray-800 mb-3">Cliente</h3>
+                <div class="flex gap-3 items-center">
+                    <input type="text" id="buscar_cliente"
+                        placeholder="Buscar cliente (mín. 3 letras)..."
+                        class="flex-1 border-gray-300 rounded-md shadow-sm text-sm">
+                    <button type="button" onclick="buscarClienteServicio()"
+                            class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 text-sm">
                         Buscar
                     </button>
+                    <button type="button" onclick="usarPublicoGeneralServicio()"
+                            class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 text-sm">
+                        Público en General
+                    </button>
                 </div>
-                <div id="resultados_clientes" class="mt-4 hidden"></div>
+                <div id="resultados_clientes_servicio" class="mt-2 hidden"></div>
+                <div class="mt-2 inline-flex items-center gap-2 bg-blue-50 border border-blue-200 rounded px-3 py-2 text-sm text-blue-800">
+                    👤 <span id="cliente_badge_servicio">PÚBLICO EN GENERAL</span>
+                    <button type="button" onclick="limpiarClienteServicio()" class="text-blue-400 hover:text-blue-600">✕</button>
+                </div>
+                
             </div>
 
             {{-- Formulario --}}
-            <div id="formulario_section" class="{{ $errors->any() ? '' : 'hidden' }}">
+            <div id="formulario_section">
                 <div class="bg-white shadow-sm rounded-lg p-6">
 
                     @if($errors->any())
@@ -34,6 +43,7 @@
                             </ul>
                         </div>
                     @endif
+            
 
                     {{-- Cliente seleccionado --}}
                     <div id="cliente_seleccionado" class="hidden mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
@@ -42,8 +52,9 @@
                     </div>
 
                     <form action="{{ route('admin.pagos-servicios.store') }}" method="POST" id="form_pago">
-                        @csrf
+                        @csrf                        
                         <input type="hidden" name="cliente_id" id="cliente_id_form" value="{{ old('cliente_id') }}">
+                        <input type="hidden" name="cliente_nombre" id="cliente_nombre_servicio" value="PÚBLICO EN GENERAL">
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
@@ -148,41 +159,56 @@
     <script>
         let clienteSeleccionadoId = '{{ old('cliente_id') }}';
 
-        document.getElementById('buscar_input').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') buscarCliente();
+        document.getElementById('buscar_cliente')?.addEventListener('keypress', e => {
+            if (e.key === 'Enter') { e.preventDefault(); buscarClienteServicio(); }
         });
 
-        function buscarCliente() {
-            const termino = document.getElementById('buscar_input').value.trim();
+        function buscarClienteServicio() {
+            const termino = document.getElementById('buscar_cliente').value.trim();
             if (termino.length < 3) { alert('Escribe al menos 3 caracteres.'); return; }
 
             fetch(`{{ route('admin.pagos-servicios.buscar-cliente') }}?q=${encodeURIComponent(termino)}`)
                 .then(r => r.json())
                 .then(clientes => {
-                    const div = document.getElementById('resultados_clientes');
+                    const div = document.getElementById('resultados_clientes_servicio');
                     div.classList.remove('hidden');
-
                     if (clientes.length === 0) {
-                        div.innerHTML = `<div class="bg-red-50 border border-red-200 rounded p-3 text-sm text-red-700">No se encontró ningún cliente con ese criterio.</div>`;
+                        div.innerHTML = `<div class="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-700">No se encontró ningún cliente.</div>`;
                         return;
                     }
-
-                    div.innerHTML = `
-                        <p class="text-sm font-medium text-gray-700 mb-2">Selecciona el cliente:</p>
-                        <div class="space-y-2">
-                            ${clientes.map(c => `
-                                <div class="flex items-center justify-between border rounded p-3 bg-gray-50 hover:bg-blue-50 cursor-pointer"
-                                     onclick="seleccionarCliente(${c.id}, '${c.nombre} ${c.apellido_paterno} ${c.apellido_materno ?? ''}')">
-                                    <div class="text-sm">
-                                        <p class="font-medium text-gray-900">${c.nombre} ${c.apellido_paterno} ${c.apellido_materno ?? ''}</p>
-                                        <p class="text-gray-500">Tel: ${c.celular ?? c.telefono ?? '—'}</p>
-                                    </div>
-                                    <span class="text-blue-600 text-sm">Seleccionar →</span>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
+                    div.innerHTML = `<div class="space-y-1 max-h-40 overflow-y-auto">
+                        ${clientes.map(c => `
+                            <div class="flex items-center justify-between border rounded p-2 hover:bg-blue-50 cursor-pointer text-sm"
+                                onclick="seleccionarClienteServicio(${c.id}, '${c.nombre} ${c.apellido_paterno} ${c.apellido_materno ?? ''}')">
+                                <span>${c.nombre} ${c.apellido_paterno} ${c.apellido_materno ?? ''}</span>
+                                <span class="text-blue-600 text-xs">Seleccionar →</span>
+                            </div>
+                        `).join('')}
+                    </div>`;
                 });
+        }
+
+        function seleccionarClienteServicio(id, nombre) {
+            document.getElementById('cliente_id_form').value = id;
+            document.getElementById('cliente_nombre_servicio').value = nombre.trim().toUpperCase();
+            document.getElementById('cliente_badge_servicio').textContent = nombre.trim().toUpperCase();
+            document.getElementById('resultados_clientes_servicio').classList.add('hidden');
+            document.getElementById('buscar_cliente').value = '';
+            clienteSeleccionadoId = id;
+            buscarUltimaReferencia();
+        }
+
+        function usarPublicoGeneralServicio() { 
+            limpiarClienteServicio();
+        }
+
+        function limpiarClienteServicio() {
+            document.getElementById('cliente_id_form').value = '';
+            document.getElementById('cliente_nombre_servicio').value = 'PÚBLICO EN GENERAL';
+            document.getElementById('cliente_badge_servicio').textContent = 'PÚBLICO EN GENERAL';
+            document.getElementById('resultados_clientes_servicio').classList.add('hidden');
+            document.getElementById('buscar_cliente').value = '';
+            clienteSeleccionadoId = '';
         }
 
         function seleccionarCliente(id, nombre) {

@@ -45,9 +45,10 @@
                         <span class="text-gray-500">Servicio:</span>
                         <span class="font-medium">{{ $pagoServicio->tipoServicio->nombre }}</span>
                     </div>
+
                     <div class="flex justify-between">
                         <span class="text-gray-500">Cliente:</span>
-                        <span class="font-medium">{{ $pagoServicio->cliente->nombre_completo }}</span>
+                        <span>{{ $pagoServicio->cliente_nombre ?? $pagoServicio->cliente?->nombre_completo ?? 'PÚBLICO EN GENERAL' }}</span>                        
                     </div>
                     <div class="flex justify-between">
                         <span class="text-gray-500">Referencia:</span>
@@ -207,7 +208,7 @@
             const datos = {
                 folio:    '{{ str_pad($pagoServicio->id, 6, "0", STR_PAD_LEFT) }}',
                 servicio: @json($pagoServicio->tipoServicio->nombre),
-                cliente:  @json($pagoServicio->cliente->nombre_completo),
+                cliente:  @json($pagoServicio->cliente_nombre),
                 ref:      @json($pagoServicio->referencia),
                 fecha:    '{{ $pagoServicio->fecha_hora_registro?->format("d/m/Y H:i") }}',
                 importe:  '${{ number_format($pagoServicio->importe, 2) }}',
@@ -217,7 +218,7 @@
 
             const texto =
                 `*ENTRETENIMIENTO BERUMEN*\n` +
-                `Tamaulipas 4, San José de Mojarras\n` +
+                `Tamaulipas 3, San José de Mojarras\n` +
                 `Tel. (311) 352-2645\n\n` +
                 `*Recibo de Pago de Servicio*\n` +
                 `Folio: #${datos.folio}\n` +

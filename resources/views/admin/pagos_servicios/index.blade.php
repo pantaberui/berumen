@@ -78,7 +78,12 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3 text-sm font-medium text-gray-900"># {{ str_pad($pago->id, 6, '0', STR_PAD_LEFT) }}</td>
                             <td class="px-4 py-3 text-sm text-gray-700">{{ $pago->tipoServicio->nombre }}</td>
-                            <td class="px-4 py-3 text-sm text-gray-700">{{ $pago->cliente->nombre_completo }}</td>
+    
+                            <td class="px-4 py-3 text-sm text-gray-700">
+                                {{ $pago->cliente_nombre ?? $pago->cliente?->nombre_completo ?? 'PÚBLICO EN GENERAL' }}
+                            </td>
+
+
                             <td class="px-4 py-3 text-sm text-gray-500">{{ $pago->referencia }}</td>
                             <td class="px-4 py-3 text-sm text-gray-500">${{ number_format($pago->importe, 2) }}</td>
                             <td class="px-4 py-3 text-sm text-gray-500">${{ number_format($pago->comision, 2) }}</td>

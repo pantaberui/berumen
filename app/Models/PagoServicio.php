@@ -13,7 +13,7 @@ class PagoServicio extends Model
     
 
     protected $fillable = [
-        'tipo_servicio_id', 'cliente_id', 'user_id',
+        'tipo_servicio_id', 'cliente_id', 'cliente_nombre', 'user_id',
         'referencia', 'importe', 'comision', 'total',
         'tipo_pago', 'estatus', 'fecha_hora_registro',
         'fecha_hora_cancelacion', 'cancelado_por', 'observaciones',
