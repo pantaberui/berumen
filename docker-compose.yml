@@ -27,7 +27,7 @@ services:
       - MAIL_FROM_NAME="Entretenimiento Berumen"
     volumes:
       # Código fuente montado desde la carpeta local — git pull aquí se refleja al reiniciar
-      - .:/var/www/html
+      # - .:/var/www/html
       # Persistir storage (uploads, logs, backups)
       - app_storage:/var/www/html/storage
       # Persistir logo y assets públicos
