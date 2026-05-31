@@ -73,6 +73,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::patch('codigos-netplus/{codigoNetplus}/cancelar', [CodigoNetplusController::class, 'cancelar'])->name('codigos-netplus.cancelar');
     Route::get('codigos-netplus/reporte', [CodigoNetplusController::class, 'reporte'])->name('codigos-netplus.reporte');
 
+    // Inventarios
+    Route::get('productos/inventario', [ProductoController::class, 'inventario'])->name('productos.inventario');
+
     // Productos
     Route::get('productos/buscar', [ProductoController::class, 'buscar'])->name('productos.buscar');
     Route::resource('productos', ProductoController::class)->except(['show']);
@@ -82,6 +85,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('ventas/buscar-producto', [VentaController::class, 'buscarProducto'])->name('ventas.buscar-producto');
     Route::post('ventas/{venta}/enviar-correo', [VentaController::class, 'enviarCorreo'])->name('ventas.enviar-correo');
     Route::resource('ventas', VentaController::class);
+
+    // ultimo precio en compras
+    Route::get('compras/ultimo-precio', [CompraController::class, 'ultimoPrecio'])->name('compras.ultimo-precio');
 
     // Compras
     Route::resource('compras', CompraController::class);
@@ -115,6 +121,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     //Respaldos
     Route::get('backup/descargar', [BackupController::class, 'descargar'])->name('backup.descargar');
+
+
 });
 
 // Panel Cajero

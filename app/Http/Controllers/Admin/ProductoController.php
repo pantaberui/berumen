@@ -112,4 +112,40 @@ class ProductoController extends Controller
 
         return response()->json($productos);
     }
+
+    public function inventario(Request $request)
+    {
+        $query = Producto::query();
+
+        if ($request->filled('q')) {
+            $termino = strtoupper(trim($request->q));
+            $query->where(function ($q) use ($termino) {
+                $q->whereRaw('UPPER(descripcion) LIKE ?', ["%{$termino}%"])
+                ->orWhereRaw('UPPER(clave) LIKE ?', ["%{$termino}%"]);
+            });
+        }
+
+        if ($request->filled('categoria')) {
+            $query->where('categoria', $request->categoria);
+        }
+
+        if ($request->filled('proveedor')) {
+            $query->whereHas('compras', function ($q) use ($request) {
+                $q->whereHas('compra', function ($q2) use ($request) {
+                    $q2->where('proveedor', $request->proveedor);
+                });
+            });
+        }
+
+
+        if ($request->filled('stock_bajo')) {
+            $query->whereColumn('stock', '<=', 'stock_minimo');
+        }
+
+        $productos   = $query->where('activo', true)->orderBy('descripcion')->paginate(20)->withQueryString();
+        $proveedores = \App\Models\Compra::PROVEEDORES;
+        $totalProductos = $query->count();
+
+        return view('admin.productos.inventario', compact('productos', 'proveedores', 'totalProductos'));
+    }
 }

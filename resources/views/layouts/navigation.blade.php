@@ -163,6 +163,20 @@
                                 Compras
                             </a>
                             @endif
+
+                            @if(auth()->user()->hasRole('admin'))
+                            <a href="{{ route('admin.compras.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.compras.*') ? 'font-semibold text-indigo-600' : '' }}">
+                                Consulta de Compras
+                            </a>
+                            <a href="{{ route('admin.productos.inventario') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.productos.inventario') ? 'font-semibold text-indigo-600' : '' }}">
+                                Inventario
+                            </a>
+                            @endif
+
+
+
                         </div>
                     </div>
 
@@ -353,6 +367,7 @@
                 Compras
             </x-responsive-nav-link>
             @endif
+
 
             {{-- Control Tiempos --}}
             <div style="padding: 0.5rem 1rem; color: #60a5fa; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;">

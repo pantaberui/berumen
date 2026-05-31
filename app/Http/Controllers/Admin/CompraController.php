@@ -4,111 +4,156 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Compra;
+use App\Models\CompraDetalle;
 use App\Models\Producto;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CompraController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Compra::with('producto', 'usuario');
+        $query = Compra::with('detalles.producto', 'usuario');
 
         $fechaDesde = $request->get('fecha_desde', now()->format('Y-m-d'));
         $fechaHasta = $request->get('fecha_hasta', now()->format('Y-m-d'));
 
-        $query->whereDate('fecha_hora_compra', '>=', $fechaDesde)
-              ->whereDate('fecha_hora_compra', '<=', $fechaHasta);
+        $query->whereDate('fecha_compra', '>=', $fechaDesde)
+              ->whereDate('fecha_compra', '<=', $fechaHasta);
 
-        if ($request->filled('producto_id')) {
-            $query->where('producto_id', $request->producto_id);
+        if ($request->filled('proveedor')) {
+            $query->where('proveedor', $request->proveedor);
         }
 
-        $compras    = $query->orderBy('fecha_hora_compra', 'desc')->paginate(15)->withQueryString();
-        $productos  = Producto::where('activo', true)->orderBy('descripcion')->get();
+        $compras        = $query->orderBy('fecha_compra', 'desc')->paginate(15)->withQueryString();
         $totalAcumulado = $query->sum('total');
+        $proveedores    = Compra::PROVEEDORES;
+        $productos      = Producto::where('activo', true)->where('categoria', 'producto')->orderBy('descripcion')->get();
 
-        return view('admin.compras.index', compact('compras', 'productos', 'fechaDesde', 'fechaHasta', 'totalAcumulado'));
+        return view('admin.compras.index', compact(
+            'compras', 'proveedores', 'productos', 'fechaDesde', 'fechaHasta', 'totalAcumulado'
+        ));
     }
 
     public function create()
     {
-        $productos = Producto::where('activo', true)
-                             ->where('categoria', 'producto')
-                             ->orderBy('descripcion')
-                             ->get();
-        return view('admin.compras.create', compact('productos'));
+        $productos   = Producto::where('activo', true)
+                               ->where('categoria', 'producto')
+                               ->orderBy('descripcion')
+                               ->get();
+        $proveedores = Compra::PROVEEDORES;
+        return view('admin.compras.create', compact('productos', 'proveedores'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'producto_id'   => 'required|exists:productos,id',
-            'cantidad'      => 'required|integer|min:1',
-            'precio_compra' => 'required|numeric|min:0',
-            'observaciones' => 'nullable|string',
+            'proveedor'             => 'required|string',
+            'fecha_compra'          => 'required|date|before_or_equal:today',
+            'productos'             => 'required|array|min:1',
+            'productos.*.id'        => 'required|exists:productos,id',
+            'productos.*.cantidad'  => 'required|integer|min:1',
+            'productos.*.precio'    => 'required|numeric|min:0',
+            'observaciones'         => 'nullable|string',
         ]);
 
-        $total = $request->cantidad * $request->precio_compra;
+        DB::beginTransaction();
+        try {
+            $totalGeneral = 0;
+            $detalles     = [];
 
-        Compra::create([
-            'producto_id'      => $request->producto_id,
-            'user_id'          => auth()->id(),
-            'cantidad'         => $request->cantidad,
-            'precio_compra'    => $request->precio_compra,
-            'total'            => $total,
-            'fecha_hora_compra'=> now(),
-            'observaciones'    => $request->observaciones,
-        ]);
+            foreach ($request->productos as $item) {
+                $total         = $item['cantidad'] * $item['precio'];
+                $totalGeneral += $total;
+                $detalles[]    = [
+                    'producto_id'  => $item['id'],
+                    'cantidad'     => $item['cantidad'],
+                    'precio_compra'=> $item['precio'],
+                    'total'        => $total,
+                ];
 
-        // Incrementar stock
-        Producto::find($request->producto_id)->increment('stock', $request->cantidad);
+                // Incrementar stock
+                Producto::find($item['id'])->increment('stock', $item['cantidad']);
+            }
 
-        return redirect()->route('admin.compras.index')
-            ->with('success', 'Compra registrada y stock actualizado correctamente.');
+            $compra = Compra::create([
+                'producto_id'  => $detalles[0]['producto_id'], // Compatibilidad con campo original
+                'user_id'      => auth()->id(),
+                'proveedor'    => $request->proveedor,
+                'fecha_compra' => $request->fecha_compra,
+                'cantidad'     => array_sum(array_column($detalles, 'cantidad')),
+                'precio_compra'=> $detalles[0]['precio_compra'],
+                'total'        => $totalGeneral,
+                'observaciones'=> $request->observaciones,
+            ]);
+
+            foreach ($detalles as $detalle) {
+                $detalle['compra_id'] = $compra->id;
+                CompraDetalle::create($detalle);
+            }
+
+            DB::commit();
+            return redirect()->route('admin.compras.index')
+                ->with('success', 'Compra registrada y stock actualizado correctamente.');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Error: ' . $e->getMessage()])->withInput();
+        }
     }
 
     public function show(Compra $compra)
     {
-        $compra->load('producto', 'usuario');
+        $compra->load('detalles.producto', 'usuario');
         return view('admin.compras.show', compact('compra'));
     }
 
     public function edit(Compra $compra)
     {
-        $productos = Producto::where('activo', true)->where('categoria', 'producto')->orderBy('descripcion')->get();
-        return view('admin.compras.edit', compact('compra', 'productos'));
+        $compra->load('detalles.producto');
+        $proveedores = Compra::PROVEEDORES;
+        return view('admin.compras.edit', compact('compra', 'proveedores'));
     }
 
     public function update(Request $request, Compra $compra)
     {
         $request->validate([
-            'cantidad'      => 'required|integer|min:1',
-            'precio_compra' => 'required|numeric|min:0',
             'observaciones' => 'nullable|string',
         ]);
 
-        // Ajustar stock: revertir cantidad anterior y aplicar nueva
-        $diferencia = $request->cantidad - $compra->cantidad;
-        $compra->producto->increment('stock', $diferencia);
+        $compra->update(['observaciones' => $request->observaciones]);
 
-        $compra->update([
-            'cantidad'      => $request->cantidad,
-            'precio_compra' => $request->precio_compra,
-            'total'         => $request->cantidad * $request->precio_compra,
-            'observaciones' => $request->observaciones,
-        ]);
-
-        return redirect()->route('admin.compras.index')
+        return redirect()->route('admin.compras.show', $compra)
             ->with('success', 'Compra actualizada correctamente.');
     }
 
     public function destroy(Compra $compra)
     {
-        // Revertir stock
-        $compra->producto->decrement('stock', $compra->cantidad);
-        $compra->delete();
+        DB::beginTransaction();
+        try {
+            // Revertir stock de cada detalle
+            foreach ($compra->detalles as $detalle) {
+                $detalle->producto->decrement('stock', $detalle->cantidad);
+            }
+            $compra->delete();
+            DB::commit();
+            return redirect()->route('admin.compras.index')
+                ->with('success', 'Compra eliminada y stock revertido.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Error al eliminar: ' . $e->getMessage());
+        }
+    }
 
-        return redirect()->route('admin.compras.index')
-            ->with('success', 'Compra eliminada y stock revertido.');
+    public function ultimoPrecio(Request $request)
+    {
+        $ultimaCompra = CompraDetalle::where('producto_id', $request->producto_id)
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        return response()->json([
+            'precio' => $ultimaCompra?->precio_compra,
+        ]);
     }
 }
