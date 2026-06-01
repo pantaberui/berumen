@@ -1,0 +1,32 @@
+# Control de versiones
+.git
+.gitignore
+
+# Dependencias locales (se instalan durante el build)
+vendor/
+node_modules/
+
+# Variables de entorno locales (NO subir al contenedor)
+.env
+.env.*
+!.env.example
+
+# Logs
+storage/logs/*.log
+
+# Cache local
+bootstrap/cache/*.php
+
+# Archivos de desarrollo
+*.md
+.editorconfig
+.phpunit.result.cache
+phpunit.xml
+docker-compose.override.yml
+
+# Archivos innecesarios
+*.sql
+WhatsApp*
+*.jpeg
+*.jpg
+!public/images/
