@@ -38,10 +38,10 @@ RUN printf '#!/bin/bash\n\
 set -e\n\
 \n\
 echo ">>> Generando APP_KEY si no existe..."\n\
-php artisan key:generate --force\n\
+# php artisan key:generate --force\n\
 \n\
 echo ">>> Ejecutando migraciones..."\n\
-php artisan migrate --force\n\
+# php artisan migrate --force\n\
 \n\
 echo ">>> Limpiando y optimizando cache..."\n\
 php artisan config:clear\n\

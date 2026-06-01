@@ -33,6 +33,8 @@ services:
     volumes:
       # Storage persistente (logs, backups, uploads)
       - app_storage:/var/www/html/storage
+      - .:/var/www/html
+      - ./.env:/var/www/html/.env
       # Logo e imágenes públicas (copiar manualmente logo_berumen.png aquí)
       - ./public/images:/var/www/html/public/images
     depends_on:
