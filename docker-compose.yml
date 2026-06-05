@@ -48,8 +48,8 @@ services:
     environment:
       MYSQL_DATABASE: berumen_db
       MYSQL_USER: berumen
-      MYSQL_PASSWORD: Berumen2024Secure!
-      MYSQL_ROOT_PASSWORD: Root2024Secure!
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
