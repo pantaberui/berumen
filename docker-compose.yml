@@ -6,35 +6,36 @@ services:
     restart: unless-stopped
     ports:
       - "8080:80"
+    env_file:
+      - .env.docker
     environment:
       # App
       - APP_NAME=Entretenimiento Berumen
       - APP_ENV=production
       - APP_DEBUG=false
-      - APP_URL=http://localhost:8080
+      - APP_URL=${IP_SERVER}
       # Base de datos
       - DB_CONNECTION=mysql
       - DB_HOST=db
       - DB_PORT=3306
-      - DB_DATABASE=berumen_db
-      - DB_USERNAME=berumen
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
       # Correo
       - MAIL_MAILER=smtp
       - MAIL_HOST=smtp.gmail.com
       - MAIL_PORT=587
       - MAIL_ENCRYPTION=tls
-      - MAIL_USERNAME=ecberumen2015@gmail.com
+      - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
-      - MAIL_FROM_ADDRESS=ecberumen2015@gmail.com
+      - MAIL_FROM_ADDRESS=${MAIL_USERNAME}
       - MAIL_FROM_NAME="Entretenimiento Berumen"
       # Timezone
       - APP_TIMEZONE=America/Mazatlan
     volumes:
       # Storage persistente (logs, backups, uploads)
       - app_storage:/var/www/html/storage
-      - .:/var/www/html
-      - ./.env:/var/www/html/.env
+      - ./.env.docker:/var/www/html/.env
       # Logo e imágenes públicas (copiar manualmente logo_berumen.png aquí)
       - ./public/images:/var/www/html/public/images
     depends_on:
@@ -46,8 +47,8 @@ services:
     container_name: berumen_db
     restart: unless-stopped
     environment:
-      MYSQL_DATABASE: berumen_db
-      MYSQL_USER: berumen
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
       MYSQL_PASSWORD: ${DB_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     volumes:
@@ -57,10 +58,10 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    env_file:
+      - .env.docker
 
 volumes:
   app_storage:
   db_data:
 
-env_file:
-  - .env.docker
