@@ -158,17 +158,22 @@
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.productos.*') ? 'font-semibold text-indigo-600' : '' }}">
                                 Catálogo
                             </a>
-                            <a href="{{ route('admin.compras.index') }}"
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.compras.*') ? 'font-semibold text-indigo-600' : '' }}">
+                            <a href="{{ route('admin.compras.create') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.compras.create') ? 'font-semibold text-indigo-600' : '' }}">
                                 Compras
                             </a>
                             @endif
 
                             @if(auth()->user()->hasRole('admin'))
                             <a href="{{ route('admin.compras.index') }}"
-                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.compras.*') ? 'font-semibold text-indigo-600' : '' }}">
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.compras.index') ? 'font-semibold text-indigo-600' : '' }}">
                                 Consulta de Compras
                             </a>
+
+
+                            <a href="{{ route('admin.compras.create') }}"
+
+                            
                             <a href="{{ route('admin.productos.inventario') }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.productos.inventario') ? 'font-semibold text-indigo-600' : '' }}">
                                 Inventario
@@ -363,7 +368,7 @@
             <x-responsive-nav-link :href="route('admin.productos.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
                 Catálogo
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('admin.compras.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+            <x-responsive-nav-link :href="route('admin.compras.create')" style="color: #cbd5e1; padding-left: 1.5rem;">
                 Compras
             </x-responsive-nav-link>
             @endif

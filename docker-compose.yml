@@ -18,7 +18,7 @@ services:
       - DB_PORT=3306
       - DB_DATABASE=berumen_db
       - DB_USERNAME=berumen
-      - DB_PASSWORD=Berumen2024Secure!
+      - DB_PASSWORD=${DB_PASSWORD}
       # Correo
       - MAIL_MAILER=smtp
       - MAIL_HOST=smtp.gmail.com
@@ -53,7 +53,7 @@ services:
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uberumen", "-pBerumen2024Secure!"]
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u${DB_USERNAME} -p${DB_PASSWORD}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -61,3 +61,6 @@ services:
 volumes:
   app_storage:
   db_data:
+
+env_file:
+  - .env.docker
