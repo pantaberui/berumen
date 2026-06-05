@@ -7,6 +7,7 @@ use App\Models\Incidencia;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
 
+
 class IncidenciaController extends Controller
 {
     public function index()
@@ -20,7 +21,11 @@ class IncidenciaController extends Controller
 
     public function create()
     {
-        $clientes = Cliente::where('activo', true)->orderBy('apellido_paterno')->get();
+        $clientes = Cliente::where('activo', true)
+            ->whereHas('contratos')
+            ->orderBy('apellido_paterno')
+            ->get();
+
         return view('admin.incidencias.create', compact('clientes'));
     }
 
@@ -53,10 +58,14 @@ class IncidenciaController extends Controller
 
     public function edit(Incidencia $incidencia)
     {
-        $clientes = Cliente::where('activo', true)->orderBy('apellido_paterno')->get();
+        $clientes = Cliente::where('activo', true)
+            ->whereHas('contratos')
+            ->orderBy('apellido_paterno')
+            ->get();
+            
         return view('admin.incidencias.edit', compact('incidencia', 'clientes'));
     }
-
+    
     public function update(Request $request, Incidencia $incidencia)
     {
         $request->validate([
