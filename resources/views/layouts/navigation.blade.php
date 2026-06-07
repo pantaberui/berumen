@@ -170,17 +170,11 @@
                                 Consulta de Compras
                             </a>
 
-
-                            <a href="{{ route('admin.compras.create') }}"
-
-                            
                             <a href="{{ route('admin.productos.inventario') }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.productos.inventario') ? 'font-semibold text-indigo-600' : '' }}">
                                 Inventario
                             </a>
                             @endif
-
-
 
                         </div>
                     </div>
