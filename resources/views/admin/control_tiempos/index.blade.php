@@ -343,6 +343,11 @@
         inactivo:   '#6b7280',
     };
 
+
+    // Precargar voces del navegador al iniciar
+    window.speechSynthesis.onvoiceschanged = function() {
+        window.speechSynthesis.getVoices();
+    };
     
     // =============================================
     // INICIALIZACIÓN — calcula segundos correctos
@@ -534,8 +539,24 @@
     function reproducirAlarma(id) {
         const eq = equiposState[id];
         if ('speechSynthesis' in window) {
-            const msg = new SpeechSynthesisUtterance(`Finalizó el tiempo en equipo ${eq.numero}`);
-            msg.lang = 'es-MX';
+            // Cancelar cualquier síntesis anterior
+            window.speechSynthesis.cancel();
+
+            const msg = new SpeechSynthesisUtterance(
+                `Atención, finalizó el tiempo en el equipo número ${eq.numero}`
+            );
+            msg.lang   = 'es-MX';
+            msg.rate   = 0.9;  // velocidad ligeramente más lenta para mayor claridad
+            msg.pitch  = 1;
+            msg.volume = 1;
+
+            // Forzar voz en español si está disponible
+            const voces = window.speechSynthesis.getVoices();
+            const vozEsp = voces.find(v =>
+                v.lang === 'es-MX' || v.lang === 'es-ES' || v.lang.startsWith('es')
+            );
+            if (vozEsp) msg.voice = vozEsp;
+
             window.speechSynthesis.speak(msg);
         }
     }

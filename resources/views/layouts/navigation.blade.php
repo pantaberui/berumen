@@ -365,6 +365,9 @@
             <x-responsive-nav-link :href="route('admin.compras.create')" style="color: #cbd5e1; padding-left: 1.5rem;">
                 Compras
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.productos.inventario')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Inventarios
+            </x-responsive-nav-link>
             @endif
 
 
@@ -377,6 +380,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.control-tiempos.reporte')" style="color: #cbd5e1; padding-left: 1.5rem;">
                 Reporte
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.control-tiempos.reporte')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Inventario
             </x-responsive-nav-link>
         </div>
 
