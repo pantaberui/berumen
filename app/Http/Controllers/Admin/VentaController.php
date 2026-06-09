@@ -23,9 +23,8 @@ class VentaController extends Controller
 
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->user_id);
-        } else {
-            $query->where('user_id', auth()->id());
         }
+        // sin filtro de usuario por defecto = muestra todos
 
         $totalAcumulado = $query->sum('total');
         $ventas = $query->with(['vendedor', 'cliente', 'detalles.producto'])

@@ -33,6 +33,7 @@
                     <div>
                         <label class="block text-xs font-medium text-gray-500 mb-1">Usuario</label>
                         <select name="user_id" class="w-full border-gray-300 rounded-md shadow-sm text-sm">
+                            <option value="">— Todos —</option>
                             @foreach($usuarios as $usuario)
                                 <option value="{{ $usuario->id }}"
                                     {{ request('user_id', auth()->id()) == $usuario->id ? 'selected' : '' }}>
