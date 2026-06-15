@@ -74,10 +74,19 @@ class PagoServicioController extends Controller
 
         $total = $request->importe + $request->comision;
 
+        $clienteNombre = 'PÚBLICO EN GENERAL';
+
+        if ($request->cliente_id) {
+            $cliente = Cliente::find($request->cliente_id);
+            if ($cliente) {
+                $clienteNombre = $cliente->nombre_completo;
+            }
+        }
+
         $pago = PagoServicio::create([
             'tipo_servicio_id'    => $request->tipo_servicio_id,
             'cliente_id'          => $request->cliente_id ?? null,
-            'cliente_nombre'      => $request->cliente_nombre ?? 'PÚBLICO EN GENERAL',
+            'cliente_nombre'      => strtoupper($clienteNombre),
             'user_id'             => auth()->id(),
             'referencia'          => strtoupper($request->referencia),
             'importe'             => $request->importe,
