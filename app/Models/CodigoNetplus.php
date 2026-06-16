@@ -41,8 +41,8 @@ class CodigoNetplus extends Model
             '1_hora'     => ['label' => '1 Hora',       'tiempo' => '01:00:00', 'importe' => 9.00,  'color' => 'green'],
             '3_horas'    => ['label' => '3 Horas',      'tiempo' => '03:00:00', 'importe' => 15.00, 'color' => 'yellow'],
             '1_dia'      => ['label' => '1 Día',        'tiempo' => '24:00:00', 'importe' => 25.00, 'color' => 'orange'],
-            '1_semana'   => ['label' => '1 Semana',     'tiempo' => '168:00:00','importe' => 60.00, 'color' => 'purple'],
-            '1_mes'      => ['label' => '1 Mes',       'tiempo' => '720:00:00', 'importe' => 120.00,'color' => 'red'],
+            '1_semana'   => ['label' => '1 Semana',     'tiempo' => '1w','importe' => 60.00, 'color' => 'purple'],
+            '1_mes'      => ['label' => '1 Mes',       'tiempo' => '4w', 'importe' => 120.00,'color' => 'red'],
         ];
     }
 }

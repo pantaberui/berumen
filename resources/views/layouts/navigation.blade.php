@@ -125,6 +125,13 @@
                             @endif
 
                             @if(auth()->user()->hasRole('admin'))
+                            <a href="{{ route('admin.netplus.mikrotik.create') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.netplus.mikrotik.create') ? 'font-semibold text-indigo-600' : '' }}">
+                                Generar Códigos para Mikrotik
+                            </a>
+                            @endif
+
+                            @if(auth()->user()->hasRole('admin'))
                             <a href="{{ route('admin.codigos-netplus.reporte') }}"
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.codigos-netplus.reporte') ? 'font-semibold text-indigo-600' : '' }}">
                                 Reporte de Ventas

@@ -19,6 +19,7 @@ use App\Http\Controllers\Admin\TipoTramiteController;
 use App\Http\Controllers\Admin\TramiteController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BackupController;
+use App\Http\Controllers\Admin\MikrotikVoucherController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -121,6 +122,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     //Respaldos
     Route::get('backup/descargar', [BackupController::class, 'descargar'])->name('backup.descargar');
+
+    Route::get('/netplus/generar-mikrotik', [MikrotikVoucherController::class, 'create'])
+        ->name('netplus.mikrotik.create');
+
+    Route::post('/netplus/generar-mikrotik', [MikrotikVoucherController::class, 'generate'])
+        ->name('netplus.mikrotik.generate');
 
 
 });
