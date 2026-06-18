@@ -354,6 +354,12 @@
     // =============================================
     document.addEventListener('DOMContentLoaded', () => {
         const ahora = Date.now();
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices(); // forzar carga
+            };
+        }
 
         EQUIPOS_DATA.forEach(eq => {
             // El servidor ya calculó los segundos acumulados correctamente
@@ -536,28 +542,53 @@
         if (innerEl) innerEl.style.strokeDashoffset = circInner - (pctProd * circInner);
     }
 
-    function reproducirAlarma(id) {
+   function reproducirAlarma(id) {
         const eq = equiposState[id];
-        if ('speechSynthesis' in window) {
-            // Cancelar cualquier síntesis anterior
-            window.speechSynthesis.cancel();
 
-            const msg = new SpeechSynthesisUtterance(
-                `Atención, finalizó el tiempo en el equipo número ${eq.numero}`
-            );
-            msg.lang   = 'es-MX';
-            msg.rate   = 0.9;  // velocidad ligeramente más lenta para mayor claridad
-            msg.pitch  = 1;
-            msg.volume = 1;
+        // 1. Reproducir ding-dong primero
+        const audio = new Audio('{{ asset("sounds/ding-dong.mp3") }}');
+        audio.volume = 1.0;
 
-            // Forzar voz en español si está disponible
-            const voces = window.speechSynthesis.getVoices();
+        audio.play().then(() => {
+            // 2. Al terminar el ding-dong, reproducir la voz
+            audio.onended = () => hablarAlarma(eq.numero);
+        }).catch(() => {
+            // Si falla el audio (política del navegador), intentar voz directamente
+            hablarAlarma(eq.numero);
+        });
+    }
+
+    function hablarAlarma(numero) {
+        if (!('speechSynthesis' in window)) return;
+
+        window.speechSynthesis.cancel();
+
+        function hablar() {
+            const msg    = new SpeechSynthesisUtterance(`Atención, finalizó el tiempo en el equipo número ${numero}`);
+            msg.lang     = 'es-MX';
+            msg.rate     = 0.9;
+            msg.pitch    = 1;
+            msg.volume   = 1;
+
+            // Buscar voz en español
+            const voces  = window.speechSynthesis.getVoices();
             const vozEsp = voces.find(v =>
-                v.lang === 'es-MX' || v.lang === 'es-ES' || v.lang.startsWith('es')
+                v.lang === 'es-MX' || v.lang === 'es-419' || v.lang === 'es-ES' || v.lang.startsWith('es')
             );
             if (vozEsp) msg.voice = vozEsp;
 
             window.speechSynthesis.speak(msg);
+        }
+
+        // Si las voces ya están cargadas hablar inmediatamente
+        if (window.speechSynthesis.getVoices().length > 0) {
+            hablar();
+        } else {
+            // Esperar a que carguen las voces
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.onvoiceschanged = null;
+                hablar();
+            };
         }
     }
 
