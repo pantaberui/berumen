@@ -13,12 +13,10 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
 
             @if(session('success'))
-                <div class="bg-green-100 text-green-800 px-4 py-3 rounded mb-4">
-                    {{ session('success') }}
-                </div>
+                <div class="bg-green-100 text-green-800 px-4 py-3 rounded mb-4">{{ session('success') }}</div>
             @endif
 
-            <div class="bg-white shadow-sm rounded-lg overflow-x-auto>
+            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -45,7 +43,7 @@
                                    class="text-yellow-600 hover:underline">Editar</a>
                                 <form action="{{ route('admin.tipo-servicios.destroy', $servicio) }}"
                                       method="POST" class="inline"
-                                      onsubmit="return confirm('¿Eliminar este servicio?')">
+                                      onsubmit="return confirm('¿Eliminar?')">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="text-red-600 hover:underline">Eliminar</button>
@@ -54,16 +52,12 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-8 text-center text-gray-400">
-                                No hay servicios registrados.
-                            </td>
+                            <td colspan="4" class="px-6 py-8 text-center text-gray-400">No hay servicios registrados.</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
-                <div class="px-6 py-4">
-                    {{ $servicios->links() }}
-                </div>
+                <div class="px-6 py-4">{{ $servicios->links() }}</div>
             </div>
         </div>
     </div>

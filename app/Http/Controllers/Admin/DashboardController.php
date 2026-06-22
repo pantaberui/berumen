@@ -229,7 +229,7 @@ class DashboardController extends Controller
 
     private function obtenerDatosGrafica($userId): array
     {
-        $hoy          = Carbon::now();
+        $hoy          = Carbon::now('America/Mazatlan');
         $inicioMesAct = $hoy->copy()->startOfMonth();
         $inicioMesAnt = $hoy->copy()->subMonth()->startOfMonth();
         $finMesAnt    = $hoy->copy()->subMonth()->endOfMonth();
