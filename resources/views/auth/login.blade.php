@@ -78,10 +78,9 @@
                            value="{{ old('email') }}"
                            required
                            autofocus
-                           class="w-full px-4 py-2.5 rounded-lg text-white placeholder-slate-300 border border-white/40 focus:outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-400/30 transition bg-white/15"
+                           class="w-full px-4 py-2.5 rounded-lg text-slate-800 placeholder-slate-500 border border-white/40 focus:outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-400/30 transition bg-white/85"
                            placeholder="usuario@berumen.com">
                 </div>
-
                 <div class="mb-5">
                     <label class="block text-white text-sm font-semibold mb-2">
                         Contraseña
@@ -89,7 +88,7 @@
                     <input type="password"
                            name="password"
                            required
-                           class="w-full px-4 py-2.5 rounded-lg text-white placeholder-slate-300 border border-white/40 focus:outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-400/30 transition bg-white/15"
+                           class="w-full px-4 py-2.5 rounded-lg text-slate-800 placeholder-slate-500 border border-white/40 focus:outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-400/30 transition bg-white/85"
                            placeholder="••••••••">
                 </div>
 
