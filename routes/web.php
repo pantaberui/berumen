@@ -22,7 +22,7 @@ use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\MikrotikVoucherController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
