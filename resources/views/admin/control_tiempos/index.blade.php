@@ -564,27 +564,39 @@
         window.speechSynthesis.cancel();
 
         function hablar() {
-            const msg    = new SpeechSynthesisUtterance(`Atención, finalizó el tiempo en el equipo número ${numero}`);
+            const msg    = new SpeechSynthesisUtterance();
+            msg.text     = `Atención, finalizó el tiempo en el equipo número ${numero}`;
             msg.lang     = 'es-MX';
-            msg.rate     = 0.9;
+            msg.rate     = 0.85;
             msg.pitch    = 1;
             msg.volume   = 1;
 
-            // Buscar voz en español
             const voces  = window.speechSynthesis.getVoices();
-            const vozEsp = voces.find(v =>
-                v.lang === 'es-MX' || v.lang === 'es-419' || v.lang === 'es-ES' || v.lang.startsWith('es')
-            );
-            if (vozEsp) msg.voice = vozEsp;
+
+            // Prioridad de búsqueda de voz en español
+            const vozEsp = 
+                voces.find(v => v.lang === 'es-MX') ||
+                voces.find(v => v.lang === 'es-419') ||
+                voces.find(v => v.lang === 'es-US') ||
+                voces.find(v => v.lang === 'es-ES') ||
+                voces.find(v => v.lang.startsWith('es')) ||
+                null; // Si no hay ninguna en español, el navegador usa la por defecto
+
+            if (vozEsp) {
+                msg.voice = vozEsp;
+                console.log('Voz usada:', vozEsp.name, vozEsp.lang);
+            } else {
+                console.warn('No se encontró voz en español. Voces disponibles:', 
+                    voces.map(v => `${v.name} (${v.lang})`).join(', '));
+            }
 
             window.speechSynthesis.speak(msg);
         }
 
-        // Si las voces ya están cargadas hablar inmediatamente
-        if (window.speechSynthesis.getVoices().length > 0) {
+        const voces = window.speechSynthesis.getVoices();
+        if (voces.length > 0) {
             hablar();
         } else {
-            // Esperar a que carguen las voces
             window.speechSynthesis.onvoiceschanged = () => {
                 window.speechSynthesis.onvoiceschanged = null;
                 hablar();
