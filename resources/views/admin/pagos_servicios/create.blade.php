@@ -52,7 +52,7 @@
                     </div>
 
                     <form action="{{ route('admin.pagos-servicios.store') }}" method="POST" id="form_pago">
-                        @csrf                        
+                        @csrf
                         <input type="hidden" name="cliente_id" id="cliente_id_form" value="{{ old('cliente_id') }}">
                         <input type="hidden" name="cliente_nombre" id="cliente_nombre_servicio" value="PÚBLICO EN GENERAL">
 
@@ -145,7 +145,7 @@
                                class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
                                 Cancelar
                             </a>
-                            <button type="submit"
+                            <button type="button" onclick="validarYEnviar()"
                                     class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
                                 Registrar Pago
                             </button>
@@ -271,6 +271,18 @@
             const importe  = parseFloat(document.getElementById('importe').value) || 0;
             const comision = parseFloat(document.getElementById('comision').value) || 0;
             document.getElementById('total_display').textContent = '$' + (importe + comision).toFixed(2);
+        }
+
+        function validarYEnviar() {
+            const buscarInput = document.getElementById('buscar_cliente').value.trim();
+
+            if (buscarInput.length > 0) {
+                alert('Debes buscar y seleccionar un cliente de la lista, o limpia el campo y usa "Público en General".');
+                document.getElementById('buscar_cliente').focus();
+                return;
+            }
+
+            document.getElementById('form_pago').submit();
         }
     </script>
 </x-app-layout>
