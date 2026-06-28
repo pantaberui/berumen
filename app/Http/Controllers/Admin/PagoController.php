@@ -193,4 +193,15 @@ class PagoController extends Controller
         return redirect()->route('admin.pagos.index')
             ->with('success', 'Pago eliminado correctamente.');
     }
+
+    public function ultimoPeriodo(Contrato $contrato)
+    {
+        $ultimoPago = Pago::where('contrato_id', $contrato->id)
+            ->orderBy('periodo_hasta', 'desc')
+            ->first();
+
+        return response()->json([
+            'periodo_hasta' => $ultimoPago?->periodo_hasta?->format('Y-m-d'),
+        ]);
+    }
 }

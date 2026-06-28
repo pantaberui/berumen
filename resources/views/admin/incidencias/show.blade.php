@@ -74,7 +74,58 @@
                 </div>
                 @endif
 
+
+
             </div>
+
+            @if($incidencia->estatus === 'atendido' && isset($contrato))
+            <button onclick="abrirModalDias()"
+                    class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 text-sm">
+                📅 Agregar Días de Servicio
+            </button>
+            @endif
+
+            {{-- Modal Agregar Días --}}
+            <div id="modal_dias" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <div class="bg-white rounded-xl shadow-2xl p-6 w-full max-w-sm mx-4">
+                    <h3 class="text-base font-semibold text-gray-900 mb-4">📅 Agregar Días de Servicio</h3>
+                    <form action="{{ route('admin.incidencias.agregar-dias', $incidencia) }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Días a agregar (máx. 30)</label>
+                            <input type="number" name="dias" min="1" max="30" required
+                                class="w-full border-gray-300 rounded-md shadow-sm text-sm">
+                        </div>
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Descripción</label>
+                            <textarea name="descripcion_extra" rows="2" required
+                                    class="w-full border-gray-300 rounded-md shadow-sm text-sm"
+                                    placeholder="Motivo de la reposición de días..."></textarea>
+                        </div>
+                        <div class="flex justify-end gap-3">
+                            <button type="button" onclick="cerrarModalDias()"
+                                    class="px-4 py-2 bg-gray-200 text-gray-700 rounded text-sm">Cancelar</button>
+                            <button type="submit"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded text-sm">Agregar Días</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+
+
         </div>
     </div>
+
+                   
+    
+
+
+    <script>
+        function abrirModalDias()  { document.getElementById('modal_dias').classList.remove('hidden'); }
+        function cerrarModalDias() { document.getElementById('modal_dias').classList.add('hidden'); }
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') cerrarModalDias(); });
+    </script>
 </x-app-layout>
+

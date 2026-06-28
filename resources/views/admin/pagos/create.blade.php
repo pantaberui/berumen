@@ -133,21 +133,15 @@
             calcularTotal();
         }
 
+        
         function establecerFechasPorDefecto() {
             const hoy = new Date();
             const desde = formatoInput(hoy);
             document.getElementById('periodo_desde').value = desde;
             actualizarFechaFin(desde);
         }
+        
 
-        function actualizarFechaFin(desdeStr) {
-            if (!desdeStr) return;
-            const desde = new Date(desdeStr + 'T00:00:00');
-            const hasta = new Date(desde);
-            hasta.setMonth(hasta.getMonth() + 1);
-            hasta.setDate(hasta.getDate() - 1);
-            document.getElementById('periodo_hasta').value = formatoInput(hasta);
-        }
 
         function formatoInput(fecha) {
             const y = fecha.getFullYear();
@@ -177,6 +171,56 @@
             placeholder: '— Busca por nombre o número de contrato —',
             maxOptions: 50,
         });
+
+        // Al seleccionar contrato, cargar fecha periodo desde automáticamente
+        document.addEventListener('DOMContentLoaded', function() {
+            const contratoSelect = document.getElementById('contrato_id');
+            if (contratoSelect) {
+                contratoSelect.addEventListener('change', function() {
+                    const contratoId = this.value;
+                    if (!contratoId) return;
+
+                    fetch(`{{ url('admin/pagos/ultimo-periodo') }}/${contratoId}`)
+                        .then(r => r.json())
+                        .then(data => {
+                            if (data.periodo_hasta) {
+                                // periodo desde = periodo hasta anterior + 1 día
+                                const fechaDesde = new Date(data.periodo_hasta);
+            
+                                fechaDesde.setDate(fechaDesde.getDate() + 1);
+                                const hasta = new Date(fechaDesde);
+
+                                hasta.setMonth(hasta.getMonth() + 1);
+                                hasta.setDate(hasta.getDate() - 1);
+                                document.getElementById('periodo_hasta').value = formatoInput(hasta);
+
+                                const yyyy = fechaDesde.getFullYear();
+                                const mm   = String(fechaDesde.getMonth() + 1).padStart(2, '0');
+                                const dd   = String(fechaDesde.getDate()).padStart(2, '0');
+                                document.getElementById('periodo_desde').value = `${yyyy}-${mm}-${dd}`;
+                                //actualizarFechaFin(fechaDesde);
+                            }
+                        });
+                });
+
+                //actualizarFechaFin(fechaDesde);
+
+                // Si ya hay contrato seleccionado (por old())
+                if (contratoSelect.value) {
+                    contratoSelect.dispatchEvent(new Event('change'));
+                    
+                }
+            }
+        });
+
+        function actualizarFechaFin(desdeStr) {
+            if (!desdeStr) return;
+            const desde = new Date(desdeStr + 'T00:00:00');
+            const hasta = new Date(desde);
+            hasta.setMonth(hasta.getMonth() + 1);
+            hasta.setDate(hasta.getDate() - 1);
+            document.getElementById('periodo_hasta').value = formatoInput(hasta);
+        }
         
     </script>
 </x-app-layout>

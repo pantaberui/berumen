@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\TramiteController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\MikrotikVoucherController;
+use App\Http\Controllers\Admin\EstatusClientesController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -50,11 +51,19 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::resource('clientes', ClienteController::class);
     Route::get('contratos/buscar',   [ContratoController::class,   'buscar'])->name('contratos.buscar');
     Route::resource('contratos', ContratoController::class);
+
+    
     Route::get('pagos/buscar',       [PagoController::class,       'buscar'])->name('pagos.buscar');
+        
     Route::post('pagos/{pago}/enviar-correo', [PagoController::class, 'enviarCorreo'])->name('pagos.enviar-correo');
+    Route::get('pagos/ultimo-periodo/{contrato}', [PagoController::class, 'ultimoPeriodo'])->name('pagos.ultimo-periodo');
     Route::resource('pagos', PagoController::class);
     Route::get('incidencias/buscar', [IncidenciaController::class, 'buscar'])->name('incidencias.buscar');
+    Route::post('incidencias/{incidencia}/agregar-dias', [IncidenciaController::class, 'agregarDias'])->name('incidencias.agregar-dias');
+
     Route::resource('incidencias', IncidenciaController::class);
+    
+
     Route::resource('tipo-servicios', TipoServicioController::class)->except(['show']);
     Route::get('pagos-servicios/buscar-cliente', [PagoServicioController::class, 'buscarCliente'])->name('pagos-servicios.buscar-cliente');
     Route::get('pagos-servicios/ultima-referencia', [PagoServicioController::class, 'ultimaReferencia'])->name('pagos-servicios.ultima-referencia');
@@ -129,7 +138,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('/netplus/generar-mikrotik', [MikrotikVoucherController::class, 'generate'])
         ->name('netplus.mikrotik.generate');
 
-
+    Route::get('estatus-clientes', [EstatusClientesController::class, 'index'])->name('estatus-clientes.index');
 });
 
 // Panel Cajero

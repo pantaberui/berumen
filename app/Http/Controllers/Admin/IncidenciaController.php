@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Incidencia;
 use App\Models\Cliente;
 use Illuminate\Http\Request;
+use App\Models\Pago;
 
 
 class IncidenciaController extends Controller
@@ -53,7 +54,12 @@ class IncidenciaController extends Controller
     public function show(Incidencia $incidencia)
     {
         $incidencia->load('cliente', 'usuario');
-        return view('admin.incidencias.show', compact('incidencia'));
+
+        $contrato = $incidencia->cliente->contratos()
+            ->where('estatus', 'activo')
+            ->first();
+
+        return view('admin.incidencias.show', compact('incidencia', 'contrato'));
     }
 
     public function edit(Incidencia $incidencia)
@@ -120,5 +126,49 @@ class IncidenciaController extends Controller
         $incidencia->delete();
         return redirect()->route('admin.incidencias.index')
             ->with('success', 'Incidencia eliminada correctamente.');
+    }
+
+   public function agregarDias(Request $request, Incidencia $incidencia)
+    {
+        $request->validate([
+            'dias'             => 'required|integer|min:1|max:30',
+            'descripcion_extra'=> 'required|string|max:500',
+        ]);
+
+        // Obtener contrato activo del cliente de la incidencia
+        $contrato = $incidencia->cliente->contratos()
+            ->where('estatus', 'activo')
+            ->whereHas('pagos')
+            ->first();
+
+        if (!$contrato) {
+            return back()->with('error', 'No se encontró un contrato activo para este cliente.');
+        }
+
+        // Obtener el último pago del contrato
+       $ultimoPago = \App\Models\Pago::where('contrato_id', $contrato->id)
+            ->orderBy('periodo_hasta', 'desc')
+            ->first();
+
+        if (!$ultimoPago) {
+            return back()->with('error', 'No se encontró un pago registrado para este cliente.');
+        }
+
+        // Extender la fecha final del período
+        $dias = (int) $request->dias;
+        $nuevaFecha = $ultimoPago->periodo_hasta->copy()->addDays($dias);
+        $ultimoPago->update(['periodo_hasta' => $nuevaFecha]);
+
+        // Complementar la descripción
+        $complemento = "\n\n[REPOSICIÓN DE DÍAS - " . now()->format('d/m/Y H:i') . "]\n" .
+                    "Días agregados: {$dias}\n" .
+                    "Nueva fecha fin de período: " . $nuevaFecha->format('d/m/Y') . "\n" .
+                    "Motivo: {$request->descripcion_extra}";
+
+        $incidencia->update([
+            'descripcion' => ($incidencia->descripcion ?? '') . $complemento,
+        ]);
+
+        return back()->with('success',"Se agregaron {$dias} días. Nuevo período hasta: " . $nuevaFecha->format('d/m/Y'));
     }
 }

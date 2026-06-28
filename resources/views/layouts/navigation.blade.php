@@ -56,6 +56,13 @@
                             class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.pagos.index') ? 'font-semibold text-indigo-600' : '' }}">
                                 Consulta Pagos Internet
                             </a>
+
+                            <a href="{{ route('admin.estatus-clientes.index') }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 {{ request()->routeIs('admin.estatus-clientes.*') ? 'font-semibold text-indigo-600' : '' }}">
+                                📊 Estatus Pagos Clientes
+                            </a>
+
+
                         </div>
                     </div>
 
