@@ -320,6 +320,10 @@
             <x-responsive-nav-link :href="route('admin.incidencias.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
                 Incidencias
             </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.estatus-clientes.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Estatus Pagos Clientes
+            </x-responsive-nav-link>
+
 
             {{-- Pago de Servicios --}}
             <div style="padding: 0.5rem 1rem; color: #60a5fa; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.05em;">
@@ -378,6 +382,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.compras.create')" style="color: #cbd5e1; padding-left: 1.5rem;">
                 Compras
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('admin.compras.index')" style="color: #cbd5e1; padding-left: 1.5rem;">
+                Consulta de Compras
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('admin.productos.inventario')" style="color: #cbd5e1; padding-left: 1.5rem;">
                 Inventarios

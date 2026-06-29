@@ -56,7 +56,7 @@
             </div>
 
             {{-- Tabla --}}
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div class="bg-white shadow-sm rounded-lg overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -65,7 +65,7 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estatus</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Último Pago</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Período Último Pago</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Período Actual</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Periodo Próximo Pago</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
                         </tr>
                     </thead>
@@ -148,11 +148,13 @@
                             <td class="px-4 py-3 text-sm">
                                 <div class="flex gap-2">
                                     <a href="{{ route('admin.pagos.create', ['contrato_id' => $item['contrato']->id]) }}"
+                                       title="Registrar pago" 
                                        class="text-blue-600 hover:underline text-xs">
                                         + Pago
                                     </a>
                                     @if($item['estatus'] !== 'pagado' && $celular)
                                     <button onclick="enviarRecordatorio('{{ $celular }}', '{{ $item['cliente']->nombre }} {{ $item['cliente']->apellido_paterno }}', '{{ $item['ultimo_pago'] ? \Carbon\Carbon::parse($item['ultimo_pago']->fecha_pago)->format('d/m/Y') : 'N/A' }}', '{{ $item['ultimo_pago'] ? \Carbon\Carbon::parse($item['ultimo_pago']->periodo_desde)->format('d/m/Y') : 'N/A' }}', '{{ $item['ultimo_pago'] ? \Carbon\Carbon::parse($item['ultimo_pago']->periodo_hasta)->format('d/m/Y') : 'N/A' }}')"
+                                            title="Enviar mensaje de recordatorio de pago"
                                             class="text-green-600 hover:underline text-xs">
                                         📱 WhatsApp
                                     </button>

@@ -24,6 +24,12 @@ class VentaController extends Controller
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->user_id);
         }
+
+        if ($request->filled('producto_id')) {
+            $query->whereHas('detalles', function ($q) use ($request) {
+                $q->where('producto_id', $request->producto_id);
+            });
+        }
         // sin filtro de usuario por defecto = muestra todos
 
         $totalAcumulado = $query->sum('total');
@@ -35,7 +41,11 @@ class VentaController extends Controller
         //$ventas         = $query->orderBy('fecha_hora_venta', 'desc')->paginate(15)->withQueryString();
         $usuarios       = \App\Models\User::orderBy('name')->get();
 
-        return view('admin.ventas.index', compact('ventas', 'usuarios', 'fechaDesde', 'fechaHasta', 'totalAcumulado'));
+        $productos = \App\Models\Producto::where('activo', true)
+            ->orderBy('descripcion')
+            ->get();
+
+        return view('admin.ventas.index', compact('ventas', 'usuarios','productos', 'fechaDesde', 'fechaHasta', 'totalAcumulado'));
     }
 
     public function create()

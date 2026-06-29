@@ -58,7 +58,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Velocidad</label>
+                            <label class="block text-sm font-medium text-gray-700">Red</label>
                             <input type="text" name="velocidad"
                                    value="{{ old('velocidad', $contrato->velocidad) }}"
                                    class="mt-1 w-full border-gray-300 rounded-md shadow-sm">

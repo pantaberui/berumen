@@ -30,6 +30,20 @@
                         <input type="date" name="fecha_hasta" value="{{ $fechaHasta }}"
                                class="w-full border-gray-300 rounded-md shadow-sm text-sm">
                     </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-gray-500 mb-1">Producto / Servicio</label>
+                        <select name="producto_id" class="w-full border-gray-300 rounded-md shadow-sm text-sm">
+                            <option value="">— Todos —</option>
+                            @foreach($productos as $p)
+                                <option value="{{ $p->id }}"
+                                    {{ request('producto_id') == $p->id ? 'selected' : '' }}>
+                                    {{ $p->clave }} — {{ $p->descripcion }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
                     <div>
                         <label class="block text-xs font-medium text-gray-500 mb-1">Usuario</label>
                         <select name="user_id" class="w-full border-gray-300 rounded-md shadow-sm text-sm">
