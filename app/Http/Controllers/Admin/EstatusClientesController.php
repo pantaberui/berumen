@@ -35,7 +35,8 @@ class EstatusClientesController extends Controller
                 $periodoDesde = Carbon::parse($ultimoPago->periodo_hasta)->addDay();
                 // Duración del último período para estimar el siguiente
                 $duracion     = Carbon::parse($ultimoPago->periodo_desde)->diffInDays($ultimoPago->periodo_hasta);
-                $periodoHasta = $periodoDesde->copy()->addDays($duracion);
+                //$periodoHasta = $periodoDesde->copy()->addDays($duracion);
+                $periodoHasta = $periodoDesde->copy()->addMonth()->subDay();
 
                 $ultimoPeriodoHasta = Carbon::parse($ultimoPago->periodo_hasta);
 
