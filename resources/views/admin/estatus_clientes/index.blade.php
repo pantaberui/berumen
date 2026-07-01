@@ -182,7 +182,9 @@
             `Le recordamos que el pago de su mensualidad de *Internet* está pendiente.\n\n` +
             `Su último pago registrado fue el día *${fechaUltimoPago}* ` +
             `que comprende el periodo del *${periodoDesde}* al *${periodoHasta}*.\n\n` +
-            `Por favor realice su pago a la brevedad posible.\n\n` +
+            `Agradecemos su pago a la brevedad posible.\n\n` +
+            `Este es un mensaje generado en automático,\n\n` +
+            `no es necesario responderlo.\n\n` +
             `*Entretenimiento Berumen*\n` +
             `Tel. (311) 352-2645`;
 
