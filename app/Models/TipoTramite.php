@@ -11,7 +11,7 @@ class TipoTramite extends Model
 
     protected $table = 'tipo_tramites';
 
-    protected $fillable = ['nombre', 'precio_sugerido', 'activo'];
+    protected $fillable = ['nombre', 'tipo','precio_sugerido','requisitos', 'activo'];
 
     public function tramites()
     {

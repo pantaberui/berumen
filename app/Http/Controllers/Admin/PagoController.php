@@ -41,13 +41,14 @@ class PagoController extends Controller
         return view('admin.pagos.index', compact('pagos', 'busqueda', 'fechaDesde', 'fechaHasta', 'totalAcumulado'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        $contratos = Contrato::with('cliente')
-                             ->whereIn('estatus', ['activo', 'adeudo'])
-                             ->orderBy('numero_contrato')
-                             ->get();
-        return view('admin.pagos.create', compact('contratos'));
+        $contratos   = Contrato::with('cliente')->where('estatus', 'activo')->get();
+        $contratoId  = $request->get('contrato_id');
+        /*$importePre  = $request->get('importe');*/
+
+        //return view('admin.pagos.create', compact('contratos', 'contratoId', 'importePre'));
+        return view('admin.pagos.create', compact('contratos', 'contratoId'));
     }
 
     public function store(Request $request)

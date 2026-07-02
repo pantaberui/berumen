@@ -30,7 +30,9 @@ class TipoTramiteController extends Controller
 
         TipoTramite::create([
             'nombre'          => strtoupper($request->nombre),
+            'tipo'            => $request->tipo ? strtoupper($request->tipo) : null,
             'precio_sugerido' => $request->precio_sugerido ?: null,
+            'requisitos'      => $request->requisitos ?: null,
             'activo'          => $request->has('activo') ? 1 : 0,
         ]);
 
@@ -52,7 +54,9 @@ class TipoTramiteController extends Controller
 
         $tipoTramite->update([
             'nombre'          => strtoupper($request->nombre),
+            'tipo'            => $request->tipo ? strtoupper($request->tipo) : null,
             'precio_sugerido' => $request->precio_sugerido ?: null,
+            'requisitos'      => $request->requisitos ?: null,
             'activo'          => $request->has('activo') ? 1 : 0,
         ]);
 

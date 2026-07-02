@@ -19,10 +19,25 @@
                     @csrf
                     <div class="space-y-4">
                         <div>
+                            <label class="block text-sm font-medium text-gray-700">Tipo</label>
+                            <input type="text" name="tipo" value="{{ old('tipo') }}"
+                                placeholder="Ej: SAT, IMSS, INFONAVIT, SRE..."
+                                class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
+                        </div>
+
+                        <div>
                             <label class="block text-sm font-medium text-gray-700">Nombre *</label>
                             <input type="text" name="nombre" value="{{ old('nombre') }}"
                                    class="mt-1 w-full border-gray-300 rounded-md shadow-sm">
                         </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Requisitos</label>
+                            <textarea name="requisitos" rows="3"
+                                    class="mt-1 w-full border-gray-300 rounded-md shadow-sm"
+                                    placeholder="Lista los documentos o requisitos necesarios...">{{ old('requisitos') }}</textarea>
+                        </div>
+
                         <div>
                             <label class="block text-sm font-medium text-gray-700">Precio Sugerido</label>
                             <input type="number" name="precio_sugerido" step="0.01" min="0"

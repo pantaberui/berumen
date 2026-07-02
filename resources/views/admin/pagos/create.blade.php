@@ -30,7 +30,7 @@
                                 @foreach($contratos as $contrato)
                                     <option value="{{ $contrato->id }}"
                                             data-mensualidad="{{ $contrato->mensualidad }}"
-                                        {{ old('contrato_id') == $contrato->id ? 'selected' : '' }}>
+                                        {{ (old('contrato_id', $contratoId) == $contrato->id) ? 'selected' : '' }}>
                                         {{ $contrato->numero_contrato }} — {{ $contrato->cliente->nombre_completo }}
                                     </option>
                                 @endforeach
@@ -187,7 +187,7 @@
                                 // periodo desde = periodo hasta anterior + 1 día
                                 const fechaDesde = new Date(data.periodo_hasta);
             
-                                fechaDesde.setDate(fechaDesde.getDate() + 1);
+                                fechaDesde.setDate(fechaDesde.getDate() + 2);
                                 const hasta = new Date(fechaDesde);
 
                                 hasta.setMonth(hasta.getMonth() + 1);

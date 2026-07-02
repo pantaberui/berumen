@@ -21,7 +21,9 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">#</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Requisitos</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio Sugerido</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estatus</th>
                             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Acciones</th>
@@ -31,7 +33,9 @@
                         @forelse($tramites as $tramite)
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $tramite->id }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">{{ $tramite->tipo ?? '—' }}</td>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $tramite->nombre }}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500">{{ $tramite->requisitos ?? '—' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">
                                 {{ $tramite->precio_sugerido ? '$'.number_format($tramite->precio_sugerido, 2) : '—' }}
                             </td>

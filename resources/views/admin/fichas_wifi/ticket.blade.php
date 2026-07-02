@@ -22,10 +22,9 @@
                     <img src="{{ asset('images/logo_netplus.jpg') }}"
                         alt="Entretenimiento Berumen"
                         class="mx-auto mb-3"
-                        style="width: 95%; max-width: 700px; height: 150px; object-fit: contain;">
-                    <p class="text-gray-500 text-xs mt-2">
-                        Gracias por usar nuestros servicios,<br>
-                        Conéctate a la red WiFi <strong>NetPlus</strong> y digita el código de tu ficha.<br>
+                        style="width: 80%; max-width: 600px; height: 95px; object-fit: contain;">
+                    <p class="text-gray-500 text-xs mt-2">                        
+                        Conéctate a la red WiFi <strong>NetPlus</strong>                         
                     </p>
                     <p class="text-gray-400 text-xs mt-1">
                         {{ $codigoNetplus->fecha_venta?->format('d/m/Y H:i') }}
@@ -40,8 +39,6 @@
                     <div class="flex justify-between">
                         <span class="text-gray-500">Tiempo:</span>
                         <span class="font-medium">{{ $tipo['label'] ?? $codigoNetplus->tiempo }}</span>
-                    </div>
-                    <div class="flex justify-between">
                         <span class="text-gray-500">Importe:</span>
                         <span class="font-medium">${{ number_format($codigoNetplus->importe, 2) }}</span>
                     </div>
@@ -68,7 +65,6 @@
                 <div class="border-t border-dashed mt-4 pt-4 text-center text-gray-400 text-xs">
                     <p>Atendido por: {{ $codigoNetplus->vendedor?->name }}</p>
                     <p class="mt-1">Entretenimiento Berumen</p>
-                    <p class="mt-1">Tel. (311) 352-2645</p>
                 </div>
 
             </div>
@@ -101,7 +97,7 @@
             const ticket = document.getElementById('ticket').innerHTML;
             const ventana = window.open('', '_blank', 'width=400,height=600');
             ventana.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8">
-            <title>Ficha WiFi Netplus</title>
+            <title>Ficha WiFi</title>
             <style>
                 body{font-family:monospace;font-size:13px;margin:20px;max-width:300px;}
                 .text-center{text-align:center;}.flex{display:flex;}

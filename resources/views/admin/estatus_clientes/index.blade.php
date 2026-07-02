@@ -147,11 +147,14 @@
                             </td>
                             <td class="px-4 py-3 text-sm">
                                 <div class="flex gap-2">
-                                    <a href="{{ route('admin.pagos.create', ['contrato_id' => $item['contrato']->id]) }}"
-                                       title="Registrar pago" 
-                                       class="text-blue-600 hover:underline text-xs">
+                                    <a href="{{ route('admin.pagos.create', [
+                                            'contrato_id' => $item['contrato']->id,                                            
+                                        ]) }}"
+                                        title="Registrar pago"
+                                        class="text-blue-600 hover:underline text-xs">
                                         + Pago
                                     </a>
+
                                     @if($item['estatus'] !== 'pagado' && $celular)
                                     <button onclick="enviarRecordatorio('{{ $celular }}', '{{ $item['cliente']->nombre }} {{ $item['cliente']->apellido_paterno }}', '{{ $item['ultimo_pago'] ? \Carbon\Carbon::parse($item['ultimo_pago']->fecha_pago)->format('d/m/Y') : 'N/A' }}', '{{ $item['ultimo_pago'] ? \Carbon\Carbon::parse($item['ultimo_pago']->periodo_desde)->format('d/m/Y') : 'N/A' }}', '{{ $item['ultimo_pago'] ? \Carbon\Carbon::parse($item['ultimo_pago']->periodo_hasta)->format('d/m/Y') : 'N/A' }}')"
                                             title="Enviar mensaje de recordatorio de pago"
