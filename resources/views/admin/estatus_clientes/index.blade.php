@@ -182,13 +182,13 @@
     function enviarRecordatorio(celular, nombre, fechaUltimoPago, periodoDesde, periodoHasta) {
         const texto =
             `Estimado(a) *${nombre}*,\n\n` +
-            `Le recordamos que el pago de su mensualidad de *Internet* está pendiente.\n\n` +
+            `Le recordamos que el pago de su mensualidad de *Internet* está pendiente.\n` +
             `Su último pago registrado fue el día *${fechaUltimoPago}* ` +
             `que comprende el periodo del *${periodoDesde}* al *${periodoHasta}*.\n\n` +
-            `Agradecemos su pago a la brevedad posible.\n\n` +
-            `Este es un mensaje generado en automático,\n\n` +
-            `no es necesario responderlo.\n\n` +
-            `*Entretenimiento Berumen*\n` +
+            `Agradecemos su pago a la brevedad posible.\n` +
+            `Este es un mensaje generado en automático,\n` +
+            `no es necesario responderlo.\n` +
+            `*Entretenimiento Berumen*\n\n` +
             `Tel. (311) 352-2645`;
 
         window.open(`https://wa.me/52${celular}?text=${encodeURIComponent(texto)}`, '_blank');

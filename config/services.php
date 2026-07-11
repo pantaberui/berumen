@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'tramitanet' => [
+        'correo_admin_1' => env('TRAMITANET_CORREO_ADMIN_1'),
+        'correo_admin_2' => env('TRAMITANET_CORREO_ADMIN_2'),
+    ],
+
 ];

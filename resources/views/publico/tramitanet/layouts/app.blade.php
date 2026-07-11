@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>@yield('title', 'TramitaNet | Servicios Digitales Berumen')</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+
+<body class="bg-slate-100 text-slate-900 antialiased overflow-x-hidden">
+
+    @include('publico.tramitanet.components.navbar')
+
+    <main>
+        @yield('content')
+    </main>
+
+    @include('publico.tramitanet.components.footer')
+
+    @stack('scripts')
+
+</body>
+</html>

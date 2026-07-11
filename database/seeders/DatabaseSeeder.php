@@ -16,6 +16,12 @@ class RolesAndUsersSeeder extends Seeder
         $admin  = Role::create(['name' => 'admin']);
         $cajero = Role::create(['name' => 'cajero']);
 
+        $this->call([
+            RolesAndUsersSeeder::class,
+            TramitaNetSeeder::class,
+        ]);
+
+
         // Crear permisos básicos
         $permisos = [
             'clientes.ver', 'clientes.crear', 'clientes.editar', 'clientes.eliminar',

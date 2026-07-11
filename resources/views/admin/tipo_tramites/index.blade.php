@@ -35,7 +35,7 @@
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $tramite->id }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">{{ $tramite->tipo ?? '—' }}</td>
                             <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $tramite->nombre }}</td>
-                            <td class="px-6 py-4 text-sm text-gray-500">{{ $tramite->requisitos ?? '—' }}</td>
+                            <td class="PX-6 py-4 text-sm text-gray-500">{{ $tramite->requisitos ?? '—' }}</td>
                             <td class="px-6 py-4 text-sm text-gray-500">
                                 {{ $tramite->precio_sugerido ? '$'.number_format($tramite->precio_sugerido, 2) : '—' }}
                             </td>

@@ -1,0 +1,422 @@
+@php
+    use App\Support\TramitaNet\EstadosSolicitud;
+
+    $ordenEstados = EstadosSolicitud::orden();
+    $pasoActual = $ordenEstados[$solicitud->estatus] ?? 1;
+@endphp
+
+@extends('publico.tramitanet.layouts.app')
+
+@section('title', 'Mi trámite | TramitaNet')
+
+@section('content')
+
+
+
+<section class="bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900 text-white py-14">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 overflow-x-hidden">
+        <a href="{{ route('tramitanet.index') }}" class="text-blue-200 hover:text-white text-sm font-semibold">
+            ← Volver al inicio
+        </a>
+
+        <h1 class="text-4xl md:text-5xl font-extrabold mt-8">
+            Mi trámite
+        </h1>
+
+        <p class="text-slate-300 mt-3">
+            Folio {{ $solicitud->folio }}
+        </p>
+    </div>
+</section>
+
+<section class="bg-slate-100 py-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 grid lg:grid-cols-3 gap-6 lg:gap-8 overflow-hidden">
+        <div class="lg:col-span-2 space-y-6 min-w-0">
+
+            <div class="bg-white rounded-3xl shadow border border-slate-200 p-8">
+                <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                    <div>
+                        <p class="text-sm font-bold text-slate-500 uppercase">Folio</p>
+
+                        <p class="text-2xl sm:text-3xl font-black text-slate-900 mt-2 break-all">
+                            {{ $solicitud->folio }}
+                        </p>
+                    </div>
+
+                    <span class="inline-flex px-4 py-2 rounded-full bg-yellow-100 text-yellow-800 text-sm font-bold">
+                        {{ strtoupper(str_replace('_', ' ', $solicitud->estatus)) }}
+                    </span>
+                </div>
+
+                <div class="bg-blue-50 border border-blue-200 rounded-3xl p-5 sm:p-8 overflow-hidden">
+                    <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+                        <div class="text-4xl flex-shrink-0">
+                            {{ $estadoActual['icono'] }}
+                        </div>
+
+                        <div class="min-w-0 flex-1">
+                            <h2 class="text-2xl font-extrabold text-blue-900 break-words">
+                                {{ $estadoActual['titulo'] }}
+                            </h2>
+
+                            <p class="text-blue-800 mt-3 leading-relaxed break-words">
+                                {{ $estadoActual['mensaje'] }}
+                            </p>
+
+                            @if(!empty($estadoActual['siguiente_paso']))
+                                <div class="mt-5 w-full rounded-2xl border border-blue-200 bg-white/70 p-4">
+                                    <p class="text-sm font-extrabold text-blue-900">
+                                        Siguiente paso
+                                    </p>
+
+                                    <p class="text-sm text-blue-800 mt-1 leading-relaxed break-words">
+                                        {{ $estadoActual['siguiente_paso'] }}
+                                    </p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 grid md:grid-cols-2 gap-5">
+                    <div>
+                        <p class="text-sm text-slate-500">Institución</p>
+                        <p class="font-bold text-slate-900">
+                            {{ $solicitud->servicio->institucion->nombre ?? 'Servicio' }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-sm text-slate-500">Servicio</p>
+                        <p class="font-bold text-slate-900">
+                            {{ $solicitud->servicio->titulo_publico ?? $solicitud->servicio->nombre }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-sm text-slate-500">Modalidad</p>
+                        <p class="font-bold text-slate-900">
+                            {{ $solicitud->modalidad->nombre ?? 'No especificada' }}
+                        </p>
+                    </div>
+
+                    <div>
+                        <p class="text-sm text-slate-500">Fecha de solicitud</p>
+                        <p class="font-bold text-slate-900">
+                            {{ $solicitud->created_at->format('d/m/Y H:i') }} hrs
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow border border-slate-200 p-8">
+                <h2 class="text-2xl font-extrabold text-slate-900">
+                    Información recibida
+                </h2>
+
+                @php
+                    $titulosGrupo = [
+                        'datos' => 'Datos capturados',
+                        'documentos' => 'Documentos recibidos',
+                        'credenciales' => 'Credenciales',
+                        'autorizaciones' => 'Autorizaciones',
+                    ];
+                @endphp
+
+                <div class="mt-6 space-y-8">
+                    @foreach($datosAgrupados as $grupo => $datos)
+                        <div>
+                            <h3 class="text-sm font-black text-slate-500 uppercase mb-4">
+                                {{ $titulosGrupo[$grupo] ?? ucfirst($grupo) }}
+                            </h3>
+
+                            <div class="space-y-3">
+                                @foreach($datos as $dato)
+                                    <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                                        <p class="text-xs font-bold text-slate-500 uppercase">
+                                            {{ $dato->etiqueta }}
+                                        </p>
+
+                                        <p class="text-base font-bold text-slate-900 mt-1 break-words">
+                                            @if($dato->es_archivo)
+                                                {{ $dato->nombre_original_archivo ?? 'Documento recibido' }}
+                                            @elseif($dato->tipo_campo === 'password')
+                                                ********
+                                            @elseif($dato->tipo_campo === 'checkbox')
+                                                Aceptado
+                                            @else
+                                                {{ $dato->valor ?: 'Sin capturar' }}
+                                            @endif
+                                        </p>
+
+                                        @if($dato->es_archivo)
+                                            <p class="text-sm text-green-700 font-bold mt-2">
+                                                Documento recibido correctamente
+                                            </p>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow border border-slate-200 p-8">
+                <h2 class="text-2xl font-extrabold text-slate-900">
+                    Documentos
+                </h2>
+
+
+                @if($solicitud->documentosGenerados->where('visible_cliente', true)->count())
+                    <div class="bg-white rounded-3xl shadow border border-slate-200 p-8">
+                        <h2 class="text-2xl font-extrabold text-slate-900">
+                            Documentos disponibles
+                        </h2>
+
+                        <div class="mt-6 space-y-3">
+                            @foreach($solicitud->documentosGenerados->where('visible_cliente', true) as $documento)
+                                <div class="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                                    <p class="font-bold text-slate-900">
+                                        {{ $documento->titulo }}
+                                    </p>
+
+                                    <p class="text-sm text-slate-500 mt-1">
+                                        {{ $documento->nombre_original_archivo }}
+                                    </p>
+                                </div>
+                            @endforeach
+                        </div>
+                        <a href="{{ route('tramitanet.documentos-generados.descargar', [$solicitud->folio, $documento]) }}"
+                        class="inline-flex mt-4 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold">
+                            Descargar documento
+                        </a>
+                    </div>
+
+                @endif
+
+                <div class="mt-6 space-y-3">
+                    @php
+                        $documentos = $solicitud->datos->where('es_archivo', true);
+                    @endphp
+
+                    @forelse($documentos as $documento)
+                        <div class="flex justify-between gap-4 border-b border-slate-100 pb-3">
+                            <div>
+                                <p class="font-bold text-slate-900">
+                                    {{ $documento->etiqueta }}
+                                </p>
+                                <p class="text-sm text-slate-500">
+                                    {{ $documento->nombre_original_archivo }}
+                                </p>
+                                @if($documento->tamano_archivo)
+                                    <p class="text-xs text-slate-500 mt-1">
+                                        {{ number_format($documento->tamano_archivo / 1024, 1) }} KB
+                                    </p>
+                                    <p class="text-xs text-slate-500">
+                                        Recibido el {{ $documento->created_at->format('d/m/Y H:i') }} hrs
+                                    </p>
+                                @endif
+                            </div>
+
+                            <span class="text-sm font-bold text-green-700">
+                                Recibido
+                            </span>
+                        </div>
+                    @empty
+                        <p class="text-slate-500 text-sm">
+                            No se recibieron documentos para esta modalidad.
+                        </p>
+                    @endforelse
+                </div>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow border border-slate-200 p-8">
+
+                @php
+
+                    $pasoActual = $ordenEstados[$solicitud->estatus] ?? 1;
+
+                @endphp
+
+                <h3 class="text-xl font-extrabold text-slate-900">
+                    Avance de la solicitud
+                </h3>
+
+                <div class="mt-6 space-y-4">
+                    @foreach(\App\Support\TramitaNet\EstadosSolicitud::timeline() as [$estatus, $texto])
+                        @php
+                            $paso = $ordenEstados[$estatus] ?? 0;
+                            $completado = $paso <= $pasoActual;
+                        @endphp
+
+                        <div class="flex gap-3 items-center">
+                            <div class="w-8 h-8 rounded-full flex items-center justify-center font-bold
+                                {{ $completado ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-400' }}">
+                                {{ $completado ? '✓' : '○' }}
+                            </div>
+
+                            <p class="font-semibold {{ $completado ? 'text-slate-900' : 'text-slate-400' }}">
+                                {{ $texto }}
+                            </p>                        
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+        </div>
+
+        <aside class="space-y-6 min-w-0">
+            <div class="bg-white rounded-3xl shadow border border-slate-200 p-6">
+                <p class="text-sm font-bold text-slate-500 uppercase">Total a pagar</p>
+
+                <p class="text-4xl font-black text-slate-900 mt-3">
+                    ${{ number_format($solicitud->total_pagar, 2) }}
+                </p>
+
+                <p class="text-sm text-slate-500">MXN</p>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow border border-slate-200 p-6">
+                <p class="text-sm font-bold text-slate-500 uppercase">
+                    Tiempo estimado
+                </p>
+
+                <p class="text-slate-900 font-bold mt-3 leading-relaxed break-words">
+                    {{ $solicitud->modalidad->tiempo_estimado
+                        ?? $solicitud->servicio->tiempo_estimado
+                        ?? 'Sujeto a validación' }}
+                </p>
+
+                <p class="text-sm text-slate-600 mt-2">
+                    Los tiempos aplican dentro del horario de atención.
+                </p>
+            </div>
+
+            <div class="bg-white rounded-3xl shadow border border-slate-200 p-6">
+                <p class="text-sm font-bold text-slate-500 uppercase">Referencia</p>
+
+                <p class="text-2xl sm:text-3xl font-black text-blue-700 mt-3 break-all">
+                    {{ $solicitud->referencia_pago }}
+                </p>
+
+                <p class="text-sm text-slate-600 mt-2">
+                    Usa esta referencia para identificar tu pago.
+                </p>
+            </div>
+
+
+            <div class="bg-white rounded-3xl shadow border border-slate-200 p-6">
+                <p class="text-sm font-bold text-slate-500 uppercase">
+                    Comprobante de pago
+                </p>
+
+
+                
+
+                @if(session('success'))
+                    <div class="mt-4 rounded-xl bg-green-50 border border-green-200 p-3">
+                        <p class="text-sm font-bold text-green-800">
+                            {{ session('success') }}
+                        </p>
+                    </div>
+                @endif
+
+
+
+                @if($solicitud->estatus === 'esperando_pago')
+                    <form method="POST"
+                        action="{{ route('tramitanet.pago.subir', $solicitud->folio) }}"
+                        enctype="multipart/form-data"
+                        class="mt-4">
+
+                        @csrf
+
+                        <input type="file"
+                            name="comprobante"
+                            accept=".pdf,.jpg,.jpeg,.png"
+                            required
+                            class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
+
+                        @error('comprobante')
+                            <p class="text-sm text-red-600 font-semibold mt-2">
+                                {{ $message }}
+                            </p>
+                        @enderror
+
+                        <button type="submit"
+                                class="mt-4 w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold py-3">
+                            Subir comprobante
+                        </button>
+                    </form>
+                @elseif($solicitud->estatus === 'pago_en_revision')
+                    <p class="text-sm text-blue-800 mt-4">
+                        Ya recibimos tu comprobante. Nuestro personal lo revisará en breve.
+                    </p>
+                @elseif(in_array($solicitud->estatus, ['pago_confirmado', 'en_gestion', 'entregado']))
+                    <p class="text-sm text-green-800 mt-4">
+                        Tu pago ya fue validado correctamente.
+                    </p>
+                @else
+                    <p class="text-sm text-slate-600 mt-4">
+                        El comprobante podrá subirse cuando la solicitud esté en espera de pago.
+                    </p>
+                @endif
+
+
+                @if($ultimoPago && $ultimoPago->estatus === 'rechazado')
+                    <div class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4">
+                        <p class="font-extrabold text-red-800">
+                            ❌ Comprobante rechazado
+                        </p>
+
+                        <p class="text-sm text-red-700 mt-2">
+                            {{ $ultimoPago->observacion ?: 'El comprobante no pudo ser validado.' }}
+                        </p>
+
+                        <p class="text-xs text-red-600 mt-3">
+                            Corrige el comprobante y envíalo nuevamente.
+                        </p>
+                    </div>
+                @endif
+            </div>
+
+            
+            @if($notasVisibles->isNotEmpty())
+                <div class="bg-white rounded-3xl shadow border border-slate-200 p-8">
+                    <h2 class="text-2xl font-extrabold text-slate-900">
+                        Mensajes de seguimiento
+                    </h2>
+
+                    <div class="mt-6 space-y-4">
+                        @foreach($notasVisibles as $nota)
+                            <div class="rounded-2xl border border-blue-200 bg-blue-50 p-4">
+                                <p class="text-sm text-blue-900 whitespace-pre-line">
+                                    {{ $nota->nota }}
+                                </p>
+
+                                <p class="text-xs text-blue-600 mt-2">
+                                    {{ $nota->created_at->format('d/m/Y H:i') }}
+                                </p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+
+            <div class="bg-blue-50 rounded-3xl border border-blue-200 p-6">
+                <p class="font-extrabold text-blue-900">
+                    ¿Qué sigue?
+                </p>
+
+                <p class="text-sm text-blue-800 mt-2">
+                    Realiza tu pago por transferencia o depósito. Después validaremos la información y continuaremos con tu trámite.
+                </p>
+            </div>
+        </aside>
+
+    </div>
+</section>
+
+@endsection

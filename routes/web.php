@@ -21,6 +21,13 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\BackupController;
 use App\Http\Controllers\Admin\MikrotikVoucherController;
 use App\Http\Controllers\Admin\EstatusClientesController;
+use App\Http\Controllers\Publico\TramitaNetController;
+use App\Http\Controllers\Publico\TramitaNetServicioController;
+use App\Http\Controllers\Publico\TramitaNetSolicitudController;
+use App\Http\Controllers\Admin\TramitaNetSolicitudAdminController;
+
+
+
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -139,6 +146,47 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         ->name('netplus.mikrotik.generate');
 
     Route::get('estatus-clientes', [EstatusClientesController::class, 'index'])->name('estatus-clientes.index');
+
+    Route::get('tramitanet/solicitudes', [TramitaNetSolicitudAdminController::class, 'index'])
+    ->name('tramitanet.solicitudes.index');
+
+    Route::get('tramitanet/solicitudes/{solicitud}', [TramitaNetSolicitudAdminController::class, 'show'])
+        ->name('tramitanet.solicitudes.show');
+    
+    Route::patch('tramitanet/solicitudes/{solicitud}/estatus', [TramitaNetSolicitudAdminController::class, 'actualizarEstatus'])
+        ->name('tramitanet.solicitudes.actualizar-estatus');
+    
+    Route::post('tramitanet/solicitudes/{solicitud}/notas', [TramitaNetSolicitudAdminController::class, 'guardarNota'])
+        ->name('tramitanet.solicitudes.notas.store');
+
+    Route::get('tramitanet/solicitudes/{solicitud}/documentos/{dato}/descargar', [TramitaNetSolicitudAdminController::class, 'descargarDocumento'])
+        ->name('tramitanet.solicitudes.documentos.descargar');
+    
+    Route::get('tramitanet/solicitudes/{solicitud}/datos/{dato}/ver-password', [TramitaNetSolicitudAdminController::class, 'verPassword'])
+        ->name('tramitanet.solicitudes.datos.ver-password');
+    
+    Route::post('tramitanet/solicitudes/{solicitud}/documentos-generados', [TramitaNetSolicitudAdminController::class, 'subirDocumentoGenerado'])
+        ->name('tramitanet.solicitudes.documentos-generados.store');
+
+    Route::patch('tramitanet/pagos/{pago}/validar', [TramitaNetSolicitudAdminController::class, 'validarPago'])
+        ->name('tramitanet.pagos.validar');
+
+    Route::patch('tramitanet/pagos/{pago}/rechazar', [TramitaNetSolicitudAdminController::class, 'rechazarPago'])
+        ->name('tramitanet.pagos.rechazar');
+
+    Route::get('tramitanet/pagos/{pago}/ver', [TramitaNetSolicitudAdminController::class, 'verPago'])
+        ->name('tramitanet.pagos.ver');
+
+    Route::get('tramitanet/pagos/{pago}/descargar', [TramitaNetSolicitudAdminController::class, 'descargarPago'])
+        ->name('tramitanet.pagos.descargar');
+    
+    Route::post('/tramitanet/servicio/{slug}/resumen', [TramitaNetSolicitudController::class, 'resumen'])
+        ->name('tramitanet.servicio.resumen');
+
+    Route::post('/tramitanet/servicio/{slug}/guardar', [TramitaNetSolicitudController::class, 'store'])
+        ->name('tramitanet.servicio.store');  
+    
+
 });
 
 // Panel Cajero
@@ -147,3 +195,35 @@ Route::middleware(['auth', 'role:cajero'])->prefix('cajero')->name('cajero.')->g
         return view('cajero.dashboard');
     })->name('dashboard');
 });
+
+
+Route::get('/tramitanet', [TramitaNetController::class, 'index'])
+    ->name('tramitanet.index');
+
+Route::get('/tramitanet/servicio/{slug}', [TramitaNetServicioController::class, 'servicio'])
+    ->name('tramitanet.servicio');
+
+Route::get('/tramitanet/consulta', [TramitaNetController::class, 'consulta'])
+    ->name('tramitanet.consulta');
+
+Route::post('/tramitanet/servicio/{slug}/resumen', [TramitaNetSolicitudController::class, 'resumen'])
+    ->name('tramitanet.servicio.resumen');
+
+Route::post('/tramitanet/servicio/{slug}/solicitar', [TramitaNetSolicitudController::class, 'store'])
+    ->name('tramitanet.servicio.store');
+
+
+Route::get('/tramitanet/folio/{folio}', [TramitaNetSolicitudController::class, 'expediente'])
+    ->name('tramitanet.expediente');
+
+Route::get('/tramitanet/institucion/{slug}', [TramitaNetServicioController::class, 'institucion'])
+    ->name('tramitanet.institucion');
+
+Route::get('/tramitanet/servicio/{slug}/{modalidad}', [TramitaNetServicioController::class, 'modalidad'])
+    ->name('tramitanet.servicio.modalidad');
+
+Route::get('/tramitanet/folio/{folio}/documentos/{documento}/descargar', [TramitaNetSolicitudController::class, 'descargarDocumentoGenerado'])
+    ->name('tramitanet.documentos-generados.descargar');
+
+Route::post('/tramitanet/folio/{folio}/comprobante-pago', [TramitaNetSolicitudController::class, 'subirComprobantePago'])
+    ->name('tramitanet.pago.subir');
