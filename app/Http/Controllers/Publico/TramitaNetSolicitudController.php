@@ -30,6 +30,15 @@ class TramitaNetSolicitudController extends Controller
             ->whereKey($request->modalidad)
             ->where('activo', true)
             ->firstOrFail();
+        
+
+        $request->merge([
+            'whatsapp_numero' => preg_replace(
+                '/\D+/',
+                '',
+                (string) $request->input('whatsapp_numero', '')
+            ),
+        ]);
 
         $request->validate([
             'whatsapp_codigo_pais' => [
@@ -111,7 +120,13 @@ class TramitaNetSolicitudController extends Controller
             ->where('activo', true)
             ->firstOrFail();
         
-
+        $request->merge([
+            'whatsapp_numero' => preg_replace(
+                '/\D+/',
+                '',
+                (string) $request->input('whatsapp_numero', '')
+            ),
+        ]);
 
         $request->validate([
             'whatsapp_codigo_pais' => [
