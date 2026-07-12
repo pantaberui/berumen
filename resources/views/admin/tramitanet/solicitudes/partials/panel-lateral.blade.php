@@ -54,14 +54,11 @@
 </div>
 
 <div class="bg-blue-50 rounded-2xl border border-blue-200 p-6">
-    <div class="bg-blue-50 rounded-2xl border border-blue-200 p-6">
-        <h2 class="text-lg font-black text-blue-900">
-            {{ $proximaAccion['icono'] }} {{ $proximaAccion['titulo'] }}
-        </h2>
+    <h2 class="text-lg font-black text-blue-900">
+        {{ $proximaAccion['icono'] }} {{ $proximaAccion['titulo'] }}
+    </h2>
 
-        <p class="text-sm text-blue-800 mt-3">
-            {{ $proximaAccion['descripcion'] }}
-        </p>
-    </div>
-
+    <p class="text-sm text-blue-800 mt-3">
+        {{ $proximaAccion['descripcion'] }}
+    </p>
 </div>

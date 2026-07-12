@@ -26,5 +26,6 @@ Conserva tu folio para futuras consultas.
 Gracias por utilizar TramitaNet.
 
 Saludos,<br>
-**Servicios en Línea Berumen**
+**Equipo TramitaNet**  
+Servicios en Línea Berumen
 </x-mail::message>

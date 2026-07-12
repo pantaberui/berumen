@@ -20,30 +20,90 @@
         </div>
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-5">
+
+            @php
+                $logosInstituciones = [
+                    'sat' => 'images/instituciones/sat.png',
+                    'imss' => 'images/instituciones/imss.png',
+                    'infonavit' => 'images/instituciones/infonavit.png',
+                    'registro-civil' => 'images/instituciones/registro-civil.png',
+                    'issste' => 'images/instituciones/issste.png',
+                ];
+            @endphp
+
+
+
+
+
             @foreach($instituciones as $institucion)
 
+                @php
+                    $rutaLogo = $logosInstituciones[$institucion->slug] ?? null;
+                    $logoExiste = $rutaLogo && file_exists(public_path($rutaLogo));
+                @endphp
+
                 <a href="{{ route('tramitanet.institucion', $institucion->slug) }}"
-                  class="block bg-white rounded-2xl p-6 shadow hover:shadow-lg transition border border-slate-200 hover:-translate-y-1">
+                    class="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:border-blue-300 hover:shadow-xl">
 
-                    <div
-                        class="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-white mb-4"
-                        style="background-color: {{ $institucion->color_principal ?? '#2563EB' }}">
-                        {{ mb_substr($institucion->nombre, 0, 1) }}
-                    </div>
+                        {{-- Franja institucional --}}
+                        <div
+                            class="h-2 w-full"
+                            style="background-color: {{ $institucion->color_principal ?? '#2563EB' }}">
+                        </div>
 
-                    <h3 class="font-extrabold text-lg text-slate-900">
-                        {{ $institucion->nombre }}
-                    </h3>
+                        <div class="p-6">
 
-                    <p class="text-sm text-slate-600 mt-2 min-h-[60px]">
-                        {{ $institucion->descripcion }}
-                    </p>
+                            {{-- Logo --}}
+                            <div class="mb-5 flex h-20 items-center justify-center">
+                                @if($logoExiste)
+                                    <div class="flex h-20 w-full items-center justify-center rounded-2xl border border-slate-100 bg-white px-4">
+                                        <img
+                                            src="{{ asset($rutaLogo) }}"
+                                            alt="Logo de {{ $institucion->nombre }}"
+                                            class="max-h-16 max-w-[170px] object-contain transition duration-300 group-hover:scale-105"
+                                            loading="lazy"
+                                        >
+                                    </div>
+                                @else
+                                    <div
+                                        class="flex h-16 w-16 items-center justify-center rounded-2xl text-2xl font-black text-white shadow-sm"
+                                        style="background-color: {{ $institucion->color_principal ?? '#2563EB' }}">
+                                        {{ mb_substr($institucion->nombre, 0, 1) }}
+                                    </div>
+                                @endif
+                            </div>
 
-                    <p class="text-sm font-bold text-blue-700 mt-4">
-                        {{ $institucion->servicios_count }} trámites disponibles
-                    </p>
+                            {{-- Nombre --}}
+                            <h3 class="flex min-h-[56px] items-center justify-center text-lg font-extrabold leading-tight text-slate-900">
+                                {{ $institucion->nombre }}
+                            </h3>
 
-                </a>
+                            {{-- Descripción --}}
+                            <p class="mt-3 min-h-[72px] text-sm leading-relaxed text-slate-600">
+                                {{ $institucion->descripcion }}
+                            </p>
+
+                            {{-- Contador --}}
+                            <div class="mt-5 flex justify-center">
+                                <span class="inline-flex items-center gap-2 rounded-full bg-blue-50 px-4 py-2 text-sm font-bold text-blue-700">
+                                    <span>📄</span>
+
+                                    <span>
+                                        {{ $institucion->servicios_count }}
+                                        {{ $institucion->servicios_count === 1 ? 'trámite' : 'trámites' }}
+                                    </span>
+                                </span>
+                            </div>
+
+                            {{-- Acción --}}
+                            <p class="mt-5 font-bold text-orange-600 transition group-hover:text-orange-700">
+                                Ver trámites
+                                <span class="inline-block transition-transform duration-300 group-hover:translate-x-1">
+                                    →
+                                </span>
+                            </p>
+                        </div>
+                    </a>
             @endforeach
         </div>
     </div>

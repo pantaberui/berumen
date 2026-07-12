@@ -6,6 +6,7 @@ use App\Mail\NuevaSolicitudTramitaNetMail;
 use App\Mail\SolicitudRecibidaClienteMail;
 use App\Models\SolicitudServicio;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\EstadoSolicitudActualizadoMail;
 
 class TramitaNetNotificacionService
 {
@@ -37,13 +38,28 @@ class TramitaNetNotificacionService
     }
 
     private static function notificarCliente(
-        SolicitudServicio $solicitud
-    ): void {
+            SolicitudServicio $solicitud
+        ): void {
+            if (blank($solicitud->correo)) {
+                return;
+            }
+
+            Mail::to($solicitud->correo)
+                ->send(new SolicitudRecibidaClienteMail($solicitud));
+        }
+
+    public static function cambioEstatus(SolicitudServicio $solicitud): void
+    {
         if (blank($solicitud->correo)) {
             return;
         }
 
+        $solicitud->loadMissing([
+            'servicio',
+            'modalidad',
+        ]);
+
         Mail::to($solicitud->correo)
-            ->send(new SolicitudRecibidaClienteMail($solicitud));
+            ->send(new EstadoSolicitudActualizadoMail($solicitud));
     }
 }

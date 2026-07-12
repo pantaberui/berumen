@@ -8,6 +8,7 @@ use App\Models\SolicitudServicioNota;
 use App\Support\TramitaNet\EstadosSolicitud;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use App\Services\TramitaNetNotificacionService;
 
 class CambioEstadoService
 {
@@ -64,6 +65,15 @@ class CambioEstadoService
                     ?? "Cambio de estado a {$nuevoEstado}.",
                 'visible_cliente'       => false,
             ]);
+
+            DB::afterCommit(function () use ($solicitud) {
+                TramitaNetNotificacionService::cambioEstatus(
+                    $solicitud->fresh([
+                        'servicio',
+                        'modalidad',
+                    ])
+                );
+            });
 
         });
 

@@ -152,6 +152,8 @@ class TramitaNetSolicitudAdminController extends Controller
         );
     }
 
+
+
     public function verPassword(SolicitudServicio $solicitud, SolicitudServicioDato $dato)
     {
         abort_unless($dato->solicitud_servicio_id === $solicitud->id, 404);

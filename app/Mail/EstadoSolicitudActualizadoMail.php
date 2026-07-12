@@ -3,13 +3,14 @@
 namespace App\Mail;
 
 use App\Models\SolicitudServicio;
+use App\Support\TramitaNet\EstadosSolicitud;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class SolicitudRecibidaClienteMail extends Mailable
+class EstadoSolicitudActualizadoMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -20,15 +21,18 @@ class SolicitudRecibidaClienteMail extends Mailable
 
     public function envelope(): Envelope
     {
+        $estado = EstadosSolicitud::labels()[$this->solicitud->estatus]
+            ?? strtoupper(str_replace('_', ' ', $this->solicitud->estatus));
+
         return new Envelope(
-            subject: "TramitaNet | Solicitud recibida {$this->solicitud->folio}",
+            subject: "TramitaNet | {$estado} | Folio {$this->solicitud->folio}",
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.tramitanet.solicitud-recibida-cliente',
+            markdown: 'emails.tramitanet.estado-solicitud-actualizado',
         );
     }
 

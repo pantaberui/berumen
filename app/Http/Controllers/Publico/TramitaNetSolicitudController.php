@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Crypt;
 use App\Services\TramitaNetNotificacionService;
 use App\Models\SolicitudServicioDocumento;
 use App\Services\TramitaNet\PagoService;
+use App\Services\TramitaNet\CaptchaService;
 
 class TramitaNetSolicitudController extends Controller
 {   
@@ -71,6 +72,18 @@ class TramitaNetSolicitudController extends Controller
                 'El correo electrónico no tiene un formato válido.',
         ]);
 
+        if (!CaptchaService::validar($request->captcha)) {
+            return back()
+                ->withErrors([
+                    'captcha' => 'El código de seguridad no es correcto. Intenta nuevamente.',
+                ])
+                ->withInput();
+        }
+
+        session([
+            'tramitanet.captcha_ok' => true,
+        ]);
+
         $campos = collect($request->input('campos', []))
             ->map(function ($valor, $clave) {
                 if (!is_string($valor)) {
@@ -96,6 +109,9 @@ class TramitaNetSolicitudController extends Controller
 
         $correo = $request->input('correo');
 
+
+
+
         return view('publico.tramitanet.resumen', compact(
             'servicio',
             'modalidad',
@@ -108,6 +124,18 @@ class TramitaNetSolicitudController extends Controller
 
     public function store(Request $request, string $slug)
     {
+
+        if (!session('tramitanet.captcha_ok')) {
+            return redirect()
+                ->route('tramitanet.servicio.modalidad', [
+                    $servicio->slug,
+                    $modalidad->slug,
+                ])
+                ->withErrors([
+                    'captcha' => 'La verificación de seguridad expiró. Captura nuevamente el código.',
+                ]);
+        }
+
         $servicio = CatalogoServicio::with('modalidades.campos.campoMaestro')
             ->where('slug', $slug)
             ->where('activo', true)
@@ -193,6 +221,9 @@ class TramitaNetSolicitudController extends Controller
             })
             ->toArray();
 
+        session()->forget('tramitanet.captcha_ok');
+
+        
         foreach ($modalidad->campos as $campoServicio){
             $campo = $campoServicio->campoMaestro;
 

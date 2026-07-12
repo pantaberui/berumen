@@ -25,8 +25,7 @@ use App\Http\Controllers\Publico\TramitaNetController;
 use App\Http\Controllers\Publico\TramitaNetServicioController;
 use App\Http\Controllers\Publico\TramitaNetSolicitudController;
 use App\Http\Controllers\Admin\TramitaNetSolicitudAdminController;
-
-
+use App\Http\Controllers\Publico\TramitaNetCaptchaController;
 
 
 Route::get('/', function () {
@@ -227,3 +226,8 @@ Route::get('/tramitanet/folio/{folio}/documentos/{documento}/descargar', [Tramit
 
 Route::post('/tramitanet/folio/{folio}/comprobante-pago', [TramitaNetSolicitudController::class, 'subirComprobantePago'])
     ->name('tramitanet.pago.subir');
+
+Route::get(
+    '/tramitanet/captcha',
+    [TramitaNetCaptchaController::class, 'imagen']
+)->name('tramitanet.captcha');
