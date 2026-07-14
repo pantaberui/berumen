@@ -32,4 +32,13 @@ class CatalogoServicioModalidadCampo extends Model
     {
         return $this->belongsTo(CatalogoCampo::class, 'catalogo_campo_id');
     }
+
+    protected function casts(): array
+    {
+        return [
+            'opciones_personalizadas' => 'array',
+            'requerido' => 'boolean',
+            'activo' => 'boolean',
+        ];
+    }
 }

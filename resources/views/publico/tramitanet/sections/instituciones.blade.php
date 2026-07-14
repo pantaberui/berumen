@@ -28,6 +28,8 @@
                     'infonavit' => 'images/instituciones/infonavit.png',
                     'registro-civil' => 'images/instituciones/registro-civil.png',
                     'issste' => 'images/instituciones/issste.png',
+                    'renapo' => 'images/instituciones/renapo.png',
+                    'cfe' => 'images/instituciones/cfe.png',
                 ];
             @endphp
 

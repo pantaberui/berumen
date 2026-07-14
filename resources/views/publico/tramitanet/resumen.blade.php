@@ -11,6 +11,18 @@
             ← Regresar y corregir
         </a>
 
+        @if(!empty($entidadCurp['nombre']))
+            <div class="flex justify-between gap-4 border-b border-slate-100 pb-3">
+                <span class="text-sm text-slate-500">
+                    Entidad detectada
+                </span>
+
+                <span class="text-sm font-bold text-slate-900 text-right">
+                    {{ $entidadCurp['nombre'] }}
+                </span>
+            </div>
+        @endif
+
         <h1 class="text-4xl font-black mt-8">
             Revisa tu solicitud
         </h1>
@@ -95,7 +107,11 @@
                            value="1"
                            required
                            class="mt-1 rounded border-orange-300 text-orange-600 focus:ring-orange-500">
-
+                    <input
+                        type="hidden"
+                        name="precio_calculado"
+                        value="{{ $precioCalculado }}"
+                    >
                     <span class="text-sm text-orange-900">
                         Confirmo que revisé cuidadosamente la información y que los datos proporcionados son correctos.
                     </span>
@@ -123,7 +139,7 @@
                 </p>
 
                 <p class="text-4xl font-black text-slate-900 mt-3">
-                    ${{ number_format($modalidad->precio, 2) }}
+                    ${{ number_format($precioCalculado, 2) }}
                 </p>
 
                 <p class="text-sm text-slate-500">MXN</p>

@@ -16,6 +16,8 @@ use App\Services\TramitaNetNotificacionService;
 use App\Models\SolicitudServicioDocumento;
 use App\Services\TramitaNet\PagoService;
 use App\Services\TramitaNet\CaptchaService;
+use App\Services\TramitaNet\PrecioService;
+use InvalidArgumentException;
 
 class TramitaNetSolicitudController extends Controller
 {   
@@ -31,7 +33,10 @@ class TramitaNetSolicitudController extends Controller
             ->whereKey($request->modalidad)
             ->where('activo', true)
             ->firstOrFail();
-        
+
+        $entidadCurp = TramitaNetService::obtenerEntidadDesdeCurp(
+            $campos['curp'] ?? null
+        );
 
         $request->merge([
             'whatsapp_numero' => preg_replace(
@@ -109,7 +114,19 @@ class TramitaNetSolicitudController extends Controller
 
         $correo = $request->input('correo');
 
-
+        try {
+            $precioCalculado = PrecioService::calcular(
+                servicio: $servicio,
+                modalidad: $modalidad,
+                campos: $campos
+            );
+        } catch (InvalidArgumentException $e) {
+            return back()
+                ->withErrors([
+                    'precio' => $e->getMessage(),
+                ])
+                ->withInput();
+        }
 
 
         return view('publico.tramitanet.resumen', compact(
@@ -118,14 +135,43 @@ class TramitaNetSolicitudController extends Controller
             'campos',
             'whatsappCodigoPais',
             'whatsappNumero',
-            'correo'
+            'correo',
+            'precioCalculado',
+            'entidadCurp'
         ));
     }
 
     public function store(Request $request, string $slug)
     {
+        $servicio = CatalogoServicio::with('modalidades.campos.campoMaestro')
+            ->where('slug', $slug)
+            ->where('activo', true)
+            ->firstOrFail();
 
-        if (!session('tramitanet.captcha_ok')) {
+        $modalidad = $servicio->modalidades()
+            ->with('campos.campoMaestro')
+            ->whereKey($request->modalidad)
+            ->where('activo', true)
+            ->firstOrFail();
+
+        $tieneArchivos = $modalidad->campos->contains(
+            fn ($campoServicio) =>
+                $campoServicio->campoMaestro->tipo_campo === 'file'
+        );
+
+        if ($tieneArchivos) {
+            if (!CaptchaService::validar($request->captcha)) {
+                return redirect()
+                    ->route('tramitanet.servicio.modalidad', [
+                        $servicio->slug,
+                        $modalidad->slug,
+                    ])
+                    ->withErrors([
+                        'captcha' => 'El código de seguridad no es correcto. Intenta nuevamente.',
+                    ])
+                    ->withInput();
+            }
+        } elseif (!session('tramitanet.captcha_ok')) {
             return redirect()
                 ->route('tramitanet.servicio.modalidad', [
                     $servicio->slug,
@@ -133,20 +179,9 @@ class TramitaNetSolicitudController extends Controller
                 ])
                 ->withErrors([
                     'captcha' => 'La verificación de seguridad expiró. Captura nuevamente el código.',
-                ]);
+                ])
+                ->withInput();
         }
-
-        $servicio = CatalogoServicio::with('modalidades.campos.campoMaestro')
-            ->where('slug', $slug)
-            ->where('activo', true)
-            ->firstOrFail();
-
-        
-        $modalidad = $servicio->modalidades()
-            ->with('campos.campoMaestro')
-            ->whereKey($request->modalidad)
-            ->where('activo', true)
-            ->firstOrFail();
         
         $request->merge([
             'whatsapp_numero' => preg_replace(
@@ -220,8 +255,25 @@ class TramitaNetSolicitudController extends Controller
                     : $valor;
             })
             ->toArray();
+        
+        try {
+            $precioCalculado = PrecioService::calcular(
+                servicio: $servicio,
+                modalidad: $modalidad,
+                campos: $campos
+            );
+        } catch (InvalidArgumentException $e) {
+            return redirect()
+                ->route('tramitanet.servicio.modalidad', [
+                    $servicio->slug,
+                    $modalidad->slug,
+                ])
+                ->withErrors([
+                    'precio' => $e->getMessage(),
+                ])
+                ->withInput();
+        }
 
-        session()->forget('tramitanet.captcha_ok');
 
         
         foreach ($modalidad->campos as $campoServicio){
@@ -244,18 +296,29 @@ class TramitaNetSolicitudController extends Controller
             }
         }
 
+
+
+
+
         return DB::transaction(function () use (
             $servicio,
             $modalidad,
             $campos,
             $request,
-            $telefonoWhatsappCompleto
+            $telefonoWhatsappCompleto,
+            $precioCalculado,
+            $tieneArchivos
         ) {
             $folio = TramitaNetService::generarFolio();
             $referenciaPago = TramitaNetService::generarReferenciaPago($folio);
 
             $curp = $campos['curp'] ?? null;
             $entidad = TramitaNetService::obtenerEntidadDesdeCurp($curp);
+
+
+
+
+
 
             $solicitud = SolicitudServicio::create([
                 'folio' => $folio,
@@ -268,15 +331,16 @@ class TramitaNetSolicitudController extends Controller
                 'entidad_curp_codigo' => $entidad['codigo'] ?? null,
                 'entidad_curp_nombre' => $entidad['nombre'] ?? null,
                 'catalogo_servicio_modalidad_id' => $modalidad->id,
-                'monto_base' => $modalidad->precio ?? 0,
+                'monto_base' => $precioCalculado,
                 'comision' => 0,
-                'total_pagar' => $modalidad->precio ?? 0,
+                'total_pagar' => $precioCalculado,
             ]);
 
-            foreach ($modalidad->campos as $campoServicio){
+            foreach ($modalidad->campos as $campoServicio) {
                 $campo = $campoServicio->campoMaestro;
 
                 $valor = $campos[$campo->slug] ?? null;
+
                 if ($campo->tipo_campo === 'password' && $valor) {
                     $valor = Crypt::encryptString($valor);
                 }
@@ -292,34 +356,18 @@ class TramitaNetSolicitudController extends Controller
                     'es_archivo' => false,
                 ];
 
-                if ($campo->tipo_campo === 'file' && $request->hasFile("campos.{$campo->slug}")) {
+                if (
+                    $campo->tipo_campo === 'file' &&
+                    $request->hasFile("campos.{$campo->slug}")
+                ) {
                     $archivo = $request->file("campos.{$campo->slug}");
 
-                    if ($campo->tamano_maximo_mb && $archivo->getSize() > ($campo->tamano_maximo_mb * 1024 * 1024)) {
-                        return redirect()
-                            ->route('tramitanet.servicio.modalidad', [$servicio->slug, $modalidad->slug])
-                            ->withErrors([$campo->slug => "El archivo {$campo->nombre} no debe superar {$campo->tamano_maximo_mb} MB."])
-                            ->withInput();
-                    }
-
-                    if ($campo->accept) {
-                        $extensionesPermitidas = collect(explode(',', $campo->accept))
-                            ->map(fn ($ext) => strtolower(trim(str_replace('.', '', $ext))))
-                            ->filter()
-                            ->toArray();
-
-                        $extension = strtolower($archivo->getClientOriginalExtension());
-
-                        if (!in_array($extension, $extensionesPermitidas)) {
-                            return redirect()
-                                ->route('tramitanet.servicio.modalidad', [$servicio->slug, $modalidad->slug])
-                                ->withErrors([$campo->slug => "El archivo {$campo->nombre} debe ser de tipo: {$campo->accept}."])
-                                ->withInput();
-                        }
-                    }
-
                     $nombreOriginal = $archivo->getClientOriginalName();
-                    $nombreSeguro = preg_replace('/[^A-Za-z0-9._-]/', '_', $nombreOriginal);
+                    $nombreSeguro = preg_replace(
+                        '/[^A-Za-z0-9._-]/',
+                        '_',
+                        $nombreOriginal
+                    );
 
                     $ruta = $archivo->storeAs(
                         "tramitanet/solicitudes/{$solicitud->folio}",
@@ -327,19 +375,26 @@ class TramitaNetSolicitudController extends Controller
                         'public'
                     );
 
-
-
-
                     $datos['valor'] = null;
                     $datos['es_archivo'] = true;
                     $datos['ruta_archivo'] = $ruta;
-                    $datos['nombre_original_archivo'] = $archivo->getClientOriginalName();                    
+                    $datos['nombre_original_archivo'] = $nombreOriginal;
                     $datos['mime_type'] = $archivo->getMimeType();
                     $datos['tamano_archivo'] = $archivo->getSize();
                 }
 
                 SolicitudServicioDato::create($datos);
+
             }
+            
+            $datosGuardados = SolicitudServicioDato::where(
+                'solicitud_servicio_id',
+                $solicitud->id
+            )->get([
+                'campo',
+                'valor',
+            ]);
+
 
             HistorialEstatusSolicitud::create([
                 'solicitud_servicio_id' => $solicitud->id,
@@ -350,6 +405,10 @@ class TramitaNetSolicitudController extends Controller
             ]);
 
             TramitaNetNotificacionService::nuevaSolicitud($solicitud);
+
+            if (!$tieneArchivos) {
+                session()->forget('tramitanet.captcha_ok');
+            }
 
             return redirect()
                 ->route('tramitanet.expediente', $solicitud->folio);

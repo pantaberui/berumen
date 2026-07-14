@@ -62,18 +62,47 @@
         >
 
     @elseif($campo->tipo_campo === 'select')
+        @php
+        $opciones = $campoServicio->opciones_personalizadas
+            ?? $campo->opciones
+            ?? [];
+
+        if (is_string($opciones)) {
+            $opciones = json_decode($opciones, true) ?? [];
+        }
+    @endphp
+
         <select
             id="{{ $id }}"
             name="{{ $nombre }}"
-            class="w-full rounded-xl border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+            class="w-full rounded-xl border-slate-300 bg-white shadow-sm focus:border-blue-500 focus:ring-blue-500"
             @if($campoServicio->requerido) required @endif
         >
-            <option value="">Selecciona una opción</option>
+            <option value="">
+                {{ $campo->placeholder ?: 'Selecciona una opción' }}
+            </option>
 
-            @foreach(($campoServicio->opciones_personalizadas ?? $campo->opciones ?? []) as $opcion)
-                <option value="{{ $opcion }}" @selected(old('campos.' . $campo->slug) == $opcion)>
-                    {{ $opcion }}
-                </option>
+            @foreach($opciones as $opcion)
+                @php
+                    $valorOpcion = is_array($opcion)
+                        ? ($opcion['value'] ?? $opcion['valor'] ?? null)
+                        : $opcion;
+
+                    $etiquetaOpcion = is_array($opcion)
+                        ? ($opcion['label'] ?? $opcion['etiqueta'] ?? $valorOpcion)
+                        : $opcion;
+                @endphp
+
+                @if($valorOpcion !== null)
+                    <option
+                        value="{{ $valorOpcion }}"
+                        @selected(
+                            old('campos.' . $campo->slug) == $valorOpcion
+                        )
+                    >
+                        {{ $etiquetaOpcion }}
+                    </option>
+                @endif
             @endforeach
         </select>
 

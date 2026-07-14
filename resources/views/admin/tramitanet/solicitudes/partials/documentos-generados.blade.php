@@ -16,10 +16,15 @@
                     Título
                 </label>
 
-                <input type="text"
-                       name="titulo"
-                       value="Constancia generada"
-                       class="w-full rounded-xl border-gray-300">
+                <input
+                    type="text"
+                    name="titulo"
+                    value="{{ old(
+                        'titulo',
+                        'Documento ' . ($solicitud->servicio->titulo_publico ?? $solicitud->servicio->nombre) . ' generado'
+                    ) }}"
+                    class="w-full rounded-xl border-gray-300"
+                >
             </div>
 
             <div>

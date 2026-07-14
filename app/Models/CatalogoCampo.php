@@ -27,5 +27,6 @@ class CatalogoCampo extends Model
     protected $casts = [
         'opciones' => 'array',
         'activo' => 'boolean',
+        'multiple' => 'boolean',
     ];
 }

@@ -63,10 +63,54 @@ Esta modalidad requiere:
 
 <hr class="my-8">
 
+
+
 @php
     $tieneArchivos = $modalidadServicio->campos
-        ->contains(fn($campo) => $campo->campoMaestro->tipo_campo === 'file');
+        ->contains(fn ($campo) =>
+            $campo->campoMaestro->tipo_campo === 'file'
+        );
+
+    $camposAgrupados = $modalidadServicio->campos
+        ->sortBy('orden')
+        ->groupBy(fn ($campo) =>
+            $campo->campoMaestro->grupo_expediente ?? 'datos'
+        );
+
+    $gruposFormulario = [
+        'datos' => [
+            'titulo' => 'Datos personales',
+            'icono' => '👤',
+            'descripcion' => 'Captura la información personal requerida para el servicio.',
+        ],
+
+        'domicilio' => [
+            'titulo' => 'Domicilio',
+            'icono' => '🏠',
+            'descripcion' => 'Proporciona los datos correspondientes a tu domicilio.',
+        ],
+
+        'documentos' => [
+            'titulo' => 'Documentos',
+            'icono' => '📄',
+            'descripcion' => 'Adjunta los archivos necesarios para continuar.',
+        ],
+
+        'credenciales' => [
+            'titulo' => 'Credenciales',
+            'icono' => '🔐',
+            'descripcion' => 'Estos datos se almacenan protegidos y solo se utilizan para realizar el trámite.',
+        ],
+
+        'autorizaciones' => [
+            'titulo' => 'Autorizaciones',
+            'icono' => '✅',
+            'descripcion' => 'Revisa y confirma las autorizaciones necesarias.',
+        ],
+    ];
 @endphp
+
+
 
 @if($errors->any())
     <div class="mb-6 rounded-2xl bg-red-50 border border-red-200 p-4">
@@ -96,10 +140,50 @@ Esta modalidad requiere:
         name="modalidad"
         value="{{ $modalidadServicio->id }}">
 
-    @foreach($modalidadServicio->campos as $campo)
-        <x-tramitanet.dynamic-field
-            :campo-servicio="$campo" />
-    @endforeach
+
+    <div class="space-y-8">
+        @foreach($camposAgrupados as $grupo => $camposGrupo)
+            @php
+                $configuracionGrupo = $gruposFormulario[$grupo] ?? [
+                    'titulo' => ucfirst(str_replace('_', ' ', $grupo)),
+                    'icono' => '📋',
+                    'descripcion' => null,
+                ];
+            @endphp
+
+            <section class="rounded-3xl border border-slate-200 bg-slate-50 p-5 sm:p-6">
+                <div class="mb-5 flex items-start gap-3">
+                    <div class="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-white text-xl shadow-sm">
+                        {{ $configuracionGrupo['icono'] }}
+                    </div>
+
+                    <div>
+                        <h3 class="text-xl font-extrabold text-slate-900">
+                            {{ $configuracionGrupo['titulo'] }}
+                        </h3>
+
+                        @if($configuracionGrupo['descripcion'])
+                            <p class="mt-1 text-sm text-slate-600">
+                                {{ $configuracionGrupo['descripcion'] }}
+                            </p>
+                        @endif
+                    </div>
+                </div>
+
+                <div class="grid gap-5 md:grid-cols-2">
+                    @foreach($camposGrupo as $campo)
+                        <div class="{{ $campo->campoMaestro->tipo_campo === 'file' ? 'md:col-span-2' : '' }}">
+                            <x-tramitanet.dynamic-field
+                                :campo-servicio="$campo"
+                            />
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+        @endforeach
+    </div>
+
+
 
     @include('publico.tramitanet.partials.datos-contacto')
 
