@@ -22,8 +22,8 @@
                 name="whatsapp_numero"
                 id="whatsapp_numero"
                 value="{{ old('whatsapp_numero') }}"
-                autocomplete="tel"
-                inputmode="tel"
+                autocomplete="tel-national"
+                inputmode="numeric"
                 placeholder="311 123 4567"
                 required
                 class="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-slate-900 shadow-sm focus:border-blue-500 focus:ring-blue-500"
@@ -81,3 +81,86 @@
         </div>
     </div>
 </div>
+
+
+@once
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const numero = document.getElementById('whatsapp_numero');
+                const codigoPais = document.getElementById('whatsapp_codigo_pais');
+
+                if (!numero || !codigoPais) {
+                    return;
+                }
+
+                let ultimoValorValido = numero.value;
+
+                const obtenerInstanciaTelefono = () => {
+                    return window.intlTelInputGlobals
+                        ?.getInstance(numero);
+                };
+
+                const actualizarCodigoPais = () => {
+                    const instancia = obtenerInstanciaTelefono();
+                    const pais = instancia?.getSelectedCountryData();
+
+                    if (pais?.dialCode) {
+                        codigoPais.value = `+${pais.dialCode}`;
+                    }
+                };
+
+                const obtenerLimiteDigitos = () => {
+                    return codigoPais.value === '+52' ? 10 : 14;
+                };
+
+                const contarDigitos = (valor) => {
+                    return valor.replace(/\D/g, '').length;
+                };
+
+                const validarCantidadMientrasCaptura = () => {
+                    actualizarCodigoPais();
+
+                    const limite = obtenerLimiteDigitos();
+                    const cantidad = contarDigitos(numero.value);
+
+                    /*
+                     * Intl-tel-input puede agregar espacios y guiones.
+                     * Solo contamos los dígitos reales.
+                     */
+                    if (cantidad > limite) {
+                        numero.value = ultimoValorValido;
+                        return;
+                    }
+
+                    ultimoValorValido = numero.value;
+                };
+
+                numero.addEventListener(
+                    'input',
+                    validarCantidadMientrasCaptura
+                );
+
+                numero.addEventListener('countrychange', () => {
+                    actualizarCodigoPais();
+
+                    const limite = obtenerLimiteDigitos();
+                    const cantidad = contarDigitos(numero.value);
+
+                    if (cantidad > limite) {
+                        numero.value = '';
+                    }
+
+                    ultimoValorValido = numero.value;
+
+                    numero.placeholder = codigoPais.value === '+52'
+                        ? '311 123 4567'
+                        : 'Número local';
+                });
+
+                actualizarCodigoPais();
+                ultimoValorValido = numero.value;
+            });
+        </script>
+    @endpush
+@endonce

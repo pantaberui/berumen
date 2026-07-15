@@ -29,7 +29,7 @@ class CatalogoInstitucionSeeder extends Seeder
             ],
             [
                 'nombre' => 'INFONAVIT',
-                'descripcion' => 'Consulta y gestión de servicios relacionados con créditos y precalificación.',
+                'descripcion' => 'Servicios relacionados con créditos y documentos de INFONAVIT.',
                 'icono' => 'home',
                 'color_principal' => '#C2410C',
                 'color_secundario' => '#FFEDD5',
@@ -50,6 +50,22 @@ class CatalogoInstitucionSeeder extends Seeder
                 'color_principal' => '#0F766E',
                 'color_secundario' => '#CCFBF1',
                 'orden' => 5,
+            ],
+            [
+                'nombre' => 'RENAPO',
+                'descripcion' => 'Consulta y certificación de CURP emitida por RENAPO.',
+                'icono' => 'identification',
+                'color_principal' => '#4F46E5',
+                'color_secundario' => '#E0E7FF',
+                'orden' => 6,
+            ],
+            [
+                'nombre' => 'CFE',
+                'descripcion' => 'Servicios relacionados con recibos de energía eléctrica.',
+                'icono' => 'bolt',
+                'color_principal' => '#16A34A',
+                'color_secundario' => '#DCFCE7',
+                'orden' => 7,
             ],
         ];
 

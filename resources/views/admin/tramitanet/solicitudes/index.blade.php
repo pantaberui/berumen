@@ -25,58 +25,81 @@
                     ];
                 @endphp
 
-                <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+                <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
                     @foreach($estatuses as $valor => $texto)
-                        <a href="{{ route('admin.tramitanet.solicitudes.index', ['estatus' => $valor]) }}"
-                        class="border rounded-2xl p-5 shadow hover:shadow-md transition {{ $coloresEstatus[$valor] ?? 'bg-white border-gray-200 text-gray-800' }}">
-
-                            <p class="text-sm font-bold">
+                        <a
+                            href="{{ route('admin.tramitanet.solicitudes.index', ['estatus' => $valor]) }}"
+                            class="min-w-0 rounded-2xl border p-4 shadow transition hover:shadow-md
+                                {{ $coloresEstatus[$valor] ?? 'bg-white border-gray-200 text-gray-800' }}"
+                        >
+                            <p class="text-xs font-bold leading-tight sm:text-sm">
                                 {{ $texto }}
                             </p>
 
-                            <p class="text-3xl font-black mt-2">
+                            <p class="mt-2 text-2xl font-black sm:text-3xl">
                                 {{ $conteos[$valor] ?? 0 }}
                             </p>
                         </a>
                     @endforeach
                 </div>
 
-                <form method="GET" class="mb-6">
-                    <div class="flex gap-3">
+                <form
+                    method="GET"
+                    action="{{ route('admin.tramitanet.solicitudes.index') }}"
+                    class="mt-8 grid gap-3 px-4 pb-5 sm:px-0 lg:grid-cols-[minmax(0,1fr)_auto_200px] lg:items-end"
+                >
+                    <div class="min-w-0">
+                        <label
+                            for="buscar"
+                            class="mb-2 block text-sm font-bold text-gray-700"
+                        >
+                            Buscar solicitud
+                        </label>
+
                         <input
                             type="text"
+                            id="buscar"
                             name="buscar"
                             value="{{ request('buscar') }}"
                             placeholder="Buscar por folio, RFC o CURP..."
-                            class="w-full rounded-xl border-gray-300 shadow-sm">
-                        <button
-                            class="px-6 rounded-xl bg-blue-600 text-white font-bold">
-                            Buscar
-                        </button>
+                            class="h-11 w-full rounded-xl border-gray-300 px-4 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        >
                     </div>
 
+                    <button
+                        type="submit"
+                        class="h-11 rounded-xl bg-blue-700 px-6 font-bold text-white transition hover:bg-blue-800"
+                    >
+                        Buscar
+                    </button>
 
-                    <div class="mt-4 grid md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-1">
-                                Estatus
-                            </label>
-                            <select
-                                name="estatus"
-                                class="w-full rounded-xl border-gray-300 shadow-sm">
-                                <option value="">Todos</option>
-                                @foreach($estatuses as $valor => $texto)
-                                    <option
-                                        value="{{ $valor }}"
-                                        @selected(request('estatus') == $valor)>
-                                        {{ $texto }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div>
+                        <label
+                            for="estatus"
+                            class="mb-2 block text-sm font-bold text-gray-700"
+                        >
+                            Estatus
+                        </label>
+
+                        <select
+                            id="estatus"
+                            name="estatus"
+                            class="h-11 w-full rounded-xl border-gray-300 px-3 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                            onchange="this.form.submit()"
+                        >
+                            <option value="">Todos</option>
+
+                            @foreach($estatuses as $valor => $texto)
+                                <option
+                                    value="{{ $valor }}"
+                                    @selected(request('estatus') === $valor)
+                                >
+                                    {{ $texto }}
+                                </option>
+                            @endforeach
+                        </select>
                     </div>
                 </form>
-
 
 
                 <div class="overflow-x-auto">

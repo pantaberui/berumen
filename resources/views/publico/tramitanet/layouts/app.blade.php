@@ -7,11 +7,11 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-slate-100 text-slate-900 antialiased overflow-x-hidden">
+<body class="min-h-screen flex flex-col bg-slate-100 text-slate-900 antialiased overflow-x-hidden">
 
     @include('publico.tramitanet.components.navbar')
 
-    <main>
+    <main class="flex-1">
         @yield('content')
     </main>
 

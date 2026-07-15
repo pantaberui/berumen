@@ -17,19 +17,16 @@
                 Servicios en Línea Berumen
             </div>
 
-            <h1 class="text-5xl font-black leading-none tracking-tight sm:text-6xl md:text-7xl">
-                <span class="text-white">
-                    Tramita
-                </span><span class="text-orange-400">Net</span>
+            <h1 class="mt-4 text-6xl md:text-7xl font-black leading-none tracking-tight">
+                <span class="text-white">Tramita</span><span class="text-orange-400">Net</span>
             </h1>
 
-            <p class="mt-5 text-2xl font-bold leading-tight text-violet-200 md:text-3xl">
+            <h2 class="mt-6 max-w-xl text-3xl md:text-4xl font-bold text-slate-100 leading-tight">
                 Gestiona tus trámites desde cualquier lugar.
-            </p>
+            </h2>
 
-            <p class="mt-6 max-w-xl text-base leading-relaxed text-slate-300 md:text-lg">
-                Solicita documentos oficiales, realiza pagos y da seguimiento a tus solicitudes
-                desde México o el extranjero, con atención personalizada y entrega digital.
+            <p class="mt-8 max-w-xl text-xl leading-8 text-slate-300">
+                Solicita documentos oficiales, realiza pagos y da seguimiento a tus solicitudes desde México o el extranjero, con atención personalizada y entrega digital.
             </p>
 
             <div class="mt-8 flex flex-col gap-4 sm:flex-row">

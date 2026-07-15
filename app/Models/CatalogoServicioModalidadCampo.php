@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class CatalogoServicioModalidadCampo extends Model
 {
@@ -17,28 +18,30 @@ class CatalogoServicioModalidadCampo extends Model
         'opciones_personalizadas',
     ];
 
-    protected $casts = [
-        'requerido' => 'boolean',
-        'activo' => 'boolean',
-        'opciones_personalizadas' => 'array',
-    ];
 
-    public function modalidad()
+
+    public function modalidad(): BelongsTo
     {
-        return $this->belongsTo(CatalogoServicioModalidad::class, 'catalogo_servicio_modalidad_id');
+        return $this->belongsTo(
+            CatalogoServicioModalidad::class,
+            'catalogo_servicio_modalidad_id'
+        );
     }
 
-    public function campoMaestro()
+    public function campoMaestro(): BelongsTo
     {
-        return $this->belongsTo(CatalogoCampo::class, 'catalogo_campo_id');
+        return $this->belongsTo(
+            CatalogoCampo::class,
+            'catalogo_campo_id'
+        );
     }
 
     protected function casts(): array
     {
         return [
-            'opciones_personalizadas' => 'array',
             'requerido' => 'boolean',
             'activo' => 'boolean',
+            'opciones_personalizadas' => 'array',
         ];
     }
 }

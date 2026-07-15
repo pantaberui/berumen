@@ -56,12 +56,6 @@ class CatalogoServicio extends Model
         return $this->belongsTo(CatalogoInstitucion::class, 'catalogo_institucion_id');
     }
 
-    public function campos()
-    {
-        return $this->hasMany(CatalogoServicioCampo::class, 'catalogo_servicio_id')
-            ->orderBy('orden');
-    }
-
     public function modalidades()
     {
         return $this->hasMany(CatalogoServicioModalidad::class, 'catalogo_servicio_id')

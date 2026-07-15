@@ -33,7 +33,6 @@ class TramitaNetServicioController extends Controller
             ->firstOrFail();
 
         $modalidadServicio = $servicio->modalidades()
-            ->with('campos.campoMaestro')
             ->where('slug', $modalidad)
             ->where('activo', true)
             ->firstOrFail();
@@ -49,8 +48,7 @@ class TramitaNetServicioController extends Controller
     {
         $servicio = CatalogoServicio::with([
                 'institucion',
-                'modalidades.campos.campoMaestro',
-                'campos.campoMaestro',
+                'modalidades.campos.campoMaestro',                
             ])
             ->where('slug', $slug)
             ->where('activo', true)

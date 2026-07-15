@@ -28,13 +28,15 @@ class CatalogoServicioSeeder extends Seeder
             ['ACTA DE MATRIMONIO', 'Registro Civil', 'CURP DEL ESPOSO O ESPOSA', null, 'por_entidad'],
             ['ACTA DE DEFUNCIÓN', 'Registro Civil', 'CURP', null, 'por_entidad'],
 
-            ['COMUNICADO RFC DEL SAT', 'SAT', 'CURP', 220, 'fijo'],
-            ['CONSTANCIA DE SITUACIÓN FISCAL DEL SAT', 'SAT', 'CURP O RFC E idCIF', 220, 'fijo'],
-            ['OPINIÓN DE CUMPLIMIENTO DEL SAT', 'SAT', 'CURP', 220, 'fijo'],
+            ['COMUNICADO RFC', 'SAT', 'CURP', 220, 'fijo'],
+            ['CONSTANCIA DE SITUACIÓN FISCAL', 'SAT', 'CURP O RFC E idCIF', 220, 'fijo'],
+            ['OPINIÓN DE CUMPLIMIENTO', 'SAT', 'CURP', 220, 'fijo'],
+            ['CURP CERTIFICADA', 'RENAPO','CURP O DATOS PERSONALES', 20, 'fijo'],
+            ['RECIBO DE LUZ CFE','CFE', 'NOMBRE Y NÚMERO DE SERVICIO O RECIBO ANTERIOR', 30, 'fijo'],
         ];
 
         foreach ($servicios as [$nombre, $institucionNombre, $requisitos, $precio, $tipoPrecio]) {
-            $institucion = CatalogoInstitucion::where('nombre', $institucionNombre)->first();
+            $institucion = CatalogoInstitucion::where('slug',    Str::slug($institucionNombre))->first();
 
             if (!$institucion) {
                 continue;
@@ -61,8 +63,10 @@ class CatalogoServicioSeeder extends Seeder
                     'entrega_digital' => true,
                     'mostrar_en_portada' => in_array($nombre, [
                         'ACTA DE NACIMIENTO',
-                        'CONSTANCIA DE SITUACIÓN FISCAL DEL SAT',
+                        'CONSTANCIA DE SITUACIÓN FISCAL',
                         'SEMANAS COTIZADAS DEL IMSS',
+                        'RECIBO DE LUZ CFE',
+                        'CURP CERTIFICADA',
                     ]),
                     'mostrar_precio' => true,
                 ]

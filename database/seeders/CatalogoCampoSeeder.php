@@ -94,8 +94,8 @@ class CatalogoCampoSeeder extends Seeder
         ],
 
         [
-            'nombre' => 'Número de crédito',
-            'slug' => 'numero_de_credito',
+            'nombre' => 'Número de crédito INFONAVIT',
+            'slug' => 'numero_de_credito_infonavit',
             'tipo_campo' => 'text',
             'validacion' => 'required',
             'placeholder' => 'Número de crédito INFONAVIT',
@@ -294,6 +294,37 @@ class CatalogoCampoSeeder extends Seeder
             'tamano_maximo_mb' => null,
             'multiple' => false,
             'grupo_expediente' => 'credenciales',
+        ],
+        [
+            'nombre' => 'Nombre como aparece en el recibo',
+            'slug' => 'nombre_recibo',
+            'tipo_campo' => 'text',
+            'validacion' => 'required',
+            'placeholder' => 'Nombre del titular',
+            'transformacion' => 'mayusculas',
+            'autocomplete' => 'name',
+            'grupo_expediente' => 'datos',
+        ],
+        [
+            'nombre' => 'Número de servicio CFE',
+            'slug' => 'numero_servicio',
+            'tipo_campo' => 'text',
+            'validacion' => 'required',
+            'placeholder' => 'Número de servicio',
+            'transformacion' => null,
+            'autocomplete' => 'off',
+            'grupo_expediente' => 'datos',
+        ],
+        [
+            'nombre' => 'Recibo anterior',
+            'slug' => 'recibo_anterior',
+            'tipo_campo' => 'file',
+            'placeholder' => null,
+            'ayuda' => 'Adjunta un recibo anterior en PDF o imagen.',
+            'accept' => '.pdf,.jpg,.jpeg,.png',
+            'tamano_maximo_mb' => 5,
+            'multiple' => false,
+            'grupo_expediente' => 'documentos',
         ],
         ];
 

@@ -34,6 +34,94 @@ class TramitaNetSolicitudController extends Controller
             ->where('activo', true)
             ->firstOrFail();
 
+         $camposEntrada = $request->input('campos', []);
+
+        if (isset($camposEntrada['curp'])) {
+            $camposEntrada['curp'] = mb_strtoupper(
+                preg_replace('/\s+/', '', trim($camposEntrada['curp']))
+            );
+        }
+
+        $request->merge([
+            'campos' => $camposEntrada,
+        ]);
+
+
+
+        $solicitaCurp = $modalidad->campos->contains(
+            fn ($campoServicio) =>
+                $campoServicio->campoMaestro->slug === 'curp'
+        );
+
+        if ($solicitaCurp) {
+            $request->validate([
+                'campos.curp' => [
+                    'required',
+                    'string',
+                    'size:18',
+
+                    'regex:/^[A-Z][AEIOU][A-Z]{2}\d{6}[HMX](AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|NE|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z0-9]\d$/',
+
+                    function (
+                        string $attribute,
+                        mixed $value,
+                        \Closure $fail
+                    ) {
+                        $curp = mb_strtoupper((string) $value);
+
+                        $anioCorto = (int) substr($curp, 4, 2);
+                        $mes = (int) substr($curp, 6, 2);
+                        $dia = (int) substr($curp, 8, 2);
+
+                        /*
+                        * En la posición 17:
+                        * - número: persona nacida antes del año 2000;
+                        * - letra: persona nacida a partir del año 2000.
+                        */
+                        $diferenciador = substr($curp, 16, 1);
+
+                        $anioCompleto = ctype_digit($diferenciador)
+                            ? 1900 + $anioCorto
+                            : 2000 + $anioCorto;
+
+                        if (!checkdate($mes, $dia, $anioCompleto)) {
+                            $fail(
+                                'La fecha de nacimiento contenida en la CURP no es válida.'
+                            );
+
+                            return;
+                        }
+
+                        $fechaNacimiento = sprintf(
+                            '%04d-%02d-%02d',
+                            $anioCompleto,
+                            $mes,
+                            $dia
+                        );
+
+                        if ($fechaNacimiento > now()->format('Y-m-d')) {
+                            $fail(
+                                'La fecha de nacimiento contenida en la CURP no puede ser futura.'
+                            );
+                        }
+                    },
+                ],
+            ], [
+                'campos.curp.required' =>
+                    'La CURP es obligatoria.',
+
+                'campos.curp.size' =>
+                    'La CURP debe contener exactamente 18 caracteres.',
+
+                'campos.curp.regex' =>
+                    'La CURP capturada no tiene un formato válido.',
+            ]);
+        }
+
+
+
+
+
         $entidadCurp = TramitaNetService::obtenerEntidadDesdeCurp(
             $campos['curp'] ?? null
         );
@@ -51,10 +139,28 @@ class TramitaNetSolicitudController extends Controller
                 'required',
                 'regex:/^\+[1-9]\d{0,3}$/',
             ],
+
             'whatsapp_numero' => [
                 'required',
-                'regex:/^\d{7,14}$/',
+                'string',
+                'digits_between:7,14',
+
+                function (
+                    string $attribute,
+                    mixed $value,
+                    \Closure $fail
+                ) use ($request) {
+                    if (
+                        $request->input('whatsapp_codigo_pais') === '+52' &&
+                        strlen((string) $value) !== 10
+                    ) {
+                        $fail(
+                            'El número de WhatsApp de México debe contener exactamente 10 dígitos.'
+                        );
+                    }
+                },
             ],
+
             'correo' => [
                 'nullable',
                 'email',
@@ -143,16 +249,104 @@ class TramitaNetSolicitudController extends Controller
 
     public function store(Request $request, string $slug)
     {
+
         $servicio = CatalogoServicio::with('modalidades.campos.campoMaestro')
             ->where('slug', $slug)
             ->where('activo', true)
             ->firstOrFail();
 
         $modalidad = $servicio->modalidades()
-            ->with('campos.campoMaestro')
             ->whereKey($request->modalidad)
             ->where('activo', true)
             ->firstOrFail();
+        
+
+        $camposEntrada = $request->input('campos', []);
+
+        if (isset($camposEntrada['curp'])) {
+            $camposEntrada['curp'] = mb_strtoupper(
+                preg_replace('/\s+/', '', trim($camposEntrada['curp']))
+            );
+        }
+
+        $request->merge([
+            'campos' => $camposEntrada,
+        ]);
+
+
+
+        $solicitaCurp = $modalidad->campos->contains(
+            fn ($campoServicio) =>
+                $campoServicio->campoMaestro->slug === 'curp'
+        );
+
+        if ($solicitaCurp) {
+            $request->validate([
+                'campos.curp' => [
+                    'required',
+                    'string',
+                    'size:18',
+
+                    'regex:/^[A-Z][AEIOU][A-Z]{2}\d{6}[HMX](AS|BC|BS|CC|CL|CM|CS|CH|DF|DG|GT|GR|HG|JC|MC|MN|MS|NT|NL|NE|OC|PL|QT|QR|SP|SL|SR|TC|TS|TL|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z0-9]\d$/',
+
+                    function (
+                        string $attribute,
+                        mixed $value,
+                        \Closure $fail
+                    ) {
+                        $curp = mb_strtoupper((string) $value);
+
+                        $anioCorto = (int) substr($curp, 4, 2);
+                        $mes = (int) substr($curp, 6, 2);
+                        $dia = (int) substr($curp, 8, 2);
+
+                        /*
+                        * En la posición 17:
+                        * - número: persona nacida antes del año 2000;
+                        * - letra: persona nacida a partir del año 2000.
+                        */
+                        $diferenciador = substr($curp, 16, 1);
+
+                        $anioCompleto = ctype_digit($diferenciador)
+                            ? 1900 + $anioCorto
+                            : 2000 + $anioCorto;
+
+                        if (!checkdate($mes, $dia, $anioCompleto)) {
+                            $fail(
+                                'La fecha de nacimiento contenida en la CURP no es válida.'
+                            );
+
+                            return;
+                        }
+
+                        $fechaNacimiento = sprintf(
+                            '%04d-%02d-%02d',
+                            $anioCompleto,
+                            $mes,
+                            $dia
+                        );
+
+                        if ($fechaNacimiento > now()->format('Y-m-d')) {
+                            $fail(
+                                'La fecha de nacimiento contenida en la CURP no puede ser futura.'
+                            );
+                        }
+                    },
+                ],
+            ], [
+                'campos.curp.required' =>
+                    'La CURP es obligatoria.',
+
+                'campos.curp.size' =>
+                    'La CURP debe contener exactamente 18 caracteres.',
+
+                'campos.curp.regex' =>
+                    'La CURP capturada no tiene un formato válido.',
+            ]);
+        }
+
+
+        
 
         $tieneArchivos = $modalidad->campos->contains(
             fn ($campoServicio) =>
@@ -201,7 +395,22 @@ class TramitaNetSolicitudController extends Controller
             'whatsapp_numero' => [
                 'required',
                 'string',
-                'regex:/^\d{7,14}$/',
+                'digits_between:7,14',
+
+                function (
+                    string $attribute,
+                    mixed $value,
+                    \Closure $fail
+                ) use ($request) {
+                    if (
+                        $request->input('whatsapp_codigo_pais') === '+52' &&
+                        strlen((string) $value) !== 10
+                    ) {
+                        $fail(
+                            'El número de WhatsApp de México debe contener exactamente 10 dígitos.'
+                        );
+                    }
+                },
             ],
 
             'correo' => [
