@@ -26,7 +26,7 @@ use App\Http\Controllers\Publico\TramitaNetServicioController;
 use App\Http\Controllers\Publico\TramitaNetSolicitudController;
 use App\Http\Controllers\Admin\TramitaNetSolicitudAdminController;
 use App\Http\Controllers\Publico\TramitaNetCaptchaController;
-
+use App\Http\Controllers\Admin\TramitaNetConfiguracionController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -184,7 +184,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::post('/tramitanet/servicio/{slug}/guardar', [TramitaNetSolicitudController::class, 'store'])
         ->name('tramitanet.servicio.store');  
-    
+
+    Route::get(
+        '/tramitanet/configuracion',
+        [TramitaNetConfiguracionController::class, 'edit']
+    )->name('tramitanet.configuracion.edit');
+
+    Route::patch(
+        '/tramitanet/configuracion',
+        [TramitaNetConfiguracionController::class, 'update']
+    )->name('tramitanet.configuracion.update');
 
 });
 

@@ -18,10 +18,32 @@
                 </p>
 
                 <p class="mt-1 hidden text-xs font-semibold tracking-wide text-slate-300 sm:block">
-                    Servicios en Línea Berumen
+                    Servicios Digitales en Línea Berumen
                 </p>
             </div>
         </a>
+
+        <div class="hidden items-center md:flex">
+            <div
+                class="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold
+                    {{ $servicioAbierto
+                        ? 'border-green-400/30 bg-green-500/10 text-green-200'
+                        : 'border-amber-400/30 bg-amber-500/10 text-amber-200'
+                    }}"
+            >
+                <span
+                    class="h-2.5 w-2.5 rounded-full
+                        {{ $servicioAbierto ? 'bg-green-400' : 'bg-amber-400' }}"
+                ></span>
+
+                {{ $servicioAbierto ? 'Estamos atendiendo' : 'Fuera de horario' }}
+               
+            </div>
+
+
+
+
+        </div>
 
         <nav class="hidden items-center gap-1 md:flex">
             <a href="{{ route('tramitanet.index') }}"

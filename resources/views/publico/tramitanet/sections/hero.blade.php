@@ -48,6 +48,47 @@
                 </a>
             </div>
 
+            <div
+                class="mt-8 max-w-lg rounded-2xl border
+                    {{ $servicioAbierto
+                        ? 'border-green-400/20 bg-green-500/10'
+                        : 'border-amber-400/20 bg-amber-500/10'
+                    }}
+                px-5 py-4">
+
+                <div class="flex items-center gap-3">
+
+                    <span
+                        class="h-3 w-3 rounded-full
+                            {{ $servicioAbierto ? 'bg-green-400' : 'bg-amber-400' }}">
+                    </span>
+
+                    <h3
+                        class="font-extrabold
+                            {{ $servicioAbierto ? 'text-green-300' : 'text-amber-300' }}">
+                        {{ $servicioAbierto ? 'Estamos atendiendo' : 'Fuera del horario de atención' }}
+                    </h3>
+
+                </div>
+
+                <p class="mt-3 text-sm leading-6 text-slate-300">
+                    {{ $mensajeAtencion }}
+                </p>
+
+                @if($horarioAtencion)
+                    <div class="mt-3 whitespace-pre-line text-sm leading-6 text-slate-300">
+                        {{ $horarioAtencion }}
+                    </div>
+                @endif
+
+                @if($zonaHoraria)
+                    <p class="mt-3 text-xs font-semibold text-slate-400">
+                        {{ $zonaHoraria }}
+                    </p>
+                @endif
+
+            </div>
+
             {{-- Indicadores --}}
             <div class="mt-10 flex flex-wrap gap-x-6 gap-y-3 text-sm text-slate-300">
                 <span class="inline-flex items-center gap-2">

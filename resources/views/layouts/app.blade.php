@@ -162,62 +162,103 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('input[type="text"], input[type="email"], textarea').forEach(function (campo) {
-                campo.addEventListener('input', function () {
-                    const pos = this.selectionStart;
-                    this.value = this.value.toUpperCase();
-                    this.setSelectionRange(pos, pos);
+            document
+                .querySelectorAll(
+                    'input[type="text"], textarea'
+                )
+                .forEach(function (campo) {
+                    if (campo.dataset.preserveCase === 'true') {
+                        return;
+                    }
+
+                    campo.addEventListener('input', function () {
+                        const inicio = this.selectionStart;
+                        const fin = this.selectionEnd;
+
+                        this.value = this.value.toUpperCase();
+
+                        this.setSelectionRange(inicio, fin);
+                    });
                 });
-            });
         });
 
         document.addEventListener('DOMContentLoaded', function () {
 
-        // Máscara teléfono/celular: (###) ###-##-##
-        document.querySelectorAll('input[name="telefono"], input[name="celular"]').forEach(function (campo) {
-            campo.setAttribute('maxlength', '16');
-            campo.setAttribute('placeholder', '(311) 352-26-45');
+            // Máscara teléfono/celular: (###) ###-##-##
+            document.querySelectorAll(
+                'input[name="telefono"], input[name="celular"]'
+            ).forEach(function (campo) {
+                campo.setAttribute('maxlength', '16');
+                campo.setAttribute('placeholder', '(311) 352-26-45');
 
-            campo.addEventListener('input', function (e) {
-                let digits = this.value.replace(/\D/g, '').substring(0, 10);
-                let result = '';
-                if (digits.length > 0) result = '(' + digits.substring(0, 3);
-                if (digits.length >= 4) result += ') ' + digits.substring(3, 6);
-                if (digits.length >= 7) result += '-' + digits.substring(6, 8);
-                if (digits.length >= 9) result += '-' + digits.substring(8, 10);
-                this.value = result;
-            });
-        });
-
-        // Máscara IP: ###.###.###.###
-        document.querySelectorAll('input[name="ip"]').forEach(function (campo) {
                 campo.addEventListener('input', function () {
-                    let digits = this.value.replace(/[^\d.]/g, '');
-                    let partes = digits.split('.');
-                    partes = partes.map(p => p.substring(0, 3));
+                    const digits = this.value
+                        .replace(/\D/g, '')
+                        .substring(0, 10);
+
+                    let result = '';
+
+                    if (digits.length > 0) {
+                        result = '(' + digits.substring(0, 3);
+                    }
+
+                    if (digits.length >= 4) {
+                        result += ') ' + digits.substring(3, 6);
+                    }
+
+                    if (digits.length >= 7) {
+                        result += '-' + digits.substring(6, 8);
+                    }
+
+                    if (digits.length >= 9) {
+                        result += '-' + digits.substring(8, 10);
+                    }
+
+                    this.value = result;
+                });
+            });
+
+            // Máscara IP: ###.###.###.###
+            document.querySelectorAll('input[name="ip"]').forEach(function (campo) {
+                campo.addEventListener('input', function () {
+                    let valor = this.value.replace(/[^\d.]/g, '');
+                    let partes = valor.split('.');
+
+                    partes = partes.map(
+                        parte => parte.substring(0, 3)
+                    );
+
                     partes = partes.slice(0, 4);
+
                     this.value = partes.join('.');
                 });
             });
 
             // Solo letras, espacios, acentos y punto para nombre
-            document.querySelectorAll('input[name="nombre"]').forEach(function (campo) {
+            document.querySelectorAll(
+                'input[name="nombre"]'
+            ).forEach(function (campo) {
                 campo.addEventListener('input', function () {
-                    this.value = this.value.replace(/[^A-ZÁÉÍÓÚÜÑ\s.]/gi, '').toUpperCase();
+                    this.value = this.value
+                        .replace(/[^A-ZÁÉÍÓÚÜÑ\s.]/gi, '')
+                        .toUpperCase();
                 });
             });
 
             // Solo letras, espacios y acentos para apellidos
-            document.querySelectorAll('input[name="apellido_paterno"], input[name="apellido_materno"]').forEach(function (campo) {
+            document.querySelectorAll(
+                'input[name="apellido_paterno"], input[name="apellido_materno"]'
+            ).forEach(function (campo) {
                 campo.addEventListener('input', function () {
-                    this.value = this.value.replace(/[^A-ZÁÉÍÓÚÜÑ\s]/gi, '').toUpperCase();
+                    this.value = this.value
+                        .replace(/[^A-ZÁÉÍÓÚÜÑ\s]/gi, '')
+                        .toUpperCase();
                 });
             });
-
         });
-
-
     </script>
+
+
 
     <body class="font-sans antialiased min-h-screen flex flex-col">
         <div class="flex-1">

@@ -17,10 +17,10 @@ class TramitaNetSeeder extends Seeder
             CatalogoInstitucionSeeder::class,
             CatalogoCampoSeeder::class,
             CatalogoServicioSeeder::class,
-            
             CatalogoServicioModalidadSeeder::class,
             CatalogoServicioModalidadCampoSeeder::class,
             CostoActaEntidadSeeder::class,
+            TramitaNetConfiguracionSeeder::class,
         ]);
     }
 

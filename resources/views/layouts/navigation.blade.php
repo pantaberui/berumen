@@ -267,6 +267,15 @@
                         </x-dropdown-link>
                         @endif
 
+                        @if(auth()->user()->hasRole('admin'))
+                            <x-dropdown-link
+                                :href="route('admin.tramitanet.configuracion.edit')"
+                                class="text-gray-700 font-medium"
+                            >
+                                ⚙ Configuración TramitaNet
+                            </x-dropdown-link>
+                        @endif
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
