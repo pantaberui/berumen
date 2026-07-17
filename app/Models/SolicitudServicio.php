@@ -32,6 +32,7 @@ class SolicitudServicio extends Model
         'fecha_pago_confirmado',
         'fecha_enviado',
         'catalogo_servicio_modalidad_id',
+        'codigo_consulta',
     ];
 
     protected $casts = [

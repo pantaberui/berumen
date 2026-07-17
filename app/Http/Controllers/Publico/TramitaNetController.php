@@ -60,9 +60,67 @@ class TramitaNetController extends Controller
         return view('publico.tramitanet.servicio', compact('servicio'));
     }
 
-    public function consulta()
+     public function consulta()
     {
         return view('publico.tramitanet.consulta');
+    }
+    
+    public function consultar(Request $request)
+    {
+        $datos = $request->validate([
+            'folio' => [
+                'required',
+                'string',
+                'max:50',
+            ],
+
+            'codigo_consulta' => [
+                'required',
+                'digits:6',
+            ],
+        ], [
+            'folio.required' =>
+                'Captura el folio de tu solicitud.',
+
+            'codigo_consulta.required' =>
+                'Captura el código de consulta.',
+
+            'codigo_consulta.digits' =>
+                'El código de consulta debe contener exactamente 6 dígitos.',
+        ]);
+
+        $solicitud = SolicitudServicio::where(
+                'folio',
+                trim($datos['folio'])
+            )
+            ->where(
+                'codigo_consulta',
+                $datos['codigo_consulta']
+            )
+            ->first();
+
+        if (!$solicitud) {
+            return back()
+                ->withErrors([
+                    'consulta' =>
+                        'No se encontró ninguna solicitud con la información proporcionada.',
+                ])
+                ->withInput();
+        }
+
+        /*
+        * Guardamos temporalmente en sesión que el ciudadano
+        * validó correctamente esta solicitud.
+        */
+        session()->put(
+            "tramitanet.expedientes_autorizados.{$solicitud->folio}",
+            true
+        );
+
+        return redirect()->route(
+            'tramitanet.expediente',
+            $solicitud->folio
+        );
     }
 
     

@@ -214,6 +214,9 @@ Route::get('/tramitanet/servicio/{slug}', [TramitaNetServicioController::class, 
 Route::get('/tramitanet/consulta', [TramitaNetController::class, 'consulta'])
     ->name('tramitanet.consulta');
 
+Route::post('/tramitanet/consulta', [TramitaNetController::class, 'consultar'])
+    ->name('tramitanet.consulta.buscar');
+
 Route::post('/tramitanet/servicio/{slug}/resumen', [TramitaNetSolicitudController::class, 'resumen'])
     ->name('tramitanet.servicio.resumen');
 

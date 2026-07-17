@@ -106,7 +106,7 @@
                     <table class="min-w-full divide-y divide-gray-200">
                         <thead class="bg-gray-50">
                             <tr>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Folio</th>
+                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Folio</th>                            
                                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">RFC / CURP</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Servicio</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Modalidad</th>
@@ -120,8 +120,17 @@
                         <tbody class="bg-white divide-y divide-gray-200">
                             @forelse($solicitudes as $solicitud)
                                 <tr>
-                                    <td class="px-6 py-4 font-bold text-blue-700">
-                                        {{ $solicitud->folio }}
+                                    <td class="px-4 py-3">
+                                        <p class="font-bold text-gray-900">
+                                            {{ $solicitud->folio }}
+                                        </p>
+
+                                        <p class="mt-1 text-xs text-gray-500">
+                                            Código:
+                                            <span class="font-mono font-bold text-gray-700">
+                                                {{ $solicitud->codigo_consulta ?? '—' }}
+                                            </span>
+                                        </p>
                                     </td>
 
                                     @php

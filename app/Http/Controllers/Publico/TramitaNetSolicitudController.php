@@ -18,6 +18,9 @@ use App\Services\TramitaNet\PagoService;
 use App\Services\TramitaNet\CaptchaService;
 use App\Services\TramitaNet\PrecioService;
 use InvalidArgumentException;
+use App\Mail\TramitaNetSolicitudRegistradaMail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class TramitaNetSolicitudController extends Controller
 {   
@@ -524,13 +527,9 @@ class TramitaNetSolicitudController extends Controller
             $curp = $campos['curp'] ?? null;
             $entidad = TramitaNetService::obtenerEntidadDesdeCurp($curp);
 
-
-
-
-
-
             $solicitud = SolicitudServicio::create([
                 'folio' => $folio,
+                'codigo_consulta' => TramitaNetService::generarCodigoConsulta(),
                 'telefono_whatsapp' => $telefonoWhatsappCompleto,
                 'correo' => $request->correo,
                 'referencia_pago' => $referenciaPago,
@@ -614,10 +613,32 @@ class TramitaNetSolicitudController extends Controller
             ]);
 
             TramitaNetNotificacionService::nuevaSolicitud($solicitud);
+            
 
             if (!$tieneArchivos) {
                 session()->forget('tramitanet.captcha_ok');
             }
+
+            $solicitud->load('servicio');
+
+            if ($solicitud->correo) {
+                try {
+                    Mail::to($solicitud->correo)
+                        ->send(new TramitaNetSolicitudRegistradaMail($solicitud));
+                } catch (\Throwable $e) {
+                    Log::error('No se pudo enviar el correo de solicitud TramitaNet.', [
+                        'solicitud_id' => $solicitud->id,
+                        'folio' => $solicitud->folio,
+                        'correo' => $solicitud->correo,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            session()->put(
+                "tramitanet.expedientes_autorizados.{$solicitud->folio}",
+                true
+            );
 
             return redirect()
                 ->route('tramitanet.expediente', $solicitud->folio);

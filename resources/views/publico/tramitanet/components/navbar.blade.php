@@ -40,9 +40,6 @@
                
             </div>
 
-
-
-
         </div>
 
         <nav class="hidden items-center gap-1 md:flex">

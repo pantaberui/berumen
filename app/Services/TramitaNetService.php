@@ -98,4 +98,25 @@ class TramitaNetService
         $digito = array_sum(str_split($base)) % 10;
         return $base . $digito;
     }
+
+    public static function generarCodigoConsulta(): string
+    {
+        do {
+
+            $codigo = str_pad(
+                (string) random_int(0, 999999),
+                6,
+                '0',
+                STR_PAD_LEFT
+            );
+
+        } while (
+            \App\Models\SolicitudServicio::where(
+                'codigo_consulta',
+                $codigo
+            )->exists()
+        );
+
+        return $codigo;
+    }
 }

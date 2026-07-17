@@ -29,6 +29,7 @@
     </div>
 </section>
 
+
 <section class="bg-slate-100 py-12">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 grid lg:grid-cols-3 gap-6 lg:gap-8 overflow-hidden">
         <div class="lg:col-span-2 space-y-6 min-w-0">
@@ -47,6 +48,75 @@
                         {{ strtoupper(str_replace('_', ' ', $solicitud->estatus)) }}
                     </span>
                 </div>
+
+
+
+                <div class="mb-6 rounded-2xl border border-green-200 bg-green-50 p-6 shadow-sm">
+                    <div class="flex items-start gap-3">
+                        <div class="text-3xl">✅</div>
+
+                        <div class="flex-1">
+
+                            <h2 class="text-xl font-black text-green-800">
+                                Solicitud registrada correctamente
+                            </h2>
+
+                            @if($solicitud->correo)
+                                <p class="mt-2 text-sm text-green-700">
+                                    Conserva estos datos en un lugar seguro. También fueron enviados a tu correo electrónico y te permitirán consultar el estado de tu solicitud en cualquier momento.
+                                </p>
+                            @else
+                                <p class="mt-2 text-sm text-green-700">
+                                    Conserva estos datos en un lugar seguro. Los necesitarás para consultar el estado de tu solicitud.
+                                </p>
+                            @endif
+
+                            <div class="mt-5 grid gap-4 md:grid-cols-2">
+
+                                <div class="rounded-xl border border-green-100 bg-white p-4">
+                                    <p class="text-xs font-bold uppercase tracking-wide text-gray-500">
+                                        Folio de solicitud
+                                    </p>
+
+                                    <p class="mt-2 font-mono text-2xl font-black text-gray-900">
+                                        {{ $solicitud->folio }}
+                                    </p>
+                                </div>
+
+                                <div class="rounded-xl border border-green-100 bg-white p-4">
+                                    <p class="text-xs font-bold uppercase tracking-wide text-gray-500">
+                                        Código de seguimiento
+                                    </p>
+
+                                    <p class="mt-2 font-mono text-2xl font-black text-gray-900">
+                                        {{ $solicitud->codigo_consulta }}
+                                    </p>
+                                </div>
+
+                            </div>
+
+                            @if($solicitud->correo)
+                                <p class="mt-4 text-sm text-green-700">
+                                    📧 También enviamos esta información a
+                                    <strong>{{ $solicitud->correo }}</strong>.
+                                </p>
+                            @endif
+
+                            <div class="mt-5 rounded-xl border border-blue-200 bg-blue-50 p-4">
+                                <p class="text-sm text-blue-800">
+                                    <strong>ℹ Importante:</strong><br>
+                                    El folio y el código de seguimiento son necesarios para consultar el avance de tu trámite desde la opción
+                                    <strong>"Consultar solicitud"</strong>.
+                                </p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+
 
                 <div class="bg-blue-50 border border-blue-200 rounded-3xl p-5 sm:p-8 overflow-hidden">
                     <div class="flex flex-col sm:flex-row sm:items-start gap-4">
