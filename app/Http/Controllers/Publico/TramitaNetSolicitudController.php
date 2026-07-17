@@ -672,12 +672,58 @@ class TramitaNetSolicitudController extends Controller
         
         $estadoActual = $this->obtenerMensajeEstado($solicitud->estatus);
 
+        $mensajeWhatsApp = implode("\n", [
+            "📄 *TRAMITANET*",
+            "Servicios Digitales Berumen",
+            "",
+            "Hola.",
+            "",
+            "Tu solicitud fue registrada correctamente.",
+            "",
+            "────────────────────",
+            "",
+            "📄 *Trámite:*",
+            $solicitud->servicio?->titulo_publico
+                ?? $solicitud->servicio?->nombre
+                ?? 'Solicitud de servicio',
+            "",
+            "🆔 *Folio:*",
+            $solicitud->folio,
+            "",
+            "🔑 *Código de seguimiento:*",
+            $solicitud->codigo_consulta,
+            "",
+            "💳 *Referencia de pago:*",
+            $solicitud->referencia_pago,
+            "",
+            "💰 *Total:*",
+            '$' . number_format((float) $solicitud->total_pagar, 2) . ' MXN',
+            "",
+            "📍 *Estado actual:*",
+            $estadoActual['titulo'],
+            "",
+            "────────────────────",
+            "",
+            "Consulta directamente tu expediente:",
+            route('tramitanet.expediente', $solicitud->folio),
+            "",
+            "📄 Descargar tu acuse:",
+            route('tramitanet.acuse', $solicitud->folio),
+            "",
+            "También puedes consultar cualquier solicitud en:",
+            route('tramitanet.consulta'),
+            "",
+            "Conserva este mensaje para futuras consultas.",
+        ]);
+
+
         return view('publico.tramitanet.expediente', compact(
             'solicitud',
             'estadoActual',
             'datosAgrupados',
             'ultimoPago',
-            'notasVisibles'
+            'notasVisibles',
+            'mensajeWhatsApp'
         ));
     }
 

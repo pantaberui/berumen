@@ -206,7 +206,7 @@
 
             const texto =
                 `*ENTRETENIMIENTO BERUMEN*\n` +
-                `Tamaulipas 4, San José de Mojarras\n` +
+                `Tamaulipas 3, San José de Mojarras\n` +
                 `Tel. (311) 352-2645\n\n` +
                 `*Recibo de Trámite*\n` +
                 `Folio: #${datos.folio}\n` +

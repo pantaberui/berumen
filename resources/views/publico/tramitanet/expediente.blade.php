@@ -110,38 +110,65 @@
                                 </p>
                             </div>
 
-                            @if($solicitud->servicio?->es_documento_oficial)
-                                <div class="mt-5">
-                                    <a
-                                        href="{{ route('tramitanet.acuse', $solicitud->folio) }}"
-                                        class="inline-flex w-full sm:w-auto items-center justify-center gap-2
-                                            rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white
-                                            shadow-sm transition hover:bg-blue-700
-                                            focus:outline-none focus:ring-2 focus:ring-blue-500
-                                            focus:ring-offset-2"
+                        
+                            <div class="mt-5 flex flex-col sm:flex-row gap-3">
+                                <a
+                                    href="{{ route('tramitanet.acuse', $solicitud->folio) }}"
+                                    class="inline-flex w-full sm:w-auto items-center justify-center gap-2
+                                        rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white
+                                        shadow-sm transition hover:bg-blue-700
+                                        focus:outline-none focus:ring-2 focus:ring-blue-500
+                                        focus:ring-offset-2"
+                                >
+                                    <svg
+                                        class="h-5 w-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                        aria-hidden="true"
                                     >
-                                        <svg
-                                            class="h-5 w-5"
-                                            fill="none"
-                                            stroke="currentColor"
-                                            viewBox="0 0 24 24"
-                                            aria-hidden="true"
-                                        >
-                                            <path
-                                                stroke-linecap="round"
-                                                stroke-linejoin="round"
-                                                stroke-width="2"
-                                                d="M12 10v6m0 0 3-3m-3 3-3-3m9 6H6a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2z"
-                                            />
-                                        </svg>
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M12 10v6m0 0 3-3m-3 3-3-3m9 6H6a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2z"
+                                        />
+                                    </svg>
 
-                                        Descargar acuse PDF
-                                    </a>
-                                </div>
-                            @endif
+                                    Descargar acuse PDF
+                                </a>
+                                <a
+                                    href="javascript:void(0)"
+                                    onclick="abrirModalWhatsApp()"
+                                    class="inline-flex w-full sm:w-auto items-center justify-center gap-2
+                                        rounded-xl bg-green-600 px-5 py-3 text-sm font-bold text-white
+                                        shadow-sm transition hover:bg-green-700
+                                        focus:outline-none focus:ring-2 focus:ring-green-500
+                                        focus:ring-offset-2"
+                                >
+                                    <svg class="h-5 w-5"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            d="M3 5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2H8l-5 5V5z"/>
+                                    </svg>
+
+                                    Enviar por WhatsApp
+                                </a>
+
+                            </div>
+                        
+
+
 
                         </div>
+
                     </div>
+
                 </div>
 
 
@@ -517,6 +544,101 @@
         </aside>
 
     </div>
+
+    {{-- Modal WhatsApp --}}
+    <div id="modal_whatsapp"
+        class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+
+        <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-sm mx-4">
+
+            <h3 class="text-lg font-black text-gray-900 mb-2">
+                Enviar comprobante por WhatsApp
+            </h3>
+
+            <p class="text-sm text-gray-600 mt-2">
+                Se abrirá WhatsApp con un mensaje listo para enviarte el comprobante de tu trámite.
+            </p>
+
+            <p class="text-sm text-gray-500 mb-4">
+                Revisa el número antes de abrir WhatsApp.
+            </p>
+
+            <div class="mt-5">
+                <label class="block text-xs font-bold text-gray-500 uppercase mb-1">
+                    Número registrado
+                </label>
+                <input type="text"
+                    id="whatsapp_numero"
+                    value="{{ preg_replace('/\D/', '', $solicitud->telefono_whatsapp ?? '') }}"
+                    class="w-full border-gray-300 rounded-xl shadow-sm text-sm"
+                    maxlength="15"
+                    placeholder="523111234567">
+            </div>
+
+            <p id="error_whatsapp"
+            class="hidden text-red-600 text-xs mt-2">
+                Ingresa un número válido con código de país.
+            </p>
+
+            <div class="flex justify-end gap-3 mt-5">
+                <button type="button"
+                        onclick="cerrarModalWhatsApp()"
+                        class="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm font-bold">
+                    Cancelar
+                </button>
+
+                <button type="button"
+                        onclick="enviarWhatsApp()"
+                        class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-sm font-bold">
+                    📱 Abrir WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+
 </section>
 
 @endsection
+
+<script>
+    function abrirModalWhatsApp() {
+        document
+            .getElementById('modal_whatsapp')
+            .classList
+            .remove('hidden');
+    }
+
+    function cerrarModalWhatsApp() {
+        document
+            .getElementById('modal_whatsapp')
+            .classList
+            .add('hidden');
+    }
+
+    function enviarWhatsApp() {
+        const numero = document
+            .getElementById('whatsapp_numero')
+            .value
+            .replace(/\D/g, '');
+
+        if (numero.length < 7 || numero.length > 15) {
+            return;
+        }
+
+        const texto = @json($mensajeWhatsApp);
+
+        window.open(
+            `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`,
+            '_blank'
+        );
+
+        cerrarModalWhatsApp();
+    }
+
+    document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+            cerrarModalWhatsApp();
+        }
+    });
+</script>
