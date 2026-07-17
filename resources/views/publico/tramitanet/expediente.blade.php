@@ -110,6 +110,36 @@
                                 </p>
                             </div>
 
+                            @if($solicitud->servicio?->es_documento_oficial)
+                                <div class="mt-5">
+                                    <a
+                                        href="{{ route('tramitanet.acuse', $solicitud->folio) }}"
+                                        class="inline-flex w-full sm:w-auto items-center justify-center gap-2
+                                            rounded-xl bg-blue-600 px-5 py-3 text-sm font-bold text-white
+                                            shadow-sm transition hover:bg-blue-700
+                                            focus:outline-none focus:ring-2 focus:ring-blue-500
+                                            focus:ring-offset-2"
+                                    >
+                                        <svg
+                                            class="h-5 w-5"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                            aria-hidden="true"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 10v6m0 0 3-3m-3 3-3-3m9 6H6a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2z"
+                                            />
+                                        </svg>
+
+                                        Descargar acuse PDF
+                                    </a>
+                                </div>
+                            @endif
+
                         </div>
                     </div>
                 </div>

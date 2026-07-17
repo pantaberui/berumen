@@ -27,6 +27,7 @@ use App\Http\Controllers\Publico\TramitaNetSolicitudController;
 use App\Http\Controllers\Admin\TramitaNetSolicitudAdminController;
 use App\Http\Controllers\Publico\TramitaNetCaptchaController;
 use App\Http\Controllers\Admin\TramitaNetConfiguracionController;
+use App\Http\Controllers\Publico\TramitaNetAcuseController;
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -243,3 +244,8 @@ Route::get(
     '/tramitanet/captcha',
     [TramitaNetCaptchaController::class, 'imagen']
 )->name('tramitanet.captcha');
+
+Route::get(
+    '/tramitanet/expediente/{folio}/acuse',
+    [TramitaNetAcuseController::class, 'descargar']
+)->name('tramitanet.acuse');
