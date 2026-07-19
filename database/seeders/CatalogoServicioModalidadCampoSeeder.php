@@ -180,7 +180,7 @@ class CatalogoServicioModalidadCampoSeeder extends Seeder
                 'por-datos-del-credito' => [
                     'curp',
                     'nss',
-                    'numero_credito_infonavit',
+                    'numero_de_credito_infonavit',
                 ],
             ],
 
@@ -195,7 +195,7 @@ class CatalogoServicioModalidadCampoSeeder extends Seeder
                 'por-datos-del-credito' => [
                     'curp',
                     'nss',
-                    'numero_credito_infonavit',
+                    'numero_de_credito_infonavit',
                 ],
             ],
 

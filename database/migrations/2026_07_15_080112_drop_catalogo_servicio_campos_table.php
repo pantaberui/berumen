@@ -18,22 +18,21 @@ return new class extends Migration
 
             $table->foreignId('catalogo_servicio_id')
                 ->constrained('catalogo_servicios')
+                ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
             $table->foreignId('catalogo_campo_id')
+                ->nullable()
                 ->constrained('catalogo_campos')
-                ->cascadeOnDelete();
+                ->nullOnDelete();
 
-            $table->boolean('requerido')->default(false);
-            $table->unsignedInteger('orden')->default(0);
+            $table->boolean('requerido')->default(true);
+            $table->integer('orden')->default(0);
             $table->boolean('activo')->default(true);
 
-            $table->timestamps();
+            $table->json('opciones_personalizadas')->nullable();
 
-            $table->unique([
-                'catalogo_servicio_id',
-                'catalogo_campo_id',
-            ], 'catalogo_servicio_campo_unique');
+            $table->timestamps();
         });
     }
 };

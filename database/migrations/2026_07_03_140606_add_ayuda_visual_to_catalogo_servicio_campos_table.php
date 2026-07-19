@@ -6,35 +6,26 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::table('catalogo_servicios', function (Blueprint $table) {
-
-            $table->foreignId('catalogo_institucion_id')
+        Schema::table('catalogo_servicio_campos', function (Blueprint $table) {
+            $table->string('titulo_ayuda')
                 ->nullable()
-                ->after('categoria')
-                ->constrained('catalogo_instituciones')
-                ->nullOnDelete();
+                ->after('ayuda');
 
-            $table->dropColumn('subcategoria');
-
+            $table->string('imagen_ayuda')
+                ->nullable()
+                ->after('titulo_ayuda');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-  public function down(): void
+    public function down(): void
     {
-        Schema::table('catalogo_servicios', function (Blueprint $table) {
-
-            $table->string('subcategoria')->nullable();
-
-            $table->dropConstrainedForeignId('catalogo_institucion_id');
-
+        Schema::table('catalogo_servicio_campos', function (Blueprint $table) {
+            $table->dropColumn([
+                'titulo_ayuda',
+                'imagen_ayuda',
+            ]);
         });
     }
 };
