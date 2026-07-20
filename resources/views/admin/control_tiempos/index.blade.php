@@ -840,6 +840,8 @@
         document.getElementById('btn_agregar_prod').classList.remove('hidden');
         document.getElementById('resultados_productos_renta').classList.add('hidden');
         document.getElementById('buscar_producto_renta').value = '';
+        // Reset cantidad a 1 siempre
+        document.getElementById('prod_cantidad_renta').value = '1';
     }
 
     function cargarProductosRenta() {
@@ -849,13 +851,23 @@
             .then(data => {
                 const lista = document.getElementById('lista_productos_renta');
                 if (data.productos && data.productos.length > 0) {
-                    lista.innerHTML = '<p class="text-xs text-gray-500 mb-1">Productos agregados:</p>' +
-                        data.productos.map(p =>
-                            `<div class="text-xs flex justify-between text-gray-600">
-                                <span>${p.producto.descripcion} x${p.cantidad}</span>
-                                <span>$${parseFloat(p.subtotal).toFixed(2)}</span>
-                            </div>`
-                        ).join('');
+                    lista.innerHTML = '<p class="text-xs text-gray-500 mb-1 font-medium">Productos agregados:</p>' +
+                        data.productos.map(p => `
+                            <div class="flex items-center justify-between text-xs text-gray-600 mb-1 gap-1">
+                                <span class="flex-1">${p.producto.descripcion}</span>
+                                <div class="flex items-center gap-1">
+                                    <button onclick="cambiarCantidadProducto(${p.id}, ${p.cantidad - 1})"
+                                            class="w-5 h-5 bg-gray-200 rounded text-center font-bold hover:bg-gray-300">−</button>
+                                    <span class="w-6 text-center font-medium">${p.cantidad}</span>
+                                    <button onclick="cambiarCantidadProducto(${p.id}, ${p.cantidad + 1})"
+                                            class="w-5 h-5 bg-gray-200 rounded text-center font-bold hover:bg-gray-300">+</button>
+                                    <span class="text-gray-400 ml-1">$${parseFloat(p.subtotal).toFixed(2)}</span>
+                                    <button onclick="quitarProductoRenta(${p.id})"
+                                            class="w-5 h-5 bg-red-100 text-red-600 rounded text-center hover:bg-red-200 ml-1"
+                                            title="Quitar">✕</button>
+                                </div>
+                            </div>
+                        `).join('');
                 } else {
                     lista.innerHTML = '<p class="text-xs text-gray-400">Sin productos agregados.</p>';
                 }
@@ -1177,6 +1189,51 @@
             btnStop.disabled  = false;
             btnPause.title = eq.estatus === 'pausado' ? 'Reanudar' : 'Pausar';
         }
+    }
+
+    function quitarProductoRenta(rentaProductoId) {
+        if (!confirm('¿Quitar este producto?')) return;
+
+        fetch(`{{ url('admin/control-tiempos/quitar-producto') }}/${rentaProductoId}`, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const eq = equiposState[equipoActivo];
+                eq.total_productos = parseFloat(data.total_productos) || 0;
+                eq.num_productos   = Math.max(0, (eq.num_productos || 1) - 1);
+                renderEquipo(equipoActivo);
+                cargarProductosRenta();
+            } else {
+                alert(data.error || 'Error al quitar producto.');
+            }
+        });
+    }
+
+    function cambiarCantidadProducto(rentaProductoId, nuevaCantidad) {
+        if (nuevaCantidad < 1) {
+            quitarProductoRenta(rentaProductoId);
+            return;
+        }
+
+        fetch(`{{ url('admin/control-tiempos/actualizar-producto') }}/${rentaProductoId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': CSRF },
+            body: JSON.stringify({ cantidad: nuevaCantidad }),
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                const eq = equiposState[equipoActivo];
+                eq.total_productos = parseFloat(data.total_productos) || 0;
+                renderEquipo(equipoActivo);
+                cargarProductosRenta();
+            } else {
+                alert(data.error || 'Error al actualizar cantidad.');
+            }
+        });
     }
 
     </script>

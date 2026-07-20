@@ -313,4 +313,55 @@ class ControlTiemposController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function quitarProducto(RentaProducto $rentaProducto)
+    {
+        $renta = $rentaProducto->renta;
+
+        // Regresar stock si es producto
+        if ($rentaProducto->producto->categoria === 'producto') {
+            $rentaProducto->producto->increment('stock', $rentaProducto->cantidad);
+        }
+
+        $rentaProducto->delete();
+
+        $totalProductos = $renta->productos()->sum('subtotal');
+
+        return response()->json([
+            'success'         => true,
+            'total_productos' => $totalProductos,
+        ]);
+    }
+
+    public function actualizarProducto(Request $request, RentaProducto $rentaProducto)
+    {
+        $request->validate(['cantidad' => 'required|integer|min:1']);
+
+        $producto       = $rentaProducto->producto;
+        $diferencia     = $request->cantidad - $rentaProducto->cantidad;
+
+        // Verificar stock si es producto físico
+        if ($producto->categoria === 'producto' && $diferencia > 0) {
+            if ($producto->stock < $diferencia) {
+                return response()->json([
+                    'error' => "Stock insuficiente. Disponible: {$producto->stock}"
+                ], 422);
+            }
+            $producto->decrement('stock', $diferencia);
+        } elseif ($producto->categoria === 'producto' && $diferencia < 0) {
+            $producto->increment('stock', abs($diferencia));
+        }
+
+        $rentaProducto->update([
+            'cantidad' => $request->cantidad,
+            'subtotal' => $rentaProducto->precio_unitario * $request->cantidad,
+        ]);
+
+        $totalProductos = $rentaProducto->renta->productos()->sum('subtotal');
+
+        return response()->json([
+            'success'         => true,
+            'total_productos' => $totalProductos,
+        ]);
+    }
 }
