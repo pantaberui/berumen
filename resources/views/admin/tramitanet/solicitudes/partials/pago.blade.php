@@ -88,7 +88,7 @@
 
         </div>
 
-        @if($ultimoPago->estatus === 'pendiente')
+        @if(in_array($ultimoPago->estatus, ['pendiente', 'en_revision']))
             <div class="mt-5 grid md:grid-cols-2 gap-3">
                 <form method="POST"
                       action="{{ route('admin.tramitanet.pagos.validar', $ultimoPago) }}">

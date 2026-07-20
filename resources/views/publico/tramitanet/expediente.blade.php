@@ -311,13 +311,14 @@
                                     <p class="text-sm text-slate-500 mt-1">
                                         {{ $documento->nombre_original_archivo }}
                                     </p>
+                                    <a href="{{ route('tramitanet.documentos-generados.descargar', [$solicitud->folio, $documento]) }}"
+                                    class="inline-flex mt-4 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold">
+                                        Descargar documento
+                                    </a>
                                 </div>
                             @endforeach
                         </div>
-                        <a href="{{ route('tramitanet.documentos-generados.descargar', [$solicitud->folio, $documento]) }}"
-                        class="inline-flex mt-4 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold">
-                            Descargar documento
-                        </a>
+
                     </div>
 
                 @endif
@@ -432,6 +433,76 @@
                 </p>
             </div>
 
+            @if($ultimoPago)
+                <div class="bg-white rounded-3xl shadow border border-slate-200 p-6">
+                    <p class="text-sm font-bold text-slate-500 uppercase">
+                        Datos para realizar el pago
+                    </p>
+
+                    <div class="mt-5 space-y-4">
+
+                        <div>
+                            <p class="text-xs font-bold uppercase text-slate-500">
+                                Banco
+                            </p>
+
+                            <p class="font-black text-slate-900 mt-1">
+                                {{ $ultimoPago->banco ?: 'No especificado' }}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p class="text-xs font-bold uppercase text-slate-500">
+                                Titular
+                            </p>
+
+                            <p class="font-black text-slate-900 mt-1 break-words">
+                                {{ $ultimoPago->titular ?: 'No especificado' }}
+                            </p>
+                        </div>
+
+                        @if($ultimoPago->numero_cuenta)
+                            <div>
+                                <p class="text-xs font-bold uppercase text-slate-500">
+                                    Número de cuenta
+                                </p>
+
+                                <p class="font-mono text-lg font-black text-slate-900 mt-1 break-all">
+                                    {{ $ultimoPago->numero_cuenta }}
+                                </p>
+                            </div>
+                        @endif
+
+                        @if($ultimoPago->clabe_interbancaria)
+                            <div>
+                                <p class="text-xs font-bold uppercase text-slate-500">
+                                    CLABE interbancaria
+                                </p>
+
+                                <p class="font-mono text-lg font-black text-blue-700 mt-1 break-all">
+                                    {{ $ultimoPago->clabe_interbancaria }}
+                                </p>
+                            </div>
+                        @endif
+
+                        <div class="rounded-2xl border border-blue-200 bg-blue-50 p-4">
+                            <p class="text-xs font-bold uppercase text-blue-700">
+                                Referencia obligatoria
+                            </p>
+
+                            <p class="font-mono text-2xl font-black text-blue-900 mt-2 break-all">
+                                {{ $solicitud->referencia_pago }}
+                            </p>
+
+                            <p class="text-xs text-blue-700 mt-2">
+                                Incluye esta referencia en el concepto de tu transferencia.
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+            @endif
+
 
             <div class="bg-white rounded-3xl shadow border border-slate-200 p-6">
                 <p class="text-sm font-bold text-slate-500 uppercase">
@@ -452,59 +523,133 @@
 
 
                 @if($solicitud->estatus === 'esperando_pago')
-                    <form method="POST"
-                        action="{{ route('tramitanet.pago.subir', $solicitud->folio) }}"
-                        enctype="multipart/form-data"
-                        class="mt-4">
+                    @php
+                        $puedeSubirComprobante =
+                            $solicitud->estatus === EstadosSolicitud::ESPERANDO_PAGO
+                            && $ultimoPago
+                            && in_array($ultimoPago->estatus, [
+                                'esperando_comprobante',
+                                'pendiente',
+                                'rechazado',
+                            ]);
+                    @endphp
 
-                        @csrf
+                    @if($puedeSubirComprobante)
 
-                        <input type="file"
-                            name="comprobante"
-                            accept=".pdf,.jpg,.jpeg,.png"
-                            required
-                            class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm">
+                        @if($ultimoPago?->estatus === 'rechazado')
+                            <div class="mb-5 rounded-2xl border border-red-200 bg-red-50 p-5">
+                                <div class="flex items-start gap-3">
+                                    <div class="text-2xl">
+                                        ⚠️
+                                    </div>
 
-                        @error('comprobante')
-                            <p class="text-sm text-red-600 font-semibold mt-2">
-                                {{ $message }}
+                                    <div>
+                                        <p class="font-black text-red-800">
+                                            El comprobante de pago fue rechazado
+                                        </p>
+
+                                        <p class="mt-1 text-sm text-red-700">
+                                            Revisa el motivo indicado y envía un nuevo comprobante.
+                                        </p>
+
+                                        @if($ultimoPago->observacion)
+                                            <div class="mt-3 rounded-xl border border-red-200 bg-white p-4">
+                                                <p class="text-xs font-bold uppercase text-red-600">
+                                                    Motivo del rechazo
+                                                </p>
+
+                                                <p class="mt-1 text-sm font-semibold text-red-900">
+                                                    {{ $ultimoPago->observacion }}
+                                                </p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+
+
+
+                        <form
+                            method="POST"
+                            action="{{ route('tramitanet.pago.subir', $solicitud->folio) }}"
+                            enctype="multipart/form-data"
+                            class="mt-4"
+                        >
+                            @csrf
+
+                            <label class="block text-sm font-bold text-slate-700 mb-2">
+                                Selecciona tu comprobante
+                            </label>
+
+                            <input
+                                type="file"
+                                name="comprobante"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                required
+                                class="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm"
+                            >
+
+                            @error('comprobante')
+                                <p class="text-sm text-red-600 font-semibold mt-2">
+                                    {{ $message }}
+                                </p>
+                            @enderror
+
+                            <p class="text-xs text-slate-500 mt-2">
+                                Formatos permitidos: PDF, JPG, JPEG o PNG. Tamaño máximo: 10 MB.
                             </p>
-                        @enderror
 
-                        <button type="submit"
-                                class="mt-4 w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold py-3">
-                            Subir comprobante
-                        </button>
-                    </form>
-                @elseif($solicitud->estatus === 'pago_en_revision')
-                    <p class="text-sm text-blue-800 mt-4">
-                        Ya recibimos tu comprobante. Nuestro personal lo revisará en breve.
-                    </p>
-                @elseif(in_array($solicitud->estatus, ['pago_confirmado', 'en_gestion', 'entregado']))
-                    <p class="text-sm text-green-800 mt-4">
-                        Tu pago ya fue validado correctamente.
-                    </p>
-                @else
-                    <p class="text-sm text-slate-600 mt-4">
-                        El comprobante podrá subirse cuando la solicitud esté en espera de pago.
-                    </p>
-                @endif
+                            <button
+                                type="submit"
+                                class="mt-4 w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold py-3"
+                            >
+                                Subir comprobante
+                            </button>
+                        </form>
 
+                    @elseif(
+                        $solicitud->estatus === EstadosSolicitud::PAGO_EN_REVISION
+                        || $ultimoPago?->estatus === 'en_revision'
+                    )
+                        <div class="mt-4 rounded-2xl border border-blue-200 bg-blue-50 p-4">
+                            <p class="font-bold text-blue-900">
+                                Comprobante recibido
+                            </p>
 
-                @if($ultimoPago && $ultimoPago->estatus === 'rechazado')
-                    <div class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4">
-                        <p class="font-extrabold text-red-800">
-                            ❌ Comprobante rechazado
+                            <p class="text-sm text-blue-800 mt-2">
+                                Nuestro personal revisará el pago en breve.
+                            </p>
+
+                            @if($ultimoPago?->fecha_subida)
+                                <p class="text-xs text-blue-600 mt-2">
+                                    Recibido el
+                                    {{ $ultimoPago->fecha_subida->format('d/m/Y H:i') }}
+                                    hrs.
+                                </p>
+                            @endif
+                        </div>
+
+                    @elseif(in_array($solicitud->estatus, [
+                        EstadosSolicitud::PAGO_CONFIRMADO,
+                        EstadosSolicitud::EN_GESTION,
+                        EstadosSolicitud::ENTREGADO,
+                    ]))
+                        <div class="mt-4 rounded-2xl border border-green-200 bg-green-50 p-4">
+                            <p class="font-bold text-green-900">
+                                ✅ Pago validado
+                            </p>
+
+                            <p class="text-sm text-green-800 mt-2">
+                                Tu pago fue validado correctamente.
+                            </p>
+                        </div>
+
+                    @else
+                        <p class="text-sm text-slate-600 mt-4">
+                            El comprobante podrá enviarse cuando la solicitud se encuentre en espera de pago.
                         </p>
-
-                        <p class="text-sm text-red-700 mt-2">
-                            {{ $ultimoPago->observacion ?: 'El comprobante no pudo ser validado.' }}
-                        </p>
-
-                        <p class="text-xs text-red-600 mt-3">
-                            Corrige el comprobante y envíalo nuevamente.
-                        </p>
-                    </div>
+                    @endif
                 @endif
             </div>
 

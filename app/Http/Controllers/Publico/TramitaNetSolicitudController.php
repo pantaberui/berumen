@@ -21,6 +21,8 @@ use InvalidArgumentException;
 use App\Mail\TramitaNetSolicitudRegistradaMail;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use App\Services\TramitaNet\CambioEstadoService;
+use App\Support\TramitaNet\EstadosSolicitud;
 
 class TramitaNetSolicitudController extends Controller
 {   
@@ -611,6 +613,16 @@ class TramitaNetSolicitudController extends Controller
                 'observacion' => 'Solicitud registrada desde TramitaNet.',
                 'user_id' => null,
             ]);
+
+            PagoService::crearPagoInicial($solicitud);
+
+            CambioEstadoService::ejecutar(
+                solicitud: $solicitud,
+                nuevoEstado: EstadosSolicitud::ESPERANDO_PAGO,
+                observacion: 'Solicitud registrada. Se encuentra pendiente de pago.',
+                userId: null,
+                tipoNota: 'pago'
+            );
 
             TramitaNetNotificacionService::nuevaSolicitud($solicitud);
             
