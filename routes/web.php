@@ -121,6 +121,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::get('estado/{renta}',                 [ControlTiemposController::class, 'estadoActual'])->name('estado');
         Route::get('reporte',                        [ControlTiemposController::class, 'reporte'])->name('reporte');
         Route::post('asignar-tiempo/{renta}', [ControlTiemposController::class, 'asignarTiempo'])->name('asignar-tiempo');         
+        Route::delete('quitar-producto/{rentaProducto}',    [ControlTiemposController::class, 'quitarProducto'])->name('quitar-producto');
+        Route::patch('actualizar-producto/{rentaProducto}', [ControlTiemposController::class, 'actualizarProducto'])->name('actualizar-producto');
     });
 
     Route::resource('usuarios', UsuarioController::class)->except(['show']);
