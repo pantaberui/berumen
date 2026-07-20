@@ -666,8 +666,8 @@ class TramitaNetSolicitudController extends Controller
             'datos.catalogoCampo',
             'historial',
             'documentosGenerados',
-            'pagos',
             'notas',
+            'ultimoPago'
         ])
             ->where('folio', $folio)
             ->firstOrFail();
