@@ -128,7 +128,7 @@ class TramitaNetSolicitudController extends Controller
 
 
         $entidadCurp = TramitaNetService::obtenerEntidadDesdeCurp(
-            $campos['curp'] ?? null
+             $camposEntrada['curp'] ?? null
         );
 
         $request->merge([
