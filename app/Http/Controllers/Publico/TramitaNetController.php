@@ -159,4 +159,9 @@ class TramitaNetController extends Controller
             'modalidadServicio'
         ));
     }
+
+    public function faq()
+    {
+        return view('publico.tramitanet.faq');
+    }
 }

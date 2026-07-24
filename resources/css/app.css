@@ -5,3 +5,7 @@
 .iti {
     width: 100%;
 }
+
+[x-cloak] {
+    display: none !important;
+}

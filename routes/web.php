@@ -263,3 +263,20 @@ Route::get(
     '/tramitanet/expediente/{folio}/acuse',
     [TramitaNetAcuseController::class, 'descargar']
 )->name('tramitanet.acuse');
+
+Route::get('/tramitanet/preguntas-frecuentes', [TramitaNetController::class, 'faq'])
+    ->name('tramitanet.faq');
+
+Route::get('/tramitanet/preguntas-frecuentes', function () {
+    return view('publico.tramitanet.faq');
+})->name('tramitanet.faq');
+
+Route::view(
+    '/tramitanet/aviso-de-privacidad',
+    'publico.tramitanet.privacidad'
+)->name('tramitanet.privacidad');
+
+Route::view(
+    '/tramitanet/terminos-y-condiciones',
+    'publico.tramitanet.terminos'
+)->name('tramitanet.terminos');

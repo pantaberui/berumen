@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>@yield('title', 'TramitaNet | Servicios Digitales Berumen')</title>
+    <title>resources/views/publico/tramitanet/components/footer.blade.php</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
