@@ -7,7 +7,7 @@
     @endif
 
     <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex min-w-0 flex-1">
                 <!-- Logo -->
@@ -20,7 +20,7 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden sm:flex sm:shrink-0 sm:items-center sm:ms-4">
+                <div class="hidden sm:flex sm:shrink-0 sm:items-center sm:ms-4 sm:gap-4">
                     <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                         Dashboard
                     </x-nav-link>
