@@ -25,7 +25,8 @@
                     <img
                         src="{{ asset('images/tramitanet-icono.png') }}"
                         alt="Icono de TramitaNet"
-                        class="h-14 w-14 object-contain transition duration-200 group-hover:scale-105"
+                        class="h-12 w-auto rounded-xl"
+                        
                     >
                 </div>
 
