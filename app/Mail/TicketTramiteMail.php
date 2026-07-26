@@ -23,7 +23,7 @@ class TicketTramiteMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.ticket-tramite',
+            view: 'emails.ticket-tramite',
             with: ['tramite' => $this->tramite],
         );
     }

@@ -6,7 +6,7 @@
 # ENTRETENIMIENTO BERUMEN
 Tamaulipas 3, San José de Mojarras.
 Nayarit, México. Tel. (311) 352-2645
-ecberumen2015@gmail.com
+tramitanet.berumen@gmail.com
 </div>
 
 ---

@@ -18,9 +18,7 @@ use App\Services\TramitaNet\PagoService;
 use App\Services\TramitaNet\CaptchaService;
 use App\Services\TramitaNet\PrecioService;
 use InvalidArgumentException;
-use App\Mail\TramitaNetSolicitudRegistradaMail;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Mail;
 use App\Services\TramitaNet\CambioEstadoService;
 use App\Support\TramitaNet\EstadosSolicitud;
 
@@ -621,7 +619,8 @@ class TramitaNetSolicitudController extends Controller
                 nuevoEstado: EstadosSolicitud::ESPERANDO_PAGO,
                 observacion: 'Solicitud registrada. Se encuentra pendiente de pago.',
                 userId: null,
-                tipoNota: 'pago'
+                tipoNota: 'pago',
+                notificarCliente: false
             );
 
             TramitaNetNotificacionService::nuevaSolicitud($solicitud);
@@ -631,21 +630,6 @@ class TramitaNetSolicitudController extends Controller
                 session()->forget('tramitanet.captcha_ok');
             }
 
-            $solicitud->load('servicio');
-
-            if ($solicitud->correo) {
-                try {
-                    Mail::to($solicitud->correo)
-                        ->send(new TramitaNetSolicitudRegistradaMail($solicitud));
-                } catch (\Throwable $e) {
-                    Log::error('No se pudo enviar el correo de solicitud TramitaNet.', [
-                        'solicitud_id' => $solicitud->id,
-                        'folio' => $solicitud->folio,
-                        'correo' => $solicitud->correo,
-                        'error' => $e->getMessage(),
-                    ]);
-                }
-            }
 
             session()->put(
                 "tramitanet.expedientes_autorizados.{$solicitud->folio}",

@@ -29,7 +29,7 @@
                         style="width: 95%; max-width: 800px; height: 250px; object-fit: contain;">
                     <p class="text-gray-600 text-sm">Tamaulipas 3, San José de Mojarras</p>
                     <p class="text-gray-600 text-sm">Nayarit, México. Tel. (311) 352-26-45</p>
-                    <p class="text-gray-600 text-sm">ecberumen2015@gmail.com</p>
+                    <p class="text-gray-600 text-sm">tramitanet.berumen@gmail.comp>
                     <p class="text-gray-600 text-sm">Síguenos en Facebook: /berumen.entretenimiento</p>
                     <p class="text-gray-400 text-xs mt-1">
                         {{ $pago->fecha_hora_registro ? $pago->fecha_hora_registro->format('d/m/Y H:i') : $pago->created_at->format('d/m/Y H:i') }}

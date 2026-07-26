@@ -291,6 +291,17 @@
                                     🏦 Cuentas bancarias
                                 </a>
 
+                                <a
+                                    href="{{ route('admin.costos-actas.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50
+                                        {{ request()->routeIs('admin.costos-actas.*')
+                                            ? 'font-semibold text-indigo-600'
+                                            : '' }}"
+                                >
+                                    💰 Costos de actas
+                                </a>
+
+
                                 <div class="my-1 border-t border-gray-100"></div>
 
                                 <p class="px-4 py-2 text-xs font-bold uppercase tracking-wide text-gray-400">
@@ -567,6 +578,14 @@
                     style="color: #cbd5e1; padding-left: 1.5rem;"
                 >
                     Cuentas bancarias
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link
+                    :href="route('admin.costos-actas.index')"
+                    :active="request()->routeIs('admin.costos-actas.*')"
+                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                >
+                    Costos de actas
                 </x-responsive-nav-link>
 
                 <a

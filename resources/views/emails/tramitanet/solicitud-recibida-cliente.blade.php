@@ -3,10 +3,12 @@
 
 Hola.
 
-Recibimos correctamente tu solicitud en TramitaNet.
+Recibimos correctamente tu solicitud en **TramitaNet**.
 
 <x-mail::panel>
 **Folio:** {{ $solicitud->folio }}
+
+**Código de seguimiento:** {{ $solicitud->codigo_consulta }}
 
 **Servicio:** {{ $solicitud->servicio->titulo_publico ?? $solicitud->servicio->nombre }}
 
@@ -15,13 +17,13 @@ Recibimos correctamente tu solicitud en TramitaNet.
 **Estado:** Solicitud recibida
 </x-mail::panel>
 
-Puedes consultar el avance de tu trámite desde el siguiente botón:
+Conserva tu **folio** y tu **código de seguimiento**. Los necesitarás para consultar el avance de tu solicitud.
 
-<x-mail::button :url="route('tramitanet.expediente', $solicitud->folio)">
+<x-mail::button :url="route('tramitanet.consulta')">
 Consultar mi trámite
 </x-mail::button>
 
-Conserva tu folio para futuras consultas.
+También puedes ingresar directamente al portal y capturar ambos datos.
 
 Gracias por utilizar TramitaNet.
 

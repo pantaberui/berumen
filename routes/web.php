@@ -29,6 +29,7 @@ use App\Http\Controllers\Publico\TramitaNetCaptchaController;
 use App\Http\Controllers\Admin\TramitaNetConfiguracionController;
 use App\Http\Controllers\Publico\TramitaNetAcuseController;
 use App\Http\Controllers\Admin\CatalogoCuentaBancariaController;
+use App\Http\Controllers\Admin\CostoActaEntidadController;
 
 
 Route::get('/', function () {
@@ -208,7 +209,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             'catalogo-cuentas-bancarias' => 'catalogoCuentaBancaria',
         ])
         ->except('show');
-    
+
+   Route::resource(
+        'costos-actas',
+        CostoActaEntidadController::class
+    )
+        ->parameters([
+            'costos-actas' => 'costoActaEntidad',
+        ])
+        ->only([
+            'index',
+            'edit',
+            'update',
+        ]);     
+
+
 
 });
 

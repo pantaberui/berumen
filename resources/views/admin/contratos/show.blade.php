@@ -31,7 +31,7 @@
                     <div><span class="font-medium text-gray-500">Número</span><p>{{ $contrato->numero_contrato }}</p></div>
                     <div><span class="font-medium text-gray-500">Fecha Inicio</span><p>{{ $contrato->fecha_inicio->format('d/m/Y') }}</p></div>
                     <div><span class="font-medium text-gray-500">Mensualidad</span><p>${{ number_format($contrato->mensualidad, 2) }}</p></div>
-                    <div><span class="font-medium text-gray-500">Velocidad</span><p>{{ $contrato->velocidad ?? '—' }}</p></div>
+                    <div><span class="font-medium text-gray-500">Red</span><p>{{ $contrato->velocidad ?? '—' }}</p></div>
                     
                     <div>
                         <span class="font-medium text-gray-500">Dirección IP</span>
