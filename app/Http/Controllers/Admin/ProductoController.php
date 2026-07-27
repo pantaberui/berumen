@@ -76,14 +76,34 @@ class ProductoController extends Controller
             'precio_unitario'=> 'required|numeric|min:0',
         ]);
 
+        $nuevoStock     = $request->categoria === 'producto' ? ($request->stock ?? 0) : 0;
+        $stockAnterior  = $producto->stock;
+        $diferencia     = $nuevoStock - $stockAnterior;
+        $usuario        = auth()->user()->name . ' ' . auth()->user()->apellido_paterno;
+        $fecha          = now()->format('d/m/Y H:i');
+
+        // Generar observación automática si el stock cambió
+        $observacionNueva = null;
+        if ($producto->categoria === 'producto' && $diferencia !== 0) {
+            $obsActual = $producto->observaciones_stock ?? '';
+            if ($diferencia < 0) {
+                $observacionNueva = trim($obsActual . "\n⚠️ Faltó registrar en venta " . abs($diferencia) . " producto(s); {$fecha}; {$usuario}");
+            } else {
+                $observacionNueva = trim($obsActual . "\n📦 Sobrante de {$diferencia} producto(s) o faltó registrar alguna compra; {$fecha}; {$usuario}");
+            }
+        } else {
+            $observacionNueva = $producto->observaciones_stock;
+        }
+
         $producto->update([
-            'clave'          => strtoupper($request->clave),
-            'descripcion'    => strtoupper($request->descripcion),
-            'categoria'      => $request->categoria,
-            'stock'          => $request->categoria === 'producto' ? ($request->stock ?? 0) : 0,
-            'stock_minimo'   => $request->stock_minimo ?? 0,
-            'precio_unitario'=> $request->precio_unitario,
-            'activo'         => $request->has('activo') ? 1 : 0,
+            'clave'               => strtoupper($request->clave),
+            'descripcion'         => strtoupper($request->descripcion),
+            'categoria'           => $request->categoria,
+            'stock'               => $nuevoStock,
+            'stock_minimo'        => $request->stock_minimo ?? 0,
+            'precio_unitario'     => $request->precio_unitario,
+            'activo'              => $request->has('activo') ? 1 : 0,
+            'observaciones_stock' => $observacionNueva,
         ]);
 
         return redirect()->route('admin.productos.index')

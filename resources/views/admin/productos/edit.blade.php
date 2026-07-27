@@ -72,6 +72,16 @@
                             <label for="activo" class="ml-2 text-sm text-gray-700">Activo</label>
                         </div>
 
+                        @if($producto->observaciones_stock)
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Historial de Ajustes de Stock</label>
+                            <div class="mt-1 w-full border border-gray-200 rounded-md px-3 py-2 bg-gray-50 text-xs text-gray-600 whitespace-pre-line">
+                                {{ $producto->observaciones_stock }}
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">Este campo se actualiza automáticamente al cambiar el stock.</p>
+                        </div>
+                        @endif
+
                     </div>
 
                     <div class="mt-6 flex justify-end gap-3">
