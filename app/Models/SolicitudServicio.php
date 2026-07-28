@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class SolicitudServicio extends Model
 {
@@ -76,9 +78,20 @@ class SolicitudServicio extends Model
         )->latest();
     }    
 
-    public function pagos()
+
+    public function pagos(): HasMany
     {
-        return $this->hasMany(SolicitudServicioPago::class)
-                    ->latest();
+        return $this->hasMany(
+            SolicitudServicioPago::class,
+            'solicitud_servicio_id'
+        );
+    }
+
+    public function ultimoPago(): HasOne
+    {
+        return $this->hasOne(
+            SolicitudServicioPago::class,
+            'solicitud_servicio_id'
+        )->latestOfMany();
     }
 }

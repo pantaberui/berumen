@@ -28,6 +28,8 @@ use App\Http\Controllers\Admin\TramitaNetSolicitudAdminController;
 use App\Http\Controllers\Publico\TramitaNetCaptchaController;
 use App\Http\Controllers\Admin\TramitaNetConfiguracionController;
 use App\Http\Controllers\Publico\TramitaNetAcuseController;
+use App\Http\Controllers\Admin\CatalogoCuentaBancariaController;
+
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -197,6 +199,16 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         '/tramitanet/configuracion',
         [TramitaNetConfiguracionController::class, 'update']
     )->name('tramitanet.configuracion.update');
+
+    Route::resource(
+        'catalogo-cuentas-bancarias',
+        CatalogoCuentaBancariaController::class
+    )
+        ->parameters([
+            'catalogo-cuentas-bancarias' => 'catalogoCuentaBancaria',
+        ])
+        ->except('show');
+    
 
 });
 

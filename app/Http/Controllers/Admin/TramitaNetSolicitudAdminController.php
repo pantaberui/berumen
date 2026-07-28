@@ -75,16 +75,16 @@ class TramitaNetSolicitudAdminController extends Controller
             'historial',
             'notas',
             'documentosGenerados',
-            'pagos',
+            'ultimoPago',
         ]);
 
-        $ultimoPago = $solicitud->pagos->first();
+        $ultimoPago = $solicitud->ultimoPago;
 
         $estatuses = EstadosSolicitud::labels();
 
         $datosAgrupados = $solicitud->datos
             ->groupBy(fn ($dato) => $dato->catalogoCampo->grupo_expediente ?? 'datos');
-        
+
         $proximaAccion = ProximaAccionService::obtener($solicitud);
 
         return view('admin.tramitanet.solicitudes.show', compact(
@@ -232,7 +232,11 @@ class TramitaNetSolicitudAdminController extends Controller
 
     public function validarPago(SolicitudServicioPago $pago)
     {
-        PagoService::validarPago($pago);
+        try {
+            PagoService::validarPago($pago);
+        } catch (\RuntimeException $e) {
+            return back()->with('info', $e->getMessage());
+        }
 
         return back()->with(
             'success',
@@ -243,16 +247,19 @@ class TramitaNetSolicitudAdminController extends Controller
     public function rechazarPago(
         Request $request,
         SolicitudServicioPago $pago
-    )
-    {
+    ) {
         $request->validate([
             'observacion' => 'required|string|max:1000',
         ]);
 
-        PagoService::rechazarPago(
-            $pago,
-            $request->observacion
-        );
+        try {
+            PagoService::rechazarPago(
+                $pago,
+                $request->observacion
+            );
+        } catch (\RuntimeException $e) {
+            return back()->with('info', $e->getMessage());
+        }
 
         return back()->with(
             'success',
