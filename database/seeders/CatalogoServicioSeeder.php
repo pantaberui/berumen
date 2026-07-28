@@ -29,7 +29,7 @@ class CatalogoServicioSeeder extends Seeder
             ['ACTA DE DEFUNCIÓN', 'Acta de Defunción','Registro Civil', 'CURP', null, 'por_entidad'],
 
             ['COMUNICADO RFC DEL SAT', 'Comunicado RFC del SAT','SAT', 'CURP', 220, 'fijo'],
-            ['CONSTANCIA DE SITUACIÓN FISCAL DEL SAT', 'Constancia de situación Fiscal del SAT','SAT', 'CURP O RFC E idCIF', 220, 'fijo'],
+            ['CONSTANCIA DE SITUACIÓN FISCAL DEL SAT', 'Constancia de Situación Fiscal del SAT','SAT', 'CURP O RFC E idCIF', 220, 'fijo'],
             ['OPINIÓN DE CUMPLIMIENTO DEL SAT', 'Opinión de Cumplimiento del SAT','SAT', 'CURP', 220, 'fijo'],
             ['CURP CERTIFICADA','CURP Certificada', 'RENAPO','CURP O DATOS PERSONALES', 20, 'fijo'],
             ['RECIBO DE LUZ CFE','Recibo de Luz CFE','CFE', 'NOMBRE Y NÚMERO DE SERVICIO O RECIBO ANTERIOR', 30, 'fijo'],
