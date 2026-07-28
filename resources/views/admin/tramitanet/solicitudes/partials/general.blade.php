@@ -56,7 +56,61 @@
                                     Aceptado
 
                                 @else
-                                    {{ $dato->valor ?: 'Sin capturar' }}
+                                    @php
+                                        $campoNormalizado = \Illuminate\Support\Str::of(
+                                            ($dato->campo ?? '') . ' ' . ($dato->etiqueta ?? '')
+                                        )
+                                            ->lower()
+                                            ->ascii()
+                                            ->replace(['_', '-', '.', ' '], '');
+
+                                        $camposCopiables = [
+                                            'curp',
+                                            'rfc',
+                                            'idcif',
+                                            'nss',
+                                            'numerocreditoinfonavit',
+                                            'creditoinfonavit',
+                                        ];
+
+                                        $esCopiable = collect($camposCopiables)
+                                            ->contains(fn ($campo) => $campoNormalizado->contains($campo));
+
+                                        $valorDato = $dato->valor ?: null;
+                                    @endphp
+
+                                    @if($valorDato)
+                                        <div class="flex items-center justify-between gap-3">
+                                            <span
+                                                id="dato-{{ $dato->id }}"
+                                                class="break-all"
+                                            >
+                                                {{ $valorDato }}
+                                            </span>
+
+                                            @if($esCopiable)
+                                                <button
+                                                    type="button"
+                                                    id="copiar-dato-{{ $dato->id }}"
+                                                    onclick="copiarDato(
+                                                        @js($valorDato),
+                                                        {{ $dato->id }}
+                                                    )"
+                                                    class="shrink-0 inline-flex items-center gap-1.5 rounded-lg
+                                                        border border-blue-200 bg-blue-50 px-3 py-1.5
+                                                        text-xs font-bold text-blue-700
+                                                        transition hover:bg-blue-100"
+                                                >
+                                                    <span>📋</span>
+                                                    <span>Copiar</span>
+                                                </button>
+                                            @endif
+                                        </div>
+                                    @else
+                                        <span class="text-gray-500">
+                                            Sin capturar
+                                        </span>
+                                    @endif
                                 @endif
                             </div>
 
@@ -82,4 +136,94 @@
 
         document.getElementById(`password-${datoId}`).innerText = data.password;
     }
+
+    
+    async function verPassword(url, datoId) {
+        const respuesta = await fetch(url);
+
+        if (!respuesta.ok) {
+            alert('No se pudo consultar la contraseña. Código: ' + respuesta.status);
+            return;
+        }
+
+        const data = await respuesta.json();
+
+        document.getElementById(`password-${datoId}`).innerText = data.password;
+    }
+
+    async function copiarDato(valor, datoId) {
+        const boton = document.getElementById(`copiar-dato-${datoId}`);
+
+        if (!boton) {
+            return;
+        }
+
+        const contenidoOriginal = boton.innerHTML;
+
+        try {
+            await navigator.clipboard.writeText(valor);
+
+            boton.innerHTML = `
+                <span>✓</span>
+                <span>Copiado</span>
+            `;
+
+            boton.classList.remove(
+                'border-blue-200',
+                'bg-blue-50',
+                'text-blue-700',
+                'hover:bg-blue-100'
+            );
+
+            boton.classList.add(
+                'border-green-200',
+                'bg-green-50',
+                'text-green-700'
+            );
+
+            setTimeout(() => {
+                boton.innerHTML = contenidoOriginal;
+
+                boton.classList.remove(
+                    'border-green-200',
+                    'bg-green-50',
+                    'text-green-700'
+                );
+
+                boton.classList.add(
+                    'border-blue-200',
+                    'bg-blue-50',
+                    'text-blue-700',
+                    'hover:bg-blue-100'
+                );
+            }, 1800);
+
+        } catch (error) {
+            copiarDatoAlternativo(valor);
+
+            boton.innerHTML = `
+                <span>✓</span>
+                <span>Copiado</span>
+            `;
+
+            setTimeout(() => {
+                boton.innerHTML = contenidoOriginal;
+            }, 1800);
+        }
+    }
+
+    function copiarDatoAlternativo(valor) {
+        const textarea = document.createElement('textarea');
+
+        textarea.value = valor;
+        textarea.setAttribute('readonly', '');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+    }
+
 </script>

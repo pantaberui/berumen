@@ -84,6 +84,7 @@
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoría</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Stock Mín.</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ajustes Stock</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio Venta</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Último Proveedor</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Última Compra</th>
@@ -113,6 +114,18 @@
                             </td>
                             <td class="px-4 py-3 text-sm text-gray-500">
                                 {{ $producto->categoria === 'producto' ? $producto->stock_minimo : '—' }}
+                            </td>
+                            <td class="px-4 py-3 text-xs text-gray-500">
+                                @if($producto->observaciones_stock)
+                                    @php $lineas = explode("\n", trim($producto->observaciones_stock)); @endphp
+                                    <div class="max-h-16 overflow-y-auto">
+                                        @foreach(array_filter($lineas) as $linea)
+                                            <p class="leading-tight">{{ $linea }}</p>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    —
+                                @endif
                             </td>
                             <td class="px-4 py-3 text-sm font-medium text-gray-900">
                                 ${{ number_format($producto->precio_unitario, 2) }}

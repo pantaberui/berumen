@@ -4,6 +4,8 @@
 
 @section('content')
 
+    @include('publico.tramitanet.sections.publicidad')
+
     @include('publico.tramitanet.sections.hero')
 
     @include('publico.tramitanet.sections.instituciones')

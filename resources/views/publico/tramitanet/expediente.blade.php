@@ -71,16 +71,29 @@
                                 </p>
                             @endif
 
-                            <div class="mt-5 grid gap-4 md:grid-cols-2">
 
+                            <div class="mt-5 grid gap-4 md:grid-cols-2">
                                 <div class="rounded-xl border border-green-100 bg-white p-4">
                                     <p class="text-xs font-bold uppercase tracking-wide text-gray-500">
                                         Folio de solicitud
                                     </p>
 
-                                    <p class="mt-2 font-mono text-2xl font-black text-gray-900">
-                                        {{ $solicitud->folio }}
-                                    </p>
+                                    <div class="mt-2 flex min-w-0 flex-col gap-3">
+                                        <p class="min-w-0 break-all font-mono text-xl font-black text-gray-900">
+                                            {{ $solicitud->folio }}
+                                        </p>
+
+                                        <button
+                                            type="button"
+                                            onclick="copiarValor(this, @js($solicitud->folio))"
+                                            class="inline-flex w-fit items-center justify-center rounded-lg
+                                                border border-green-200 bg-green-50 px-3 py-2 text-sm font-bold
+                                                text-green-700 transition hover:bg-green-100
+                                                disabled:cursor-default disabled:opacity-75"
+                                        >
+                                            Copiar
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <div class="rounded-xl border border-green-100 bg-white p-4">
@@ -88,12 +101,25 @@
                                         Código de seguimiento
                                     </p>
 
-                                    <p class="mt-2 font-mono text-2xl font-black text-gray-900">
-                                        {{ $solicitud->codigo_consulta }}
-                                    </p>
-                                </div>
+                                    <div class="mt-2 flex min-w-0 flex-col gap-3">
+                                        <p class="min-w-0 break-all font-mono text-xl font-black text-gray-900">
+                                            {{ $solicitud->codigo_consulta }}
+                                        </p>
 
+                                        <button
+                                            type="button"
+                                            onclick="copiarValor(this, @js($solicitud->codigo_consulta))"
+                                            class="inline-flex w-fit items-center justify-center rounded-lg
+                                                border border-green-200 bg-green-50 px-3 py-2 text-sm font-bold
+                                                text-green-700 transition hover:bg-green-100
+                                                disabled:cursor-default disabled:opacity-75"
+                                        >
+                                            Copiar
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
+
 
                             @if($solicitud->correo)
                                 <p class="mt-4 text-sm text-green-700">
@@ -422,16 +448,32 @@
             </div>
 
             <div class="bg-white rounded-3xl shadow border border-slate-200 p-6">
-                <p class="text-sm font-bold text-slate-500 uppercase">Referencia</p>
-
-                <p class="text-2xl sm:text-3xl font-black text-blue-700 mt-3 break-all">
-                    {{ $solicitud->referencia_pago }}
+                <p class="text-sm font-bold text-slate-500 uppercase">
+                    Referencia
                 </p>
+
+                <div class="mt-3 flex min-w-0 flex-col gap-3">
+                    <p class="min-w-0 break-all text-2xl font-black text-blue-700">
+                        {{ $solicitud->referencia_pago }}
+                    </p>
+
+                    <button
+                        type="button"
+                        onclick="copiarValor(this, @js($solicitud->referencia_pago))"
+                        class="inline-flex w-fit items-center justify-center rounded-lg
+                            border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-bold
+                            text-blue-700 transition hover:bg-blue-100
+                            disabled:cursor-default disabled:opacity-75"
+                    >
+                        Copiar
+                    </button>
+                </div>
 
                 <p class="text-sm text-slate-600 mt-2">
                     Usa esta referencia para identificar tu pago.
                 </p>
             </div>
+
 
             @if($ultimoPago)
                 <div class="bg-white rounded-3xl shadow border border-slate-200 p-6">
@@ -467,9 +509,22 @@
                                     Número de cuenta
                                 </p>
 
-                                <p class="font-mono text-lg font-black text-slate-900 mt-1 break-all">
-                                    {{ $ultimoPago->numero_cuenta }}
-                                </p>
+                                <div class="mt-1 flex min-w-0 flex-col gap-3">
+                                    <p class="min-w-0 break-all font-mono text-base font-black text-slate-900">
+                                        {{ $ultimoPago->numero_cuenta }}
+                                    </p>
+
+                                    <button
+                                        type="button"
+                                        onclick="copiarValor(this, @js($ultimoPago->numero_cuenta))"
+                                        class="inline-flex w-fit items-center justify-center rounded-lg
+                                            border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-bold
+                                            text-slate-700 transition hover:bg-slate-100
+                                            disabled:cursor-default disabled:opacity-75"
+                                    >
+                                        Copiar
+                                    </button>
+                                </div>
                             </div>
                         @endif
 
@@ -479,11 +534,25 @@
                                     CLABE interbancaria
                                 </p>
 
-                                <p class="font-mono text-lg font-black text-blue-700 mt-1 break-all">
-                                    {{ $ultimoPago->clabe_interbancaria }}
-                                </p>
+                                <div class="mt-1 flex min-w-0 flex-col gap-3">
+                                    <p class="min-w-0 break-all font-mono text-base font-black text-blue-700">
+                                        {{ $ultimoPago->clabe_interbancaria }}
+                                    </p>
+
+                                    <button
+                                        type="button"
+                                        onclick="copiarValor(this, @js($ultimoPago->clabe_interbancaria))"
+                                        class="inline-flex w-fit items-center justify-center rounded-lg
+                                            border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-bold
+                                            text-blue-700 transition hover:bg-blue-100
+                                            disabled:cursor-default disabled:opacity-75"
+                                    >
+                                        Copiar
+                                    </button>
+                                </div>
                             </div>
                         @endif
+
 
                         <div class="rounded-2xl border border-blue-200 bg-blue-50 p-4">
                             <p class="text-xs font-bold uppercase text-blue-700">
@@ -493,6 +562,17 @@
                             <p class="font-mono text-2xl font-black text-blue-900 mt-2 break-all">
                                 {{ $solicitud->referencia_pago }}
                             </p>
+
+                            <button
+                                type="button"
+                                onclick="copiarValor(this, @js($solicitud->referencia_pago))"
+                                class="inline-flex w-fit items-center justify-center rounded-lg
+                                    border border-blue-200 bg-blue-50 px-3 py-2 text-sm font-bold
+                                    text-blue-700 transition hover:bg-blue-100
+                                    disabled:cursor-default disabled:opacity-75"
+                            >
+                                Copiar
+                            </button>
 
                             <p class="text-xs text-blue-700 mt-2">
                                 Incluye esta referencia en el concepto de tu transferencia.
@@ -780,6 +860,115 @@
 
         cerrarModalWhatsApp();
     }
+
+
+    async function copiarTexto(texto) {
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(texto);
+            return;
+        }
+
+        const campoTemporal = document.createElement('textarea');
+
+        campoTemporal.value = texto;
+        campoTemporal.setAttribute('readonly', '');
+        campoTemporal.style.position = 'fixed';
+        campoTemporal.style.left = '-9999px';
+
+        document.body.appendChild(campoTemporal);
+
+        campoTemporal.select();
+        campoTemporal.setSelectionRange(0, campoTemporal.value.length);
+
+        const copiado = document.execCommand('copy');
+
+        document.body.removeChild(campoTemporal);
+
+        if (!copiado) {
+            throw new Error('No fue posible copiar el texto.');
+        }
+    }
+
+    document.querySelectorAll('[data-copy-button]').forEach(boton => {
+        boton.addEventListener('click', async () => {
+            const contenedor = boton.parentElement;
+            const elemento = contenedor.querySelector('[data-copy-value]');
+
+            if (!elemento) {
+                return;
+            }
+
+            const texto = elemento.textContent.trim();
+            const textoOriginal = boton.textContent;
+
+            try {
+                await copiarTexto(texto);
+
+                boton.textContent = 'Copiado ✓';
+                boton.disabled = true;
+
+                setTimeout(() => {
+                    boton.textContent = textoOriginal;
+                    boton.disabled = false;
+                }, 1800);
+            } catch (error) {
+                boton.textContent = 'No se pudo copiar';
+
+                setTimeout(() => {
+                    boton.textContent = textoOriginal;
+                }, 2200);
+            }
+        });
+    });
+
+    function copiarValor(boton, texto) {
+        const textoOriginal = boton.textContent.trim();
+
+        try {
+            const campoTemporal = document.createElement('textarea');
+
+            campoTemporal.value = texto;
+            campoTemporal.setAttribute('readonly', '');
+            campoTemporal.style.position = 'fixed';
+            campoTemporal.style.top = '0';
+            campoTemporal.style.left = '0';
+            campoTemporal.style.width = '2px';
+            campoTemporal.style.height = '2px';
+            campoTemporal.style.opacity = '0.01';
+
+            document.body.appendChild(campoTemporal);
+
+            campoTemporal.focus();
+            campoTemporal.select();
+            campoTemporal.setSelectionRange(0, campoTemporal.value.length);
+
+            const copiado = document.execCommand('copy');
+
+            document.body.removeChild(campoTemporal);
+
+            if (!copiado) {
+                throw new Error('El navegador no permitió copiar.');
+            }
+
+            boton.textContent = 'Copiado ✓';
+            boton.disabled = true;
+
+            setTimeout(() => {
+                boton.textContent = textoOriginal;
+                boton.disabled = false;
+            }, 1800);
+
+        } catch (error) {
+            console.error('Error al copiar:', error);
+
+            boton.textContent = 'Error al copiar';
+
+            setTimeout(() => {
+                boton.textContent = textoOriginal;
+            }, 2000);
+        }
+    }
+
 
     document.addEventListener('keydown', event => {
         if (event.key === 'Escape') {

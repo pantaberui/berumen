@@ -11,7 +11,7 @@ class Producto extends Model
 
     protected $fillable = [
         'clave', 'descripcion', 'categoria',
-        'stock', 'stock_minimo', 'precio_unitario', 'activo',
+        'stock', 'stock_minimo', 'precio_unitario', 'activo', 'observaciones_stock',
     ];
 
     public function ventaDetalles()

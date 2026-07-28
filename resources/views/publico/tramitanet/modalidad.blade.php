@@ -213,23 +213,20 @@ Tiempo estimado
 </p>
 
 <p class="font-black text-xl mt-2">
-
-{{ $modalidadServicio->tiempo_estimado }}
-
+    {{ $modalidadServicio->tiempo_estimado }}
 </p>
 
 <hr class="my-6">
 
 <p class="text-sm uppercase text-slate-500">
-
-Costo
-
+    Costo
 </p>
 
 <p class="font-black text-4xl mt-2">
-
-${{ number_format($modalidadServicio->precio,2) }}
-
+    ${{ number_format(
+        $modalidadServicio->precio ?? $servicio->precio ?? 0,
+        2
+    ) }}
 </p>
 
 <p class="text-slate-500">

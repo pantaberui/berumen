@@ -17,7 +17,8 @@ class CambioEstadoService
         string $nuevoEstado,
         ?string $observacion = null,
         ?int $userId = null,
-        string $tipoNota = 'estatus'
+        string $tipoNota = 'estatus',
+        bool $notificarCliente = true
     ): void {
 
         DB::transaction(function () use (
@@ -25,29 +26,26 @@ class CambioEstadoService
             $nuevoEstado,
             $observacion,
             $userId,
-            $tipoNota
+            $tipoNota,
+            $notificarCliente
         ) {
 
             $estadoAnterior = $solicitud->estatus;
 
-            // Si no cambió, no hacer nada
             if ($estadoAnterior === $nuevoEstado) {
                 return;
             }
 
-            // Validar transición
             if (!EstadosSolicitud::puedeCambiarDe($estadoAnterior, $nuevoEstado)) {
                 throw new InvalidArgumentException(
                     "No es posible cambiar de {$estadoAnterior} a {$nuevoEstado}."
                 );
             }
 
-            // Actualizar solicitud
             $solicitud->update([
                 'estatus' => $nuevoEstado,
             ]);
 
-            // Historial
             HistorialEstatusSolicitud::create([
                 'solicitud_servicio_id' => $solicitud->id,
                 'estatus_anterior'      => $estadoAnterior,
@@ -56,7 +54,6 @@ class CambioEstadoService
                 'user_id'               => $userId,
             ]);
 
-            // Nota
             SolicitudServicioNota::create([
                 'solicitud_servicio_id' => $solicitud->id,
                 'user_id'               => $userId,
@@ -66,16 +63,16 @@ class CambioEstadoService
                 'visible_cliente'       => false,
             ]);
 
-            DB::afterCommit(function () use ($solicitud) {
-                TramitaNetNotificacionService::cambioEstatus(
-                    $solicitud->fresh([
-                        'servicio',
-                        'modalidad',
-                    ])
-                );
-            });
-
+            if ($notificarCliente) {
+                DB::afterCommit(function () use ($solicitud) {
+                    TramitaNetNotificacionService::cambioEstatus(
+                        $solicitud->fresh([
+                            'servicio',
+                            'modalidad',
+                        ])
+                    );
+                });
+            }
         });
-
     }
 }

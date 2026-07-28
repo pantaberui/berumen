@@ -29,6 +29,7 @@ use App\Http\Controllers\Publico\TramitaNetCaptchaController;
 use App\Http\Controllers\Admin\TramitaNetConfiguracionController;
 use App\Http\Controllers\Publico\TramitaNetAcuseController;
 use App\Http\Controllers\Admin\CatalogoCuentaBancariaController;
+use App\Http\Controllers\Admin\CostoActaEntidadController;
 
 
 Route::get('/', function () {
@@ -208,7 +209,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             'catalogo-cuentas-bancarias' => 'catalogoCuentaBancaria',
         ])
         ->except('show');
-    
+
+   Route::resource(
+        'costos-actas',
+        CostoActaEntidadController::class
+    )
+        ->parameters([
+            'costos-actas' => 'costoActaEntidad',
+        ])
+        ->only([
+            'index',
+            'edit',
+            'update',
+        ]);     
+
+
 
 });
 
@@ -263,3 +278,20 @@ Route::get(
     '/tramitanet/expediente/{folio}/acuse',
     [TramitaNetAcuseController::class, 'descargar']
 )->name('tramitanet.acuse');
+
+Route::get('/tramitanet/preguntas-frecuentes', [TramitaNetController::class, 'faq'])
+    ->name('tramitanet.faq');
+
+Route::get('/tramitanet/preguntas-frecuentes', function () {
+    return view('publico.tramitanet.faq');
+})->name('tramitanet.faq');
+
+Route::view(
+    '/tramitanet/aviso-de-privacidad',
+    'publico.tramitanet.privacidad'
+)->name('tramitanet.privacidad');
+
+Route::view(
+    '/tramitanet/terminos-y-condiciones',
+    'publico.tramitanet.terminos'
+)->name('tramitanet.terminos');

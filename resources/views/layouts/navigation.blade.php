@@ -7,9 +7,9 @@
     @endif
 
     <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="w-full px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-            <div class="flex">
+            <div class="flex min-w-0 flex-1">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('admin.dashboard') }}" class="flex items-center">
@@ -20,7 +20,7 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex items-center">
+                <div class="hidden sm:flex sm:shrink-0 sm:items-center sm:ms-4 sm:gap-4">
                     <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                         Dashboard
                     </x-nav-link>
@@ -221,6 +221,142 @@
                     </div>
 
 
+                    {{-- Menú TramitaNet --}}
+                    @if(auth()->user()->hasRole('admin'))
+                        <div
+                            class="relative"
+                            x-data="{ open: false }"
+                        >
+                            <button
+                                type="button"
+                                @click="open = !open"
+                                @click.outside="open = false"
+                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium
+                                    text-gray-500 hover:text-gray-700 focus:outline-none
+                                    {{ request()->routeIs('admin.tramitanet.*')
+                                        ? 'font-semibold text-indigo-600'
+                                        : '' }}"
+                            >
+                                TramitaNet
+
+                                <svg
+                                    class="h-4 w-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M19 9l-7 7-7-7"
+                                    />
+                                </svg>
+                            </button>
+
+                            <div
+                                x-show="open"
+                                x-transition
+                                x-cloak
+                                class="absolute left-0 z-50 mt-2 w-64 overflow-hidden
+                                    rounded-md border border-gray-100 bg-white shadow-lg"
+                            >
+                                <a
+                                    href="{{ route('admin.tramitanet.solicitudes.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50
+                                        {{ request()->routeIs('admin.tramitanet.solicitudes.*')
+                                            ? 'font-semibold text-indigo-600'
+                                            : '' }}"
+                                >
+                                    📋 Centro de Gestión
+                                </a>
+
+                                <a
+                                    href="{{ route('admin.tramitanet.configuracion.edit') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50
+                                        {{ request()->routeIs('admin.tramitanet.configuracion.*')
+                                            ? 'font-semibold text-indigo-600'
+                                            : '' }}"
+                                >
+                                    ⚙️ Configuración
+                                </a>
+
+                                <a
+                                    href="{{ route('admin.catalogo-cuentas-bancarias.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50
+                                        {{ request()->routeIs('admin.catalogo-cuentas-bancarias.*')
+                                            ? 'font-semibold text-indigo-600'
+                                            : '' }}"
+                                >
+                                    🏦 Cuentas bancarias
+                                </a>
+
+                                <a
+                                    href="{{ route('admin.costos-actas.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50
+                                        {{ request()->routeIs('admin.costos-actas.*')
+                                            ? 'font-semibold text-indigo-600'
+                                            : '' }}"
+                                >
+                                    💰 Costos de actas
+                                </a>
+
+
+                                <div class="my-1 border-t border-gray-100"></div>
+
+                                <p class="px-4 py-2 text-xs font-bold uppercase tracking-wide text-gray-400">
+                                    Portal público
+                                </p>
+
+                                <a
+                                    href="{{ route('tramitanet.index') }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                >
+                                    🌐 Inicio público ↗
+                                </a>
+
+                                <a
+                                    href="{{ route('tramitanet.consulta') }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                >
+                                    🔎 Consultar folio ↗
+                                </a>
+
+                                <a
+                                    href="{{ route('tramitanet.faq') }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                >
+                                    ❓ Preguntas frecuentes ↗
+                                </a>
+
+                                <a
+                                    href="{{ route('tramitanet.privacidad') }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                >
+                                    🔒 Aviso de privacidad ↗
+                                </a>
+
+                                <a
+                                    href="{{ route('tramitanet.terminos') }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                                >
+                                    📄 Términos y condiciones ↗
+                                </a>
+                            </div>
+                        </div>
+                    @endif
+
+
 
                 </div>
 
@@ -265,15 +401,6 @@
                             class="text-yellow-600 font-medium">
                             💾 Descargar Respaldo BD
                         </x-dropdown-link>
-                        @endif
-
-                        @if(auth()->user()->hasRole('admin'))
-                            <x-dropdown-link
-                                :href="route('admin.tramitanet.configuracion.edit')"
-                                class="text-gray-700 font-medium"
-                            >
-                                ⚙ Configuración TramitaNet
-                            </x-dropdown-link>
                         @endif
 
                         <!-- Authentication -->
@@ -414,6 +541,105 @@
             <x-responsive-nav-link :href="route('admin.control-tiempos.reporte')" style="color: #cbd5e1; padding-left: 1.5rem;">
                 Inventario
             </x-responsive-nav-link>
+
+            {{-- TramitaNet --}}
+            @if(auth()->user()->hasRole('admin'))
+                <div
+                    style="
+                        padding: 0.5rem 1rem;
+                        color: #fb923c;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        letter-spacing: 0.05em;
+                    "
+                >
+                    TRAMITANET
+                </div>
+
+                <x-responsive-nav-link
+                    :href="route('admin.tramitanet.solicitudes.index')"
+                    :active="request()->routeIs('admin.tramitanet.solicitudes.*')"
+                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                >
+                    Centro de Gestión
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link
+                    :href="route('admin.tramitanet.configuracion.edit')"
+                    :active="request()->routeIs('admin.tramitanet.configuracion.*')"
+                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                >
+                    Configuración
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link
+                    :href="route('admin.catalogo-cuentas-bancarias.index')"
+                    :active="request()->routeIs('admin.catalogo-cuentas-bancarias.*')"
+                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                >
+                    Cuentas bancarias
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link
+                    :href="route('admin.costos-actas.index')"
+                    :active="request()->routeIs('admin.costos-actas.*')"
+                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                >
+                    Costos de actas
+                </x-responsive-nav-link>
+
+                <a
+                    href="{{ route('tramitanet.index') }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block border-l-4 border-transparent py-2 pr-4 text-base font-medium"
+                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                >
+                    Portal público ↗
+                </a>
+
+                <a
+                    href="{{ route('tramitanet.consulta') }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block border-l-4 border-transparent py-2 pr-4 text-base font-medium"
+                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                >
+                    Consultar folio ↗
+                </a>
+
+                <a
+                    href="{{ route('tramitanet.faq') }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block border-l-4 border-transparent py-2 pr-4 text-base font-medium"
+                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                >
+                    Preguntas frecuentes ↗
+                </a>
+
+                <a
+                    href="{{ route('tramitanet.privacidad') }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block border-l-4 border-transparent py-2 pr-4 text-base font-medium"
+                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                >
+                    Aviso de privacidad ↗
+                </a>
+
+                <a
+                    href="{{ route('tramitanet.terminos') }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="block border-l-4 border-transparent py-2 pr-4 text-base font-medium"
+                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                >
+                    Términos y condiciones ↗
+                </a>
+            @endif
+
+
         </div>
 
         <!-- Responsive Settings Options -->
