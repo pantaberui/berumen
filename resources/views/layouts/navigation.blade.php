@@ -8,34 +8,55 @@
 
     <!-- Primary Navigation Menu -->
     <div class="w-full px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
+        <div class="desktop-nav-shell flex justify-between">
             <div class="flex min-w-0 flex-1">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('admin.dashboard') }}" class="flex items-center">
-                        <img src="{{ asset('images/logo_hor.png') }}"
+                        <img class="desktop-nav-logo"
+                            src="{{ asset('images/logo_hor.png') }}"
                             alt="Entretenimiento Berumen"
                             style="height: 52px; width: 200px; background: white; padding: 1px 2px; border-radius: 8px; border: 2px solid rgba(255,255,255,0.3);">
                     </a>
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden sm:flex sm:shrink-0 sm:items-center sm:ms-4 sm:gap-4">
-                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                        Dashboard
+                <div class="desktop-nav-links hidden sm:flex sm:min-w-0 sm:flex-1 sm:items-stretch sm:ms-2">
+                    <x-nav-link
+                        :href="route('admin.dashboard')"
+                        :active="request()->routeIs('admin.dashboard')"
+                        class="desktop-nav-item"
+                    >
+                        <span class="desktop-nav-icon">🏠</span>
+                        <span class="desktop-nav-label">Dashboard</span>
                     </x-nav-link>
 
-                    <x-nav-link :href="route('admin.clientes.index')" :active="request()->routeIs('admin.clientes.*')">
-                        Clientes
+                    <x-nav-link
+                        :href="route('admin.clientes.index')"
+                        :active="request()->routeIs('admin.clientes.*')"
+                        class="desktop-nav-item"
+                    >
+                        <span class="desktop-nav-icon">👥</span>
+                        <span class="desktop-nav-label">Clientes</span>
                     </x-nav-link>
 
                     {{-- Menú Internet --}}
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" @click.outside="open = false"
-                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none">
-                            Internet
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    <div class="desktop-nav-dropdown relative" x-data="{ open: false }">
+                        <button
+                            type="button"
+                            @click="open = !open"
+                            @click.outside="open = false"
+                            class="desktop-nav-button"
+                        >
+                            <span class="desktop-nav-icon">🌐</span>
+
+                            <span class="desktop-nav-label">
+                                Internet
+                            </span>
+
+                            <svg class="desktop-nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
                         <div x-show="open" x-transition
@@ -67,12 +88,22 @@
                     </div>
 
                     {{-- Menú Pago de Servicios --}}
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" @click.outside="open = false"
-                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none">
-                            Trámites y Pago de Servicios
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    <div class="desktop-nav-dropdown relative" x-data="{ open: false }">
+                        <button
+                            type="button"
+                            @click="open = !open"
+                            @click.outside="open = false"
+                            class="desktop-nav-button"
+                        >
+                            <span class="desktop-nav-icon">📄</span>
+
+                            <span class="desktop-nav-label">
+                                Trámites y Pago de Servicios
+                            </span>
+
+                            <svg class="desktop-nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
                         <div x-show="open" x-transition
@@ -110,12 +141,37 @@
                     </div>
 
                     {{-- Fichas WiFi  Netplus --}}
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" @click.outside="open = false"
-                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none">
-                            Fichas WiFi Netplus
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    <div class="desktop-nav-dropdown relative" x-data="{ open: false }">
+                        <button
+                            type="button"
+                            @click="open = !open"
+                            @click.outside="open = false"
+                            class="desktop-nav-button"
+                        >
+                            <span class="desktop-nav-icon">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    class="h-5 w-5"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M8.53 16.11a5 5 0 016.94 0M5.7 13.28a9 9 0 0112.6 0M2.87 10.45a13 13 0 0118.26 0M12 20h.01"
+                                    />
+                                </svg>
+                            </span>
+
+                            <span class="desktop-nav-label">
+                                Fichas WiFi Netplus
+                            </span>
+
+                            <svg class="desktop-nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
                         <div x-show="open" x-transition
@@ -149,12 +205,22 @@
                     </div>
 
                     {{-- Ventas --}}
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" @click.outside="open = false"
-                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none">
-                            Ventas
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    <div class="desktop-nav-dropdown relative" x-data="{ open: false }">
+                        <button
+                            type="button"
+                            @click="open = !open"
+                            @click.outside="open = false"
+                            class="desktop-nav-button"
+                        >
+                            <span class="desktop-nav-icon">🛒</span>
+
+                            <span class="desktop-nav-label">
+                                Ventas
+                            </span>
+
+                            <svg class="desktop-nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
                         <div x-show="open" x-transition
@@ -194,12 +260,22 @@
                     </div>
 
                     {{-- Control de Tiempos --}}
-                    <div class="relative" x-data="{ open: false }">
-                        <button @click="open = !open" @click.outside="open = false"
-                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium text-gray-500 hover:text-gray-700 focus:outline-none">
-                            Control Tiempos
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    <div class="desktop-nav-dropdown relative" x-data="{ open: false }">
+                        <button
+                            type="button"
+                            @click="open = !open"
+                            @click.outside="open = false"
+                            class="desktop-nav-button"
+                        >
+                            <span class="desktop-nav-icon">⏱️</span>
+
+                            <span class="desktop-nav-label">
+                                Control de Tiempos
+                            </span>
+
+                            <svg class="desktop-nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7"/>
                             </svg>
                         </button>
                         <div x-show="open" x-transition
@@ -224,33 +300,27 @@
                     {{-- Menú TramitaNet --}}
                     @if(auth()->user()->hasRole('admin'))
                         <div
-                            class="relative"
+                            class="desktop-nav-dropdown relative"
                             x-data="{ open: false }"
                         >
                             <button
                                 type="button"
                                 @click="open = !open"
                                 @click.outside="open = false"
-                                class="inline-flex items-center gap-1 px-1 pt-1 text-sm font-medium
-                                    text-gray-500 hover:text-gray-700 focus:outline-none
+                                class="desktop-nav-button
                                     {{ request()->routeIs('admin.tramitanet.*')
-                                        ? 'font-semibold text-indigo-600'
+                                        ? 'desktop-nav-active'
                                         : '' }}"
                             >
-                                TramitaNet
+                                <span class="desktop-nav-icon">💳</span>
 
-                                <svg
-                                    class="h-4 w-4"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        stroke-linecap="round"
-                                        stroke-linejoin="round"
-                                        stroke-width="2"
-                                        d="M19 9l-7 7-7-7"
-                                    />
+                                <span class="desktop-nav-label">
+                                    TramitaNet
+                                </span>
+
+                                <svg class="desktop-nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 9l-7 7-7-7"/>
                                 </svg>
                             </button>
 
@@ -364,7 +434,7 @@
             </div>
 
             <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
+            <div class="desktop-user-menu hidden sm:flex sm:items-center">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
                         <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -372,7 +442,9 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 24 24" fill="currentColor">
                                     <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd"/>
                                 </svg>
-                                <div>{{ Auth::user()->name }} {{ Auth::user()->apellido_paterno }}</div>
+                                <div class="desktop-user-name">
+                                    {{ Auth::user()->apellido_paterno }} {{ Auth::user()->name }} 
+                                </div>
                             </div>
 
                             <div class="ms-1">
