@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class CatalogoCuentaBancaria extends Model
 {
@@ -69,5 +70,21 @@ class CatalogoCuentaBancaria extends Model
         }
 
         return asset('images/bancos/' . $this->logo);
+    }
+
+    protected function slug(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => strtolower(trim($value))
+        );
+    }
+
+    protected function logo(): Attribute
+    {
+        return Attribute::make(
+            set: fn ($value) => filled($value)
+                ? strtolower(trim($value))
+                : null
+        );
     }
 }

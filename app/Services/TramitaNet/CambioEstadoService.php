@@ -18,7 +18,8 @@ class CambioEstadoService
         ?string $observacion = null,
         ?int $userId = null,
         string $tipoNota = 'estatus',
-        bool $notificarCliente = true
+        bool $notificarCliente = true,
+        ?string $eventoNotificacion = null
     ): void {
 
         DB::transaction(function () use (
@@ -27,7 +28,8 @@ class CambioEstadoService
             $observacion,
             $userId,
             $tipoNota,
-            $notificarCliente
+            $notificarCliente,
+            $eventoNotificacion
         ) {
 
             $estadoAnterior = $solicitud->estatus;
@@ -64,12 +66,16 @@ class CambioEstadoService
             ]);
 
             if ($notificarCliente) {
-                DB::afterCommit(function () use ($solicitud) {
+                DB::afterCommit(function () use (
+                    $solicitud,
+                    $eventoNotificacion
+                ) {
                     TramitaNetNotificacionService::cambioEstatus(
                         $solicitud->fresh([
                             'servicio',
                             'modalidad',
-                        ])
+                        ]),
+                        $eventoNotificacion
                     );
                 });
             }
