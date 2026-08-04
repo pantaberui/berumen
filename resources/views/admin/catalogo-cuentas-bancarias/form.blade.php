@@ -55,6 +55,7 @@
                     type="text"
                     name="slug"
                     value="{{ old('slug', $cuenta->slug) }}"
+                    data-preserve-case="true"
                     maxlength="255"
                     required
                     placeholder="cuenta-principal"
@@ -229,6 +230,7 @@
                     type="text"
                     name="logo"
                     value="{{ old('logo', $cuenta->logo) }}"
+                    data-preserve-case="true"
                     maxlength="255"
                     placeholder="bbva.webp"
                     class="w-full rounded-xl border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"

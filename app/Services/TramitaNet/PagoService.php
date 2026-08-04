@@ -276,7 +276,8 @@ class PagoService
                 observacion:
                     'Comprobante de pago rechazado: ' . $observacion,
                 userId: auth()->id(),
-                tipoNota: 'pago'
+                tipoNota: 'pago',
+                eventoNotificacion: 'pago_rechazado'
             );
         });
     }

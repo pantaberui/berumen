@@ -48,7 +48,7 @@ class TramitaNetNotificacionService
                 ->send(new SolicitudRecibidaClienteMail($solicitud));
         }
 
-    public static function cambioEstatus(SolicitudServicio $solicitud): void
+    public static function cambioEstatus(SolicitudServicio $solicitud, ?string $eventoNotificacion = null): void
     {
         if (blank($solicitud->correo)) {
             return;
@@ -60,6 +60,11 @@ class TramitaNetNotificacionService
         ]);
 
         Mail::to($solicitud->correo)
-            ->send(new EstadoSolicitudActualizadoMail($solicitud));
+            ->send(
+                new EstadoSolicitudActualizadoMail(
+                    $solicitud,
+                    $eventoNotificacion
+                )
+            );
     }
 }
