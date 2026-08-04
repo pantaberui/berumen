@@ -32,9 +32,8 @@ use App\Http\Controllers\Admin\CatalogoCuentaBancariaController;
 use App\Http\Controllers\Admin\CostoActaEntidadController;
 
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::get('/', [TramitaNetController::class, 'index'])
+    ->name('tramitanet.index');
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -183,13 +182,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         ->name('tramitanet.pagos.ver');
 
     Route::get('tramitanet/pagos/{pago}/descargar', [TramitaNetSolicitudAdminController::class, 'descargarPago'])
-        ->name('tramitanet.pagos.descargar');
-    
-    Route::post('/tramitanet/servicio/{slug}/resumen', [TramitaNetSolicitudController::class, 'resumen'])
-        ->name('tramitanet.servicio.resumen');
-
-    Route::post('/tramitanet/servicio/{slug}/guardar', [TramitaNetSolicitudController::class, 'store'])
-        ->name('tramitanet.servicio.store');  
+        ->name('tramitanet.pagos.descargar');  
 
     Route::get(
         '/tramitanet/configuracion',
@@ -235,63 +228,111 @@ Route::middleware(['auth', 'role:cajero'])->prefix('cajero')->name('cajero.')->g
 });
 
 
-Route::get('/tramitanet', [TramitaNetController::class, 'index'])
-    ->name('tramitanet.index');
 
-Route::get('/tramitanet/servicio/{slug}', [TramitaNetServicioController::class, 'servicio'])
+/*
+|--------------------------------------------------------------------------
+| TramitaNet público
+|--------------------------------------------------------------------------
+*/
+
+Route::get('/servicio/{slug}', [TramitaNetServicioController::class, 'servicio'])
     ->name('tramitanet.servicio');
 
-Route::get('/tramitanet/consulta', [TramitaNetController::class, 'consulta'])
+Route::get('/consulta', [TramitaNetController::class, 'consulta'])
     ->name('tramitanet.consulta');
 
-Route::post('/tramitanet/consulta', [TramitaNetController::class, 'consultar'])
+Route::post('/consulta', [TramitaNetController::class, 'consultar'])
     ->name('tramitanet.consulta.buscar');
 
-Route::post('/tramitanet/servicio/{slug}/resumen', [TramitaNetSolicitudController::class, 'resumen'])
+Route::post('/servicio/{slug}/resumen', [TramitaNetSolicitudController::class, 'resumen'])
     ->name('tramitanet.servicio.resumen');
 
-Route::post('/tramitanet/servicio/{slug}/solicitar', [TramitaNetSolicitudController::class, 'store'])
+Route::post('/servicio/{slug}/solicitar', [TramitaNetSolicitudController::class, 'store'])
     ->name('tramitanet.servicio.store');
 
-
-Route::get('/tramitanet/folio/{folio}', [TramitaNetSolicitudController::class, 'expediente'])
+Route::get('/folio/{folio}', [TramitaNetSolicitudController::class, 'expediente'])
     ->name('tramitanet.expediente');
 
-Route::get('/tramitanet/institucion/{slug}', [TramitaNetServicioController::class, 'institucion'])
+Route::get('/institucion/{slug}', [TramitaNetServicioController::class, 'institucion'])
     ->name('tramitanet.institucion');
 
-Route::get('/tramitanet/servicio/{slug}/{modalidad}', [TramitaNetServicioController::class, 'modalidad'])
+Route::get('/servicio/{slug}/{modalidad}', [TramitaNetServicioController::class, 'modalidad'])
     ->name('tramitanet.servicio.modalidad');
 
-Route::get('/tramitanet/folio/{folio}/documentos/{documento}/descargar', [TramitaNetSolicitudController::class, 'descargarDocumentoGenerado'])
-    ->name('tramitanet.documentos-generados.descargar');
+Route::get(
+    '/folio/{folio}/documentos/{documento}/descargar',
+    [TramitaNetSolicitudController::class, 'descargarDocumentoGenerado']
+)->name('tramitanet.documentos-generados.descargar');
 
-Route::post('/tramitanet/folio/{folio}/comprobante-pago', [TramitaNetSolicitudController::class, 'subirComprobantePago'])
-    ->name('tramitanet.pago.subir');
+Route::post(
+    '/folio/{folio}/comprobante-pago',
+    [TramitaNetSolicitudController::class, 'subirComprobantePago']
+)->name('tramitanet.pago.subir');
+
+Route::get('/captcha', [TramitaNetCaptchaController::class, 'imagen'])
+    ->name('tramitanet.captcha');
 
 Route::get(
-    '/tramitanet/captcha',
-    [TramitaNetCaptchaController::class, 'imagen']
-)->name('tramitanet.captcha');
-
-Route::get(
-    '/tramitanet/expediente/{folio}/acuse',
+    '/expediente/{folio}/acuse',
     [TramitaNetAcuseController::class, 'descargar']
 )->name('tramitanet.acuse');
 
-Route::get('/tramitanet/preguntas-frecuentes', [TramitaNetController::class, 'faq'])
+Route::get('/preguntas-frecuentes', [TramitaNetController::class, 'faq'])
     ->name('tramitanet.faq');
 
-Route::get('/tramitanet/preguntas-frecuentes', function () {
-    return view('publico.tramitanet.faq');
-})->name('tramitanet.faq');
-
 Route::view(
-    '/tramitanet/aviso-de-privacidad',
+    '/aviso-de-privacidad',
     'publico.tramitanet.privacidad'
 )->name('tramitanet.privacidad');
 
 Route::view(
-    '/tramitanet/terminos-y-condiciones',
+    '/terminos-y-condiciones',
     'publico.tramitanet.terminos'
 )->name('tramitanet.terminos');
+
+
+/*
+|--------------------------------------------------------------------------
+| Compatibilidad con URLs antiguas
+|--------------------------------------------------------------------------
+*/
+
+Route::redirect('/tramitanet', '/', 301);
+
+Route::get('/tramitanet/servicio/{slug}', function (string $slug) {
+    return redirect()->route('tramitanet.servicio', ['slug' => $slug], 301);
+});
+
+Route::get('/tramitanet/consulta', function () {
+    return redirect()->route('tramitanet.consulta', status: 301);
+});
+
+Route::get('/tramitanet/folio/{folio}', function (string $folio) {
+    return redirect()->route('tramitanet.expediente', ['folio' => $folio], 301);
+});
+
+Route::get('/tramitanet/institucion/{slug}', function (string $slug) {
+    return redirect()->route('tramitanet.institucion', ['slug' => $slug], 301);
+});
+
+Route::get('/tramitanet/servicio/{slug}/{modalidad}', function (
+    string $slug,
+    string $modalidad
+) {
+    return redirect()->route('tramitanet.servicio.modalidad', [
+        'slug' => $slug,
+        'modalidad' => $modalidad,
+    ], 301);
+});
+
+Route::get('/tramitanet/preguntas-frecuentes', function () {
+    return redirect()->route('tramitanet.faq', status: 301);
+});
+
+Route::get('/tramitanet/aviso-de-privacidad', function () {
+    return redirect()->route('tramitanet.privacidad', status: 301);
+});
+
+Route::get('/tramitanet/terminos-y-condiciones', function () {
+    return redirect()->route('tramitanet.terminos', status: 301);
+});
