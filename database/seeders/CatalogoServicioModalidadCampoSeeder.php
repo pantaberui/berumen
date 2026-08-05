@@ -141,16 +141,13 @@ class CatalogoServicioModalidadCampoSeeder extends Seeder
                     'curp',
                 ],
 
-                /*
-                 * Pendiente:
-                 * nombre(s)
-                 * apellido_paterno
-                 * apellido_materno
-                 * fecha_nacimiento
-                 * sexo
-                 * estado
-                 */
                 'por-datos-personales' => [
+                    'nombres',
+                    'apellido_paterno',
+                    'apellido_materno',
+                    'fecha_nacimiento',
+                    'sexo',
+                    'estado_nacimiento',
                 ],
             ],
 
