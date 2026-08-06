@@ -11,11 +11,13 @@ use App\Models\SolicitudServicioDato;
 use App\Models\HistorialEstatusSolicitud;
 use App\Services\TramitaNetService;
 use Illuminate\Support\Facades\DB;
+use App\Services\Seo\SeoService;
+
 
 
 class TramitaNetController extends Controller
 {
-    public function index()
+    public function index(SeoService $seoService)
     {
         $instituciones = CatalogoInstitucion::with([
                 'servicios' => fn ($query) => $query
@@ -40,9 +42,12 @@ class TramitaNetController extends Controller
             ->orderBy('orden')
             ->get();
 
+        $seo = $seoService->home();
+
         return view('publico.tramitanet.index', compact(
             'instituciones',
-            'serviciosDestacados'
+            'serviciosDestacados',
+            'seo'
         ));
     }
 
@@ -64,7 +69,7 @@ class TramitaNetController extends Controller
     {
         return view('publico.tramitanet.consulta');
     }
-    
+
     public function consultar(Request $request)
     {
         $datos = $request->validate([
@@ -123,8 +128,8 @@ class TramitaNetController extends Controller
         );
     }
 
-    
-  
+
+
 
     public function institucion(string $slug)
     {

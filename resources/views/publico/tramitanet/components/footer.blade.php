@@ -33,7 +33,7 @@
 
                     <li>
                         <a
-                            href="{{ route('tramitanet.privacidad') }}"
+                            href="{{ route('tramitanet.aviso-privacidad') }}"
                             class="transition hover:text-orange-400"
                         >
                             Aviso de privacidad

@@ -1,6 +1,6 @@
 @extends('publico.tramitanet.layouts.app')
 
-@section('title', 'Preguntas frecuentes | TramitaNet')
+@section('title', 'Centro de Ayuda | TramitaNet')
 
 @section('content')
 
@@ -19,16 +19,16 @@
 
             <span class="mx-2">/</span>
 
-            <span>Preguntas frecuentes</span>
+            <span>Centro de Ayuda</span>
         </nav>
 
         <h1 class="text-3xl font-bold md:text-4xl">
-            Preguntas frecuentes
+            Centro de Ayuda
         </h1>
 
         <p class="mt-3 max-w-3xl leading-7 text-slate-300">
-            Encuentra respuestas a las dudas más comunes sobre los servicios,
-            pagos, tiempos de entrega y funcionamiento de TramitaNet.
+            Encuentra respuestas sobre solicitudes, pagos, tiempos de atención
+            y el funcionamiento de TramitaNet.
         </p>
 
         <div class="mt-5 flex flex-wrap gap-3">
@@ -230,7 +230,7 @@
                 <input
                     id="buscarFaq"
                     type="search"
-                    placeholder="Buscar una pregunta..."
+                    placeholder="Busca por trámite, pago, folio o palabra clave..."
                     class="w-full rounded-xl border border-gray-300 bg-white py-4 pl-12 pr-4 shadow-sm outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-100"
                 >
 
@@ -266,11 +266,11 @@
 
                     <div>
                         <h2 class="text-2xl font-bold text-slate-900">
-                            Sobre TramitaNet
+                            Primeros Pasos
                         </h2>
 
                         <p class="text-sm text-slate-600">
-                            Información general sobre la plataforma.
+                            Conoce cómo funciona TramitaNet y cómo comenzar.
                         </p>
                     </div>
                 </div>
@@ -301,10 +301,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            TramitaNet es una plataforma en línea que permite
-                            solicitar diversos trámites y servicios de forma
-                            sencilla, realizar el pago correspondiente y dar
-                            seguimiento al estado de la solicitud hasta su entrega.
+                            TramitaNet es una plataforma donde puedes solicitar diversos trámites
+                            en línea de forma sencilla y segura.
                         </div>
 
                     </details>
@@ -333,10 +331,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Selecciona el servicio que necesitas, captura la
-                            información solicitada, realiza el pago, envía tu
-                            comprobante y consulta el avance de tu trámite
-                            utilizando tu folio y código de seguimiento.
+                            Elige un trámite, completa el formulario, realiza el pago, sube tu
+                            comprobante y da seguimiento a tu solicitud hasta recibir tu documento.
                         </div>
 
                     </details>
@@ -365,9 +361,7 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Cualquier persona que cumpla con los requisitos
-                            específicos del trámite y proporcione la información
-                            solicitada durante el proceso de registro.
+                            Cualquier persona que cumpla con los requisitos del servicio seleccionado.
                         </div>
 
                     </details>
@@ -405,7 +399,7 @@
                         </h2>
 
                         <p class="text-sm text-slate-600">
-                            Registro, folio y seguimiento de trámites.
+                            Registro, folio y seguimiento de tu solicitud.
                         </p>
                     </div>
 
@@ -437,10 +431,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Ingresa a la sección de trámites, selecciona el servicio que
-                            necesitas, elige la modalidad disponible y captura la información
-                            solicitada. Al finalizar, el sistema generará tu folio y los datos
-                            necesarios para continuar con el pago.
+                            Selecciona el trámite, completa el formulario y confirma tu solicitud.
+                            El sistema generará tu folio y referencia de pago.
                         </div>
 
                     </details>
@@ -469,9 +461,7 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Los requisitos dependen del servicio seleccionado. Antes de
-                            registrar tu solicitud, TramitaNet mostrará los datos, documentos
-                            y archivos necesarios para realizar el trámite.
+                            Cada trámite indica los datos y documentos necesarios antes de comenzar.
                         </div>
 
                     </details>
@@ -561,9 +551,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Una solicitud registrada no puede modificarse directamente desde
-                            la página. Si detectas un error, comunícate con soporte antes de
-                            realizar el pago o antes de que el trámite comience a gestionarse.
+                            Si aún no ha sido atendida, comunícate con nosotros para revisar
+                            si el cambio es posible.
                         </div>
 
                     </details>
@@ -598,11 +587,12 @@
 
                     <div>
                         <h2 class="text-2xl font-bold text-slate-900">
-                            Pagos
+                            Métodos de pago, comprobantes y validación.
                         </h2>
 
                         <p class="text-sm text-slate-600">
-                            Transferencias, comprobantes y validación del pago.
+                            Puedes pagar mediante transferencia bancaria o depósito en efectivo
+                            utilizando los datos y el número de tarjeta mostrados en tu solicitud.
                         </p>
                     </div>
 
@@ -764,10 +754,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Revisa el motivo del rechazo mostrado en tu expediente. Corrige
-                            la situación indicada y carga un nuevo comprobante que sea legible
-                            y que muestre claramente el importe, la fecha, la cuenta de destino
-                            y la referencia de la operación.
+                            Revisa el motivo indicado en tu expediente y carga un nuevo
+                            comprobante con la información correcta y claramente visible.
                         </div>
 
                     </details>
@@ -797,9 +785,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Antes de confirmar la solicitud, TramitaNet muestra por separado
-                            el costo del servicio, la comisión aplicable y el total que debes
-                            pagar. Realiza la transferencia por el importe total indicado.
+                            Sí. Antes de confirmar la solicitud verás el costo, la comisión
+                            aplicable y el total exacto que debes pagar.
                         </div>
 
                     </details>
@@ -872,9 +859,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Cada servicio muestra un tiempo estimado de atención. Este plazo
-                            comienza normalmente después de que el pago ha sido validado y
-                            la información necesaria para realizar el trámite está completa.
+                            Cada servicio muestra un tiempo estimado. El plazo comienza cuando
+                            el pago ha sido validado y la información está completa.
                         </div>
 
                     </details>
@@ -938,10 +924,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Puede haber demoras por mantenimiento o saturación de plataformas
-                            institucionales, falta temporal de disponibilidad del documento,
-                            alta demanda de solicitudes, validaciones adicionales o datos
-                            incompletos o incorrectos proporcionados por el solicitante.
+                            Puede haber demoras por datos incorrectos, documentos incompletos,
+                            alta demanda o fallas temporales en plataformas externas.
                         </div>
 
                     </details>
@@ -1004,10 +988,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Cuando el servicio permita entrega digital, el documento o archivo
-                            generado estará disponible desde tu expediente. También podrán
-                            mostrarse instrucciones adicionales de entrega de acuerdo con el
-                            tipo de servicio solicitado.
+                            Cuando la entrega sea digital, el documento estará disponible en tu
+                            expediente. Algunos servicios pueden mostrar instrucciones adicionales.
                         </div>
 
                     </details>
@@ -1085,7 +1067,7 @@
                         </h2>
 
                         <p class="text-sm text-slate-600">
-                            Protección de información, documentos y accesos.
+                            Protección de tu información y uso seguro de la plataforma.
                         </p>
                     </div>
 
@@ -1118,10 +1100,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            TramitaNet utiliza la información proporcionada únicamente para
-                            registrar, gestionar y dar seguimiento al servicio solicitado.
-                            Los datos deben capturarse solamente dentro de las páginas
-                            oficiales de la plataforma.
+                            Sí. Tus datos se utilizan únicamente para gestionar el trámite
+                            solicitado y brindar seguimiento a tu solicitud.
                         </div>
 
                     </details>
@@ -1151,9 +1131,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Se utilizan para identificar al solicitante, procesar el trámite,
-                            verificar requisitos, mantener comunicación sobre el avance y
-                            entregar el resultado correspondiente.
+                            Se utilizan exclusivamente para realizar el trámite solicitado,
+                            comunicarnos contigo y entregar el resultado del servicio.
                         </div>
 
                     </details>
@@ -1183,10 +1162,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            El expediente público requiere los datos de seguimiento
-                            proporcionados al registrar la solicitud. No compartas tu folio,
-                            código de seguimiento ni documentos con personas que no estén
-                            autorizadas para consultar el trámite.
+                            Solo quien cuente con el folio y el código de consulta podrá acceder
+                            al expediente de la solicitud.
                         </div>
 
                     </details>
@@ -1216,9 +1193,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Consérvalos en un lugar seguro y evita publicarlos en redes
-                            sociales o enviarlos a personas desconocidas. Estos datos permiten
-                            acceder a la información de seguimiento de tu solicitud.
+                            Consérvalos en un lugar seguro y no los compartas con terceros si no
+                            deseas que consulten tu expediente.
                         </div>
 
                     </details>
@@ -1248,9 +1224,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            No. TramitaNet nunca solicita contraseñas bancarias, códigos de
-                            acceso, NIP, token de seguridad ni claves dinámicas. El pago se
-                            realiza directamente desde la aplicación o plataforma de tu banco.
+                            No. Nunca solicitaremos contraseñas bancarias, códigos de seguridad
+                            ni información para acceder a tus cuentas.
                         </div>
 
                     </details>
@@ -1313,9 +1288,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            El aviso de privacidad estará disponible desde el pie de página
-                            de TramitaNet. En él se describirá el tratamiento y la protección
-                            de los datos personales proporcionados durante la solicitud.
+                            Puedes consultarlo desde el enlace "Aviso de privacidad" disponible
+                            en el pie de página del sitio.
                         </div>
 
                     </details>
@@ -1354,7 +1328,7 @@
                         </h2>
 
                         <p class="text-sm text-slate-600">
-                            Casos de devolución, cancelación y servicios no disponibles.
+                            Cancelaciones, devoluciones y servicios no disponibles.
                         </p>
                     </div>
 
@@ -1387,10 +1361,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Puedes solicitar la cancelación antes de que el trámite haya
-                            comenzado a gestionarse. La posibilidad de cancelarlo dependerá
-                            del estado de la solicitud y de si ya se realizaron operaciones
-                            o pagos ante la institución correspondiente.
+                            Sí, siempre que la gestión del trámite aún no haya comenzado.
+                            Contáctanos lo antes posible para revisar tu caso.
                         </div>
 
                     </details>
@@ -1420,11 +1392,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            El reembolso puede revisarse cuando el servicio no pueda
-                            proporcionarse por falta de disponibilidad, cuando exista un pago
-                            duplicado o cuando la solicitud sea cancelada antes de iniciar su
-                            gestión. Cada caso se analiza de acuerdo con el servicio, el estado
-                            del trámite y los gastos que ya se hayan generado.
+                            Cuando el trámite no pueda realizarse por causas atribuibles a
+                            TramitaNet o a la institución correspondiente.
                         </div>
 
                     </details>
@@ -1454,10 +1423,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Si la institución correspondiente no puede proporcionar el
-                            documento o servicio solicitado, se te informará mediante el
-                            expediente. En ese caso se revisará la procedencia del reembolso
-                            conforme al tipo de trámite y a los gastos que ya se hayan realizado.
+                            Te informaremos la situación y, cuando corresponda, iniciaremos el
+                            proceso de reembolso conforme a nuestras políticas.
                         </div>
 
                     </details>
@@ -1487,10 +1454,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            La devolución de la comisión dependerá del motivo de la
-                            cancelación y del avance de la solicitud. Si ya se realizaron
-                            actividades de revisión, validación o gestión, la comisión podría
-                            no ser reembolsable total o parcialmente.
+                            Dependerá del motivo de la cancelación o del reembolso. Consulta
+                            nuestros Términos y Condiciones para conocer los casos aplicables.
                         </div>
 
                     </details>
@@ -1520,10 +1485,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Comunícate con soporte e indica tu folio, el motivo de la solicitud
-                            y los datos del pago realizado. Es posible que se te solicite el
-                            comprobante de pago y la información bancaria necesaria para
-                            revisar y, en su caso, procesar la devolución.
+                            Comunícate con nosotros y proporciona tu folio para revisar la
+                            solicitud y, en su caso, iniciar el proceso correspondiente.
                         </div>
 
                     </details>
@@ -1553,10 +1516,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            El tiempo depende de la revisión del caso y del medio utilizado
-                            para devolver el dinero. Una vez autorizado, se informará el plazo
-                            estimado y cualquier dato adicional necesario para completar el
-                            proceso.
+                            El tiempo puede variar según el método de pago utilizado y la
+                            institución financiera correspondiente.
                         </div>
 
                     </details>
@@ -1586,10 +1547,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Si detectas un error, comunícate con soporte lo antes posible.
-                            Cuando el trámite ya haya sido gestionado con los datos
-                            proporcionados, podría no ser posible corregirlo ni realizar un
-                            reembolso, especialmente si ya se generaron costos o documentos.
+                            Si el trámite aún no ha iniciado, contáctanos de inmediato. Una vez
+                            comenzada la gestión, podría no ser posible realizar cambios.
                         </div>
 
                     </details>
@@ -1633,7 +1592,7 @@
                     </h2>
 
                     <p class="text-sm text-slate-600">
-                        Atención al usuario, seguimiento de solicitudes y medios de contacto.
+                        Atención al usuario y medios de contacto.
                     </p>
 
                 </div>
@@ -1665,10 +1624,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Comunícate con soporte cuando detectes información incorrecta,
-                            tengas problemas para cargar un comprobante, no puedas consultar
-                            tu expediente, haya vencido el tiempo estimado sin actualización
-                            o necesites una aclaración sobre el estado de tu solicitud.
+                            Si tienes dudas sobre tu solicitud, un pago, el estado de tu trámite
+                            o necesitas ayuda durante el proceso.
                         </div>
 
                     </details>
@@ -1698,10 +1655,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Proporciona tu folio, nombre del servicio solicitado y una
-                            descripción clara del problema. Cuando sea necesario, agrega una
-                            captura de pantalla o el comprobante relacionado con la solicitud.
-                            No compartas contraseñas bancarias, NIP ni códigos de seguridad.
+                            Comparte tu folio de solicitud y describe brevemente la situación para
+                            brindarte una atención más rápida.
                         </div>
 
                     </details>
@@ -1731,10 +1686,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Utiliza preferentemente las opciones disponibles dentro de tu
-                            expediente para cargar documentos y comprobantes. Envía archivos
-                            por WhatsApp únicamente cuando soporte te lo solicite y confirma
-                            que estás utilizando el número oficial de atención.
+                            Solo cuando nuestro equipo lo solicite como parte del seguimiento de
+                            tu trámite.
                         </div>
 
                     </details>
@@ -1764,10 +1717,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Los mensajes pueden enviarse en cualquier momento, pero serán
-                            atendidos dentro del horario laboral y conforme al orden en que
-                            fueron recibidos. Las solicitudes enviadas fuera de horario se
-                            revisarán durante el siguiente periodo de atención.
+                            Atendemos en días y horarios hábiles. Las consultas recibidas fuera
+                            de ese horario se responderán lo antes posible.
                         </div>
 
                     </details>
@@ -1797,10 +1748,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            El tiempo de respuesta puede variar según la cantidad de mensajes
-                            pendientes y la complejidad de cada caso. Algunas aclaraciones
-                            también requieren verificar información con la institución
-                            correspondiente antes de proporcionar una respuesta.
+                            El tiempo de respuesta puede variar según el volumen de consultas y
+                            la complejidad de cada caso.
                         </div>
 
                     </details>
@@ -1830,10 +1779,8 @@
                         </summary>
 
                         <div class="border-t border-slate-100 px-6 py-5 leading-7 text-slate-600">
-                            Conserva tu folio y continúa la comunicación por el mismo medio
-                            utilizado inicialmente. Evita enviar varios mensajes idénticos,
-                            ya que esto puede dificultar el seguimiento y no acelera el proceso
-                            de atención.
+                            Conserva tu folio y continúa la comunicación por el mismo medio para
+                            facilitar el seguimiento de tu caso.
                         </div>
 
                     </details>

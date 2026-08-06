@@ -3,17 +3,16 @@
 <head>
     <meta charset="UTF-8">
 
-    <title>@yield('title', 'TramitaNet | Servicios Digitales en Línea')</title>
+
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="description"
-        content="@yield('meta_description', 'Solicita actas, CURP, RFC, NSS y otros trámites oficiales en línea de forma rápida y segura con TramitaNet.')"
-    >
+
 
     <meta name="author" content="Entretenimiento Berumen">
-    <meta name="robots" content="index,follow">
+
+
+
 
     <meta name="theme-color" content="#f97316">
     <meta name="msapplication-TileColor" content="#f97316">
@@ -28,6 +27,10 @@
     <link rel="manifest" href="{{ asset('images/branding/site.webmanifest') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    @include('publico.tramitanet.components.seo', [
+        'seo' => $seo ?? app(\App\Services\Seo\SeoService::class)->default(),
+    ])
 </head>
 
 <body class="min-h-screen flex flex-col bg-slate-100 text-slate-900 antialiased overflow-x-hidden">

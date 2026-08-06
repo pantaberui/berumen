@@ -30,6 +30,7 @@ use App\Http\Controllers\Admin\TramitaNetConfiguracionController;
 use App\Http\Controllers\Publico\TramitaNetAcuseController;
 use App\Http\Controllers\Admin\CatalogoCuentaBancariaController;
 use App\Http\Controllers\Admin\CostoActaEntidadController;
+use App\Http\Controllers\SitemapController;
 
 
 Route::get('/', [TramitaNetController::class, 'index'])
@@ -43,7 +44,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    
+
 });
 
 require __DIR__.'/auth.php';
@@ -52,7 +53,7 @@ require __DIR__.'/auth.php';
 
 // Panel Admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {        
+    Route::get('/dashboard', function () {
         return view('admin.dashboard');
     })->name('dashboard');
 
@@ -61,9 +62,9 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('contratos/buscar',   [ContratoController::class,   'buscar'])->name('contratos.buscar');
     Route::resource('contratos', ContratoController::class);
 
-    
+
     Route::get('pagos/buscar',       [PagoController::class,       'buscar'])->name('pagos.buscar');
-        
+
     Route::post('pagos/{pago}/enviar-correo', [PagoController::class, 'enviarCorreo'])->name('pagos.enviar-correo');
     Route::get('pagos/ultimo-periodo/{contrato}', [PagoController::class, 'ultimoPeriodo'])->name('pagos.ultimo-periodo');
     Route::resource('pagos', PagoController::class);
@@ -71,7 +72,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::post('incidencias/{incidencia}/agregar-dias', [IncidenciaController::class, 'agregarDias'])->name('incidencias.agregar-dias');
 
     Route::resource('incidencias', IncidenciaController::class);
-    
+
 
     Route::resource('tipo-servicios', TipoServicioController::class)->except(['show']);
     Route::get('pagos-servicios/buscar-cliente', [PagoServicioController::class, 'buscarCliente'])->name('pagos-servicios.buscar-cliente');
@@ -122,7 +123,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         Route::post('cobrar/{renta}',                [ControlTiemposController::class, 'cobrar'])->name('cobrar');
         Route::get('estado/{renta}',                 [ControlTiemposController::class, 'estadoActual'])->name('estado');
         Route::get('reporte',                        [ControlTiemposController::class, 'reporte'])->name('reporte');
-        Route::post('asignar-tiempo/{renta}', [ControlTiemposController::class, 'asignarTiempo'])->name('asignar-tiempo');         
+        Route::post('asignar-tiempo/{renta}', [ControlTiemposController::class, 'asignarTiempo'])->name('asignar-tiempo');
         Route::delete('quitar-producto/{rentaProducto}',    [ControlTiemposController::class, 'quitarProducto'])->name('quitar-producto');
         Route::patch('actualizar-producto/{rentaProducto}', [ControlTiemposController::class, 'actualizarProducto'])->name('actualizar-producto');
     });
@@ -136,7 +137,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('tramites/buscar-cliente', [TramiteController::class, 'buscarCliente'])->name('tramites.buscar-cliente');
     Route::post('tramites/{tramite}/enviar-correo', [TramiteController::class, 'enviarCorreo'])->name('tramites.enviar-correo');
     Route::resource('tramites', TramiteController::class);
-    
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/dashboard/exportar', [DashboardController::class, 'exportarExcel'])->name('dashboard.exportar');
 
@@ -156,19 +157,19 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
     Route::get('tramitanet/solicitudes/{solicitud}', [TramitaNetSolicitudAdminController::class, 'show'])
         ->name('tramitanet.solicitudes.show');
-    
+
     Route::patch('tramitanet/solicitudes/{solicitud}/estatus', [TramitaNetSolicitudAdminController::class, 'actualizarEstatus'])
         ->name('tramitanet.solicitudes.actualizar-estatus');
-    
+
     Route::post('tramitanet/solicitudes/{solicitud}/notas', [TramitaNetSolicitudAdminController::class, 'guardarNota'])
         ->name('tramitanet.solicitudes.notas.store');
 
     Route::get('tramitanet/solicitudes/{solicitud}/documentos/{dato}/descargar', [TramitaNetSolicitudAdminController::class, 'descargarDocumento'])
         ->name('tramitanet.solicitudes.documentos.descargar');
-    
+
     Route::get('tramitanet/solicitudes/{solicitud}/datos/{dato}/ver-password', [TramitaNetSolicitudAdminController::class, 'verPassword'])
         ->name('tramitanet.solicitudes.datos.ver-password');
-    
+
     Route::post('tramitanet/solicitudes/{solicitud}/documentos-generados', [TramitaNetSolicitudAdminController::class, 'subirDocumentoGenerado'])
         ->name('tramitanet.solicitudes.documentos-generados.store');
 
@@ -182,7 +183,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         ->name('tramitanet.pagos.ver');
 
     Route::get('tramitanet/pagos/{pago}/descargar', [TramitaNetSolicitudAdminController::class, 'descargarPago'])
-        ->name('tramitanet.pagos.descargar');  
+        ->name('tramitanet.pagos.descargar');
 
     Route::get(
         '/tramitanet/configuracion',
@@ -214,7 +215,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
             'index',
             'edit',
             'update',
-        ]);     
+        ]);
 
 
 
@@ -291,6 +292,12 @@ Route::view(
 )->name('tramitanet.terminos');
 
 
+Route::view(
+    '/aviso-de-privacidad',
+    'publico.tramitanet.aviso-privacidad'
+)->name('tramitanet.aviso-privacidad');
+
+
 /*
 |--------------------------------------------------------------------------
 | Compatibilidad con URLs antiguas
@@ -336,3 +343,6 @@ Route::get('/tramitanet/aviso-de-privacidad', function () {
 Route::get('/tramitanet/terminos-y-condiciones', function () {
     return redirect()->route('tramitanet.terminos', status: 301);
 });
+
+Route::get('/sitemap.xml', SitemapController::class)
+    ->name('sitemap');

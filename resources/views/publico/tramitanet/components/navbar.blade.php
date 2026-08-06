@@ -20,13 +20,13 @@
             </div>
 
             {{-- Presentación actual para escritorio --}}
-            <div class="hidden items-center gap-3 md:flex">            
+            <div class="hidden items-center gap-3 md:flex">
                 <div class="flex h-14 w-14 flex-none items-center justify-center">
                     <img
                         src="{{ asset('images/tramitanet-icono.png') }}"
                         alt="Icono de TramitaNet"
                         class="h-12 w-auto rounded-xl"
-                        
+
                     >
                 </div>
 
@@ -227,10 +227,10 @@
             <div class="my-3 border-t border-white/10"></div>
 
             <a
-                href="{{ route('tramitanet.privacidad') }}"
+                href="{{ route('tramitanet.aviso-privacidad') }}"
                 @click="menuMovilAbierto = false"
                 class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold transition
-                    {{ request()->routeIs('tramitanet.privacidad')
+                    {{ request()->routeIs('tramitanet.aviso-privacidad')
                         ? 'bg-white/10 text-orange-400'
                         : 'text-slate-300 hover:bg-white/10 hover:text-orange-400' }}"
             >

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\CatalogoInstitucion;
 use App\Models\CatalogoServicio;
 use App\Models\CatalogoServicioModalidad;
+use App\Services\Seo\SeoService;
 
 class TramitaNetServicioController extends Controller
 {
@@ -44,17 +45,27 @@ class TramitaNetServicioController extends Controller
     }
 
 
-    public function servicio(string $slug)
+    public function servicio(string $slug, SeoService $seoService)
     {
+
+
         $servicio = CatalogoServicio::with([
                 'institucion',
-                'modalidades.campos.campoMaestro',                
+                'modalidades.campos.campoMaestro',
             ])
             ->where('slug', $slug)
             ->where('activo', true)
             ->firstOrFail();
 
-        return view('publico.tramitanet.servicio', compact('servicio'));
+        $seo = $seoService->servicio($servicio);
+
+        return view(
+            'publico.tramitanet.servicio',
+            compact(
+                'servicio',
+                'seo'
+            )
+        );
     }
 
 }
