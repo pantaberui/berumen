@@ -406,7 +406,7 @@
                                 </a>
 
                                 <a
-                                    href="{{ route('tramitanet.privacidad') }}"
+                                    href="{{ route('tramitanet.aviso-privacidad') }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
@@ -443,7 +443,7 @@
                                     <path fill-rule="evenodd" d="M12 12a5 5 0 100-10 5 5 0 000 10zm-7 9a7 7 0 1114 0H5z" clip-rule="evenodd"/>
                                 </svg>
                                 <div class="desktop-user-name">
-                                    {{ Auth::user()->apellido_paterno }} {{ Auth::user()->name }} 
+                                    {{ Auth::user()->apellido_paterno }} {{ Auth::user()->name }}
                                 </div>
                             </div>
 
@@ -691,7 +691,7 @@
                 </a>
 
                 <a
-                    href="{{ route('tramitanet.privacidad') }}"
+                    href="{{ route('tramitanet.aviso-privacidad') }}"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="block border-l-4 border-transparent py-2 pr-4 text-base font-medium"
