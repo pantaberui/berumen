@@ -24,7 +24,7 @@ class SeoService
         return new SeoData(
             title: 'Preguntas Frecuentes | TramitaNet',
             description: 'Consulta las preguntas más frecuentes sobre nuestros servicios, pagos y tiempos de atención.',
-            canonical: url('/tramitanet/preguntas-frecuentes'),
+            canonical: url('/preguntas-frecuentes'),
             image: $seo->image,
         );
     }
@@ -36,7 +36,7 @@ class SeoService
         return new SeoData(
             title: 'Aviso de Privacidad | TramitaNet',
             description: 'Conoce cómo TramitaNet recopila, utiliza y protege tus datos personales durante la prestación de nuestros servicios.',
-            canonical: url('/tramitanet/aviso-de-privacidad'),
+            canonical: url('/aviso-de-privacidad'),
             image: $seo->image,
         );
     }
@@ -48,7 +48,7 @@ class SeoService
         return new SeoData(
             title: 'Términos y Condiciones | TramitaNet',
             description: 'Consulta los términos y condiciones aplicables al uso de la plataforma TramitaNet y a los servicios ofrecidos.',
-            canonical: url('/tramitanet/terminos-y-condiciones'),
+            canonical: url('/terminos-y-condiciones'),
             image: $seo->image,
         );
     }

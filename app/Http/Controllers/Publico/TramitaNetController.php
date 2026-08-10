@@ -51,7 +51,7 @@ class TramitaNetController extends Controller
         ));
     }
 
-    public function servicio(string $slug)
+    public function servicio(string $slug, SeoService $seoService)
     {
         $servicio = CatalogoServicio::with([
                 'institucion',
@@ -62,7 +62,13 @@ class TramitaNetController extends Controller
             ->where('activo', true)
             ->firstOrFail();
 
-        return view('publico.tramitanet.servicio', compact('servicio'));
+            $seo = $seoService->servicio($servicio);
+
+
+        return view('publico.tramitanet.servicio', compact(
+            'servicio',
+            'seo'
+        ));
     }
 
      public function consulta()
