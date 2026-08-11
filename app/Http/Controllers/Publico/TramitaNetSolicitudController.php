@@ -23,7 +23,7 @@ use App\Services\TramitaNet\CambioEstadoService;
 use App\Support\TramitaNet\EstadosSolicitud;
 
 class TramitaNetSolicitudController extends Controller
-{   
+{
     public function resumen(Request $request, string $slug)
     {
         $servicio = CatalogoServicio::with('institucion')
@@ -164,11 +164,6 @@ class TramitaNetSolicitudController extends Controller
                 },
             ],
 
-            'correo' => [
-                'nullable',
-                'email',
-                'max:255',
-            ],
         ], [
             'whatsapp_codigo_pais.required' =>
                 'Selecciona el código de país.',
@@ -212,7 +207,7 @@ class TramitaNetSolicitudController extends Controller
             })
             ->toArray();
 
-        
+
         $whatsappCodigoPais = $request->input('whatsapp_codigo_pais');
 
         $whatsappNumero = preg_replace(
@@ -262,7 +257,7 @@ class TramitaNetSolicitudController extends Controller
             ->whereKey($request->modalidad)
             ->where('activo', true)
             ->firstOrFail();
-        
+
 
         $camposEntrada = $request->input('campos', []);
 
@@ -349,7 +344,7 @@ class TramitaNetSolicitudController extends Controller
         }
 
 
-        
+
 
         $tieneArchivos = $modalidad->campos->contains(
             fn ($campoServicio) =>
@@ -379,7 +374,7 @@ class TramitaNetSolicitudController extends Controller
                 ])
                 ->withInput();
         }
-        
+
         $request->merge([
             'whatsapp_numero' => preg_replace(
                 '/\D+/',
@@ -421,6 +416,15 @@ class TramitaNetSolicitudController extends Controller
                 'email',
                 'max:255',
             ],
+            'confirmacion_datos' => [
+                'required',
+                'accepted',
+            ],
+
+            'aceptacion_legal' => [
+                'required',
+                'accepted',
+            ],
         ], [
             'whatsapp_codigo_pais.required' =>
                 'Selecciona el código de país.',
@@ -451,8 +455,8 @@ class TramitaNetSolicitudController extends Controller
 
         $telefonoWhatsappCompleto =
             $whatsappCodigoPais . $whatsappNumero;
-        
-        
+
+
 
         $campos = collect($request->input('campos', []))
             ->map(function ($valor, $clave) {
@@ -467,7 +471,7 @@ class TramitaNetSolicitudController extends Controller
                     : $valor;
             })
             ->toArray();
-        
+
         try {
             $precioCalculado = PrecioService::calcular(
                 servicio: $servicio,
@@ -487,7 +491,7 @@ class TramitaNetSolicitudController extends Controller
         }
 
 
-        
+
         foreach ($modalidad->campos as $campoServicio){
             $campo = $campoServicio->campoMaestro;
 
@@ -542,6 +546,8 @@ class TramitaNetSolicitudController extends Controller
                 'monto_base' => $precioCalculado,
                 'comision' => 0,
                 'total_pagar' => $precioCalculado,
+                'terminos_aceptados_at' => now(),
+                'privacidad_aceptada_at' => now(),
             ]);
 
             foreach ($modalidad->campos as $campoServicio) {
@@ -594,7 +600,7 @@ class TramitaNetSolicitudController extends Controller
                 SolicitudServicioDato::create($datos);
 
             }
-            
+
             $datosGuardados = SolicitudServicioDato::where(
                 'solicitud_servicio_id',
                 $solicitud->id
@@ -624,7 +630,7 @@ class TramitaNetSolicitudController extends Controller
             );
 
             TramitaNetNotificacionService::nuevaSolicitud($solicitud);
-            
+
 
             if (!$tieneArchivos) {
                 session()->forget('tramitanet.captcha_ok');
@@ -638,7 +644,7 @@ class TramitaNetSolicitudController extends Controller
 
             return redirect()
                 ->route('tramitanet.expediente', $solicitud->folio);
-            
+
         });
     }
 
@@ -665,7 +671,7 @@ class TramitaNetSolicitudController extends Controller
             ->groupBy(function ($dato) {
                 return $dato->catalogoCampo->grupo_expediente ?? 'datos';
             });
-        
+
         $estadoActual = $this->obtenerMensajeEstado($solicitud->estatus);
 
         $mensajeWhatsApp = implode("\n", [

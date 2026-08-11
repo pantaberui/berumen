@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class CatalogoServicioModalidad extends Model
 {
     protected $table = 'catalogo_servicio_modalidades';
-    
+
     protected $fillable = [
         'catalogo_servicio_id',
         'nombre',
@@ -45,6 +45,15 @@ class CatalogoServicioModalidad extends Model
             'catalogo_servicio_modalidad_id'
         )
             ->where('activo', true)
+            ->orderBy('orden');
+    }
+
+    public function camposAdmin(): HasMany
+    {
+        return $this->hasMany(
+            CatalogoServicioModalidadCampo::class,
+            'catalogo_servicio_modalidad_id'
+        )
             ->orderBy('orden');
     }
 }

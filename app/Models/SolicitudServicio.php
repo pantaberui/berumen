@@ -33,6 +33,8 @@ class SolicitudServicio extends Model
         'archivo_pdf_final',
         'fecha_pago_confirmado',
         'fecha_enviado',
+        'terminos_aceptados_at',
+        'privacidad_aceptada_at',
         'catalogo_servicio_modalidad_id',
         'codigo_consulta',
     ];
@@ -43,6 +45,8 @@ class SolicitudServicio extends Model
         'total_pagar' => 'decimal:2',
         'fecha_pago_confirmado' => 'datetime',
         'fecha_enviado' => 'datetime',
+        'terminos_aceptados_at' => 'datetime',
+        'privacidad_aceptada_at' => 'datetime',
     ];
 
     public function servicio()
@@ -76,7 +80,7 @@ class SolicitudServicio extends Model
         return $this->hasMany(
             SolicitudServicioDocumento::class
         )->latest();
-    }    
+    }
 
 
     public function pagos(): HasMany

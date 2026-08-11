@@ -331,6 +331,11 @@
                                 class="absolute left-0 z-50 mt-2 w-64 overflow-hidden
                                     rounded-md border border-gray-100 bg-white shadow-lg"
                             >
+
+                                <p class="px-4 pt-3 pb-1 text-xs font-bold uppercase tracking-wide text-gray-400">
+                                    Administración
+                                </p>
+
                                 <a
                                     href="{{ route('admin.tramitanet.solicitudes.index') }}"
                                     class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50
@@ -340,6 +345,40 @@
                                 >
                                     📋 Centro de Gestión
                                 </a>
+
+                                <a
+                                    href="{{ route('admin.tramitanet.instituciones.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50
+                                        {{ request()->routeIs('admin.tramitanet.instituciones.*')
+                                            ? 'font-semibold text-indigo-600'
+                                            : '' }}"
+                                >
+                                    🏛️ Instituciones
+                                </a>
+
+
+                                <a
+                                    href="{{ route('admin.tramitanet.servicios.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50
+                                        {{ request()->routeIs('admin.tramitanet.servicios.*')
+                                            ? 'font-semibold text-indigo-600'
+                                            : '' }}"
+                                >
+                                    🧩 Servicios
+                                </a>
+
+                                <a
+                                    href="{{ route('admin.tramitanet.campos.index') }}"
+                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50
+                                        {{ request()->routeIs('admin.tramitanet.campos.*')
+                                            ? 'font-semibold text-indigo-600'
+                                            : '' }}"
+                                >
+                                    🧱 Campos maestros
+                                </a>
+
+
+
 
                                 <a
                                     href="{{ route('admin.tramitanet.configuracion.edit') }}"
@@ -631,15 +670,39 @@
                 <x-responsive-nav-link
                     :href="route('admin.tramitanet.solicitudes.index')"
                     :active="request()->routeIs('admin.tramitanet.solicitudes.*')"
-                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                    style="padding-left: 1.5rem;"
                 >
                     Centro de Gestión
                 </x-responsive-nav-link>
 
                 <x-responsive-nav-link
+                    :href="route('admin.tramitanet.instituciones.index')"
+                    :active="request()->routeIs('admin.tramitanet.instituciones.*')"
+                    style="padding-left: 1.5rem;"
+                >
+                    Instituciones
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link
+                    :href="route('admin.tramitanet.servicios.index')"
+                    :active="request()->routeIs('admin.tramitanet.servicios.*')"
+                    style="padding-left: 1.5rem;"
+                >
+                    Servicios
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link
+                    :href="route('admin.tramitanet.campos.index')"
+                    :active="request()->routeIs('admin.tramitanet.campos.*')"
+                    style="padding-left: 1.5rem;"
+                >
+                    Campos maestros
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link
                     :href="route('admin.tramitanet.configuracion.edit')"
                     :active="request()->routeIs('admin.tramitanet.configuracion.*')"
-                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                    style="padding-left: 1.5rem;"
                 >
                     Configuración
                 </x-responsive-nav-link>
@@ -647,7 +710,7 @@
                 <x-responsive-nav-link
                     :href="route('admin.catalogo-cuentas-bancarias.index')"
                     :active="request()->routeIs('admin.catalogo-cuentas-bancarias.*')"
-                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                    style="padding-left: 1.5rem;"
                 >
                     Cuentas bancarias
                 </x-responsive-nav-link>
@@ -655,7 +718,7 @@
                 <x-responsive-nav-link
                     :href="route('admin.costos-actas.index')"
                     :active="request()->routeIs('admin.costos-actas.*')"
-                    style="color: #cbd5e1; padding-left: 1.5rem;"
+                    style="padding-left: 1.5rem;"
                 >
                     Costos de actas
                 </x-responsive-nav-link>

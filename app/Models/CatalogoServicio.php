@@ -33,6 +33,8 @@ class CatalogoServicio extends Model
         'entrega_digital',
         'mostrar_en_portada',
         'mostrar_precio',
+        'seo_title',
+        'seo_description',
     ];
 
     protected $casts = [

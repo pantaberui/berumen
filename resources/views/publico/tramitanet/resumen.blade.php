@@ -115,7 +115,45 @@
                     <span class="text-sm text-orange-900">
                         Confirmo que revisé cuidadosamente la información y que los datos proporcionados son correctos.
                     </span>
+
                 </label>
+
+                <label class="mt-4 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                    <input
+                        type="checkbox"
+                        name="aceptacion_legal"
+                        value="1"
+                        required
+                        class="mt-1 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                    >
+
+                    <span class="text-sm leading-6 text-slate-700">
+                        He leído y acepto los
+                        <a
+                            href="{{ route('tramitanet.terminos') }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="font-bold text-orange-600 hover:text-orange-700 hover:underline"
+                        >
+                            Términos y Condiciones
+                        </a>
+                        y el
+                        <a
+                            href="{{ route('tramitanet.aviso-privacidad') }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="font-bold text-orange-600 hover:text-orange-700 hover:underline"
+                        >
+                            Aviso de Privacidad
+                        </a>.
+                    </span>
+                </label>
+
+                @error('aceptacion_legal')
+                    <p class="mt-2 text-sm font-semibold text-red-600">
+                        {{ $message }}
+                    </p>
+                @enderror
 
                 <div class="flex flex-col sm:flex-row gap-3 mt-6">
                     <a href="{{ route('tramitanet.servicio.modalidad', [$servicio->slug, $modalidad->slug]) }}"

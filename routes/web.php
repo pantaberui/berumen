@@ -219,13 +219,80 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
 
 
 
-});
+    Route::resource(
+        'tramitanet/servicios',
+        \App\Http\Controllers\Admin\TramitaNetServicioAdminController::class
+    )
+        ->except(['show', 'destroy'])
+        ->names('tramitanet.servicios');
+
+
+    Route::post(
+        'tramitanet/servicios/{servicio}/modalidades',
+        [\App\Http\Controllers\Admin\TramitaNetServicioModalidadAdminController::class, 'store']
+    )->name('tramitanet.servicios.modalidades.store');
+
+
+    Route::put(
+        'tramitanet/servicios/{servicio}/modalidades/{modalidad}',
+        [\App\Http\Controllers\Admin\TramitaNetServicioModalidadAdminController::class, 'update']
+    )->name('tramitanet.servicios.modalidades.update');
+
+    Route::post(
+        'tramitanet/servicios/{servicio}/modalidades/{modalidad}/campos',
+        [
+            \App\Http\Controllers\Admin\TramitaNetServicioModalidadCampoAdminController::class,
+            'store'
+        ]
+    )->name('tramitanet.servicios.modalidades.campos.store');
+
+
+    Route::put(
+        'tramitanet/servicios/{servicio}/modalidades/{modalidad}/campos/{campoModalidad}',
+        [
+            \App\Http\Controllers\Admin\TramitaNetServicioModalidadCampoAdminController::class,
+            'update'
+        ]
+    )->name('tramitanet.servicios.modalidades.campos.update');
+
+    Route::resource(
+        'tramitanet/campos',
+        \App\Http\Controllers\Admin\TramitaNetCampoAdminController::class
+    )
+        ->parameters([
+            'campos' => 'campo',
+        ])
+        ->except([
+            'show',
+            'destroy',
+        ])
+        ->names('tramitanet.campos');
+
+    Route::resource(
+        'tramitanet/instituciones',
+        \App\Http\Controllers\Admin\TramitaNetInstitucionAdminController::class
+    )
+        ->parameters([
+            'instituciones' => 'institucion',
+        ])
+        ->except([
+            'show',
+            'destroy',
+        ])
+        ->names('tramitanet.instituciones');
+
+
+}); // <-- AQUÍ cerramos Panel Admin
+
+
+
 
 // Panel Cajero
 Route::middleware(['auth', 'role:cajero'])->prefix('cajero')->name('cajero.')->group(function () {
     Route::get('/dashboard', function () {
         return view('cajero.dashboard');
     })->name('dashboard');
+
 });
 
 

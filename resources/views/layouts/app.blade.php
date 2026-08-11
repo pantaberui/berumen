@@ -442,6 +442,12 @@
             document.querySelectorAll(
                 'input[name="nombre"]'
             ).forEach(function (campo) {
+
+                // Algunos formularios deben conservar mayúsculas y minúsculas
+                if (campo.dataset.preserveCase === 'true') {
+                    return;
+                }
+
                 campo.addEventListener('input', function () {
                     this.value = this.value
                         .replace(/[^A-ZÁÉÍÓÚÜÑ\s.]/gi, '')
@@ -488,7 +494,7 @@
         <footer class="py-4 border-t border-gray-200 text-center text-xs text-gray-400">
             © {{ date('Y') }} Entretenimiento Berumen — Todos los derechos reservados.
             Desarrollado por <span class="text-gray-500 font-medium">EB</span>
-        </footer>       
+        </footer>
     </body>
 
 </html>

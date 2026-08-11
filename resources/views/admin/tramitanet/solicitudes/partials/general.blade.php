@@ -123,6 +123,58 @@
     @endforeach
 </div>
 
+<div class="mb-6">
+    <h3 class="text-sm font-bold text-gray-500 uppercase mb-3">
+        Aceptaciones legales
+    </h3>
+
+    <div class="grid md:grid-cols-2 gap-4">
+        <div class="border rounded-xl p-4 bg-gray-50">
+            <p class="text-xs text-gray-500 uppercase font-bold">
+                Términos y Condiciones
+            </p>
+
+            @if($solicitud->terminos_aceptados_at)
+                <div class="mt-2">
+                    <p class="font-bold text-green-700">
+                        ✓ Aceptados
+                    </p>
+
+                    <p class="mt-1 text-sm text-gray-600">
+                        {{ $solicitud->terminos_aceptados_at->format('d/m/Y H:i') }}
+                    </p>
+                </div>
+            @else
+                <p class="mt-2 font-bold text-gray-500">
+                    Sin registro de aceptación
+                </p>
+            @endif
+        </div>
+
+        <div class="border rounded-xl p-4 bg-gray-50">
+            <p class="text-xs text-gray-500 uppercase font-bold">
+                Aviso de Privacidad
+            </p>
+
+            @if($solicitud->privacidad_aceptada_at)
+                <div class="mt-2">
+                    <p class="font-bold text-green-700">
+                        ✓ Aceptado
+                    </p>
+
+                    <p class="mt-1 text-sm text-gray-600">
+                        {{ $solicitud->privacidad_aceptada_at->format('d/m/Y H:i') }}
+                    </p>
+                </div>
+            @else
+                <p class="mt-2 font-bold text-gray-500">
+                    Sin registro de aceptación
+                </p>
+            @endif
+        </div>
+    </div>
+</div>
+
 <script>
     async function verPassword(url, datoId) {
         const respuesta = await fetch(url);
@@ -137,7 +189,7 @@
         document.getElementById(`password-${datoId}`).innerText = data.password;
     }
 
-    
+
     async function verPassword(url, datoId) {
         const respuesta = await fetch(url);
 

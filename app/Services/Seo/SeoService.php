@@ -65,16 +65,19 @@ class SeoService
 
     public function servicio($servicio): SeoData
     {
+        $nombre = $servicio->titulo_publico ?: $servicio->nombre;
+
+        $title = $servicio->seo_title
+            ?: $nombre . ' | TramitaNet';
+
+        $description = $servicio->seo_description
+            ?: $servicio->descripcion
+            ?: 'Solicita ' . $nombre . ' en línea mediante TramitaNet.';
+
         return new SeoData(
-            title: $servicio->nombre . ' | TramitaNet',
-
-            description:
-                $servicio->descripcion
-                ?: 'Solicita ' . $servicio->nombre .
-                ' en línea mediante TramitaNet.',
-
+            title: $title,
+            description: $description,
             canonical: url('/servicio/' . $servicio->slug),
-
             image: asset('images/tramitanet/seo/default.jpg')
         );
     }
