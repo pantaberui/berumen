@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Models\TramitaNetConfiguracion;
 use Illuminate\Support\Facades\View;
+use App\Services\TramitaNet\HorarioAtencionService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
     /**
      * Bootstrap any application services.
      */
-    
+
 
     public function boot(): void
     {
@@ -28,20 +29,12 @@ class AppServiceProvider extends ServiceProvider
         View::composer(
             'publico.tramitanet.*',
             function ($view) {
-                $servicioAbierto = TramitaNetConfiguracion::obtener(
-                    'servicio_abierto',
-                    true
-                );
+                $estadoHorario = HorarioAtencionService::estado();
 
-                $mensajeAtencion = $servicioAbierto
-                    ? TramitaNetConfiguracion::obtener(
-                        'mensaje_servicio_abierto',
-                        'Estamos en horario de atención.'
-                    )
-                    : TramitaNetConfiguracion::obtener(
-                        'mensaje_servicio_cerrado',
-                        'Fuera del horario de atención.'
-                    );
+                $servicioAbierto = $estadoHorario['abierto'];
+                $mensajeAtencion = $estadoHorario['mensaje'];
+                $siguienteApertura = $estadoHorario['siguiente_apertura'];
+                $horarioAutomatico = $estadoHorario['automatico'];
 
                 $horarioAtencion = TramitaNetConfiguracion::obtener(
                     'horario_atencion',
@@ -58,6 +51,8 @@ class AppServiceProvider extends ServiceProvider
                     'mensajeAtencion' => $mensajeAtencion,
                     'horarioAtencion' => $horarioAtencion,
                     'zonaHoraria' => $zonaHoraria,
+                    'siguienteApertura' => $siguienteApertura,
+                    'horarioAutomatico' => $horarioAutomatico,
                 ]);
 
 

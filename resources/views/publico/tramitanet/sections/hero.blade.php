@@ -75,6 +75,24 @@
                     {{ $mensajeAtencion }}
                 </p>
 
+                @if(
+                    !$servicioAbierto &&
+                    $horarioAutomatico &&
+                    $siguienteApertura
+                )
+                    <div class="mt-3 rounded-xl border border-amber-300/20 bg-amber-400/10 px-4 py-3">
+                        <p class="text-sm font-bold text-amber-200">
+                            Próxima atención
+                        </p>
+
+                        <p class="mt-1 text-sm text-slate-200">
+                            {{ $siguienteApertura
+                                ->locale('es')
+                                ->translatedFormat('l d \d\e F \a \l\a\s h:i A') }}
+                        </p>
+                    </div>
+                @endif
+
                 @if($horarioAtencion)
                     <div class="mt-3 whitespace-pre-line text-sm leading-6 text-slate-300">
                         {{ $horarioAtencion }}

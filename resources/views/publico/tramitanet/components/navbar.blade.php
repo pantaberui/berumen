@@ -42,6 +42,35 @@
             </div>
         </a>
 
+        {{-- Estado de atención: móvil --}}
+        <div class="flex min-w-0 flex-1 justify-center px-2 md:hidden">
+            <div
+                class="inline-flex max-w-full items-center gap-2 rounded-full border px-3 py-2
+                    text-[11px] font-bold leading-tight
+                    {{ $servicioAbierto
+                        ? 'border-green-400/30 bg-green-500/10 text-green-200'
+                        : 'border-amber-400/30 bg-amber-500/10 text-amber-200'
+                    }}"
+            >
+                <span
+                    class="h-2 w-2 flex-none rounded-full
+                        {{ $servicioAbierto ? 'bg-green-400' : 'bg-amber-400' }}"
+                ></span>
+
+                <span class="truncate">
+                    @if($servicioAbierto)
+                        Estamos atendiendo
+                    @elseif($horarioAutomatico && $siguienteApertura)
+                        Próx. {{ $siguienteApertura
+                            ->locale('es')
+                            ->translatedFormat('D H:i') }}
+                    @else
+                        Fuera de horario
+                    @endif
+                </span>
+            </div>
+        </div>
+
         <div class="hidden items-center md:flex">
             <div
                 class="inline-flex items-center gap-2 rounded-full border px-3 py-2 text-xs font-bold
@@ -55,7 +84,16 @@
                         {{ $servicioAbierto ? 'bg-green-400' : 'bg-amber-400' }}"
                 ></span>
 
-                {{ $servicioAbierto ? 'Estamos atendiendo' : 'Fuera de horario' }}
+                @if($servicioAbierto)
+                    Estamos atendiendo
+                @elseif($horarioAutomatico && $siguienteApertura)
+                    Próxima atención:
+                    {{ $siguienteApertura
+                        ->locale('es')
+                        ->translatedFormat('D d/m H:i') }}
+                @else
+                    Fuera de horario
+                @endif
             </div>
         </div>
 
@@ -166,18 +204,37 @@
         class="border-t border-white/10 bg-slate-950 px-4 pb-5 pt-4 shadow-xl md:hidden"
     >
         <div
-            class="mb-4 flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold
+            class="mb-4 rounded-xl border px-4 py-3
                 {{ $servicioAbierto
                     ? 'border-green-400/30 bg-green-500/10 text-green-200'
                     : 'border-amber-400/30 bg-amber-500/10 text-amber-200'
                 }}"
         >
-            <span
-                class="h-2.5 w-2.5 rounded-full
-                    {{ $servicioAbierto ? 'bg-green-400' : 'bg-amber-400' }}"
-            ></span>
+            <div class="flex items-center gap-2 text-sm font-bold">
+                <span
+                    class="h-2.5 w-2.5 rounded-full
+                        {{ $servicioAbierto ? 'bg-green-400' : 'bg-amber-400' }}"
+                ></span>
 
-            {{ $servicioAbierto ? 'Estamos atendiendo' : 'Fuera de horario' }}
+                @if($servicioAbierto)
+                    Estamos atendiendo
+                @else
+                    Fuera de horario
+                @endif
+            </div>
+
+            @if(
+                !$servicioAbierto &&
+                $horarioAutomatico &&
+                $siguienteApertura
+            )
+                <p class="mt-2 pl-4 text-xs font-semibold text-amber-100">
+                    Próxima atención:
+                    {{ $siguienteApertura
+                        ->locale('es')
+                        ->translatedFormat('l d/m \a \l\a\s H:i') }}
+                </p>
+            @endif
         </div>
 
                 <nav class="space-y-2">

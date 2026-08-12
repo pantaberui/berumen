@@ -35,17 +35,23 @@ class TramitaNetConfiguracion extends Model
             return $valorPorDefecto;
         }
 
-        return match ($configuracion->tipo) {
-            'booleano' => filter_var(
-                $configuracion->valor,
-                FILTER_VALIDATE_BOOLEAN
-            ),
+    return match ($configuracion->tipo) {
+        'booleano' => filter_var(
+            $configuracion->valor,
+            FILTER_VALIDATE_BOOLEAN
+        ),
 
-            'entero' => (int) $configuracion->valor,
+        'entero' => (int) $configuracion->valor,
 
-            'decimal' => (float) $configuracion->valor,
+        'decimal' => (float) $configuracion->valor,
 
-            default => $configuracion->valor,
-        };
+        'json' => json_decode(
+            $configuracion->valor,
+            true
+        ) ?? $valorPorDefecto,
+
+        default => $configuracion->valor,
+    };
+
     }
 }
