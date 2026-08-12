@@ -189,10 +189,70 @@ Esta modalidad requiere:
 
     @include('publico.tramitanet.partials.captcha')
 
+
+    @if($tieneArchivos)
+
+        <div class="mt-8 space-y-4">
+
+            <label class="flex items-start gap-3 bg-orange-50 border border-orange-200 rounded-2xl p-4">
+                <input
+                    type="checkbox"
+                    name="confirmacion_datos"
+                    value="1"
+                    required
+                    class="mt-1 rounded border-orange-300 text-orange-600 focus:ring-orange-500"
+                >
+
+                <span class="text-sm text-orange-900">
+                    Confirmo que revisé cuidadosamente la información y que los datos proporcionados son correctos.
+                </span>
+            </label>
+
+
+            <label class="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                <input
+                    type="checkbox"
+                    name="aceptacion_legal"
+                    value="1"
+                    required
+                    class="mt-1 rounded border-slate-300 text-orange-600 focus:ring-orange-500"
+                >
+
+                <span class="text-sm leading-6 text-slate-700">
+                    He leído y acepto los
+
+                    <a
+                        href="{{ route('tramitanet.terminos') }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="font-bold text-orange-600 hover:text-orange-700 hover:underline"
+                    >
+                        Términos y Condiciones
+                    </a>
+
+                    y el
+
+                    <a
+                        href="{{ route('tramitanet.aviso-privacidad') }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="font-bold text-orange-600 hover:text-orange-700 hover:underline"
+                    >
+                        Aviso de Privacidad
+                    </a>.
+                </span>
+            </label>
+
+        </div>
+
+    @endif
+
+
     <div class="mt-8">
         <button
+            type="submit"
             class="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3 rounded-xl">
-            Continuar solicitud
+            {{ $tieneArchivos ? 'Generar solicitud' : 'Continuar solicitud' }}
         </button>
     </div>
 

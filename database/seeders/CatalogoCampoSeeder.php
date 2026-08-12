@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class CatalogoCampoSeeder extends Seeder
 {
     public function run(): void
-    {   
+    {
         $campos = [
 
         [
@@ -198,11 +198,11 @@ class CatalogoCampoSeeder extends Seeder
         [
             'nombre' => 'Estado',
             'slug' => 'estado',
-            'tipo_campo' => 'text',
+            'tipo_campo' => 'select',
             'validacion' => 'required',
-            'placeholder' => 'Ej. Nayarit',
+            'placeholder' => 'Selecciona tu estado',
             'ayuda' => null,
-            'transformacion' => 'mayusculas',
+            'transformacion' => null,
             'autocomplete' => 'address-level1',
             'accept' => null,
             'tamano_maximo_mb' => null,
@@ -210,6 +210,41 @@ class CatalogoCampoSeeder extends Seeder
             'longitud_minima' => null,
             'longitud_maxima' => null,
             'grupo_expediente' => 'datos',
+
+            'opciones' => [
+                ['value' => 'AS', 'label' => 'Aguascalientes'],
+                ['value' => 'BC', 'label' => 'Baja California'],
+                ['value' => 'BS', 'label' => 'Baja California Sur'],
+                ['value' => 'CC', 'label' => 'Campeche'],
+                ['value' => 'CL', 'label' => 'Coahuila'],
+                ['value' => 'CM', 'label' => 'Colima'],
+                ['value' => 'CS', 'label' => 'Chiapas'],
+                ['value' => 'CH', 'label' => 'Chihuahua'],
+                ['value' => 'DF', 'label' => 'Ciudad de México'],
+                ['value' => 'DG', 'label' => 'Durango'],
+                ['value' => 'GT', 'label' => 'Guanajuato'],
+                ['value' => 'GR', 'label' => 'Guerrero'],
+                ['value' => 'HG', 'label' => 'Hidalgo'],
+                ['value' => 'JC', 'label' => 'Jalisco'],
+                ['value' => 'MC', 'label' => 'México'],
+                ['value' => 'MN', 'label' => 'Michoacán'],
+                ['value' => 'MS', 'label' => 'Morelos'],
+                ['value' => 'NT', 'label' => 'Nayarit'],
+                ['value' => 'NL', 'label' => 'Nuevo León'],
+                ['value' => 'OC', 'label' => 'Oaxaca'],
+                ['value' => 'PL', 'label' => 'Puebla'],
+                ['value' => 'QT', 'label' => 'Querétaro'],
+                ['value' => 'QR', 'label' => 'Quintana Roo'],
+                ['value' => 'SP', 'label' => 'San Luis Potosí'],
+                ['value' => 'SL', 'label' => 'Sinaloa'],
+                ['value' => 'SR', 'label' => 'Sonora'],
+                ['value' => 'TC', 'label' => 'Tabasco'],
+                ['value' => 'TS', 'label' => 'Tamaulipas'],
+                ['value' => 'TL', 'label' => 'Tlaxcala'],
+                ['value' => 'VZ', 'label' => 'Veracruz'],
+                ['value' => 'YN', 'label' => 'Yucatán'],
+                ['value' => 'ZS', 'label' => 'Zacatecas'],
+            ],
         ],
         [
             'nombre' => 'ID CIF',
@@ -405,6 +440,12 @@ class CatalogoCampoSeeder extends Seeder
             'longitud_minima' => null,
             'longitud_maxima' => null,
             'grupo_expediente' => 'datos',
+
+            'opciones' => [
+                'H' => 'Hombre',
+                'M' => 'Mujer',
+                "X" => "No binario",
+            ],
         ],
         [
             'nombre' => 'Entidad federativa de nacimiento',
@@ -421,25 +462,44 @@ class CatalogoCampoSeeder extends Seeder
             'longitud_minima' => null,
             'longitud_maxima' => null,
             'grupo_expediente' => 'datos',
-        ],
-        [
-            'nombre' => 'Número de crédito INFONAVIT',
-            'slug' => 'numero_credito_infonavit',
-            'tipo_campo' => 'text',
-            'validacion' => null,
-            'placeholder' => 'Captura tu número de crédito',
-            'ayuda' => 'Escribe el número de crédito tal como aparece en tus documentos.',
-            'transformacion' => null,
-            'autocomplete' => null,
-            'accept' => null,
-            'tamano_maximo_mb' => null,
-            'multiple' => false,
-            'longitud_minima' => null,
-            'longitud_maxima' => 20,
-            'grupo_expediente' => 'datos',
+
+            'opciones' => [
+                ['value' => 'AS', 'label' => 'Aguascalientes'],
+                ['value' => 'BC', 'label' => 'Baja California'],
+                ['value' => 'BS', 'label' => 'Baja California Sur'],
+                ['value' => 'CC', 'label' => 'Campeche'],
+                ['value' => 'CL', 'label' => 'Coahuila'],
+                ['value' => 'CM', 'label' => 'Colima'],
+                ['value' => 'CS', 'label' => 'Chiapas'],
+                ['value' => 'CH', 'label' => 'Chihuahua'],
+                ['value' => 'DF', 'label' => 'Ciudad de México'],
+                ['value' => 'DG', 'label' => 'Durango'],
+                ['value' => 'GT', 'label' => 'Guanajuato'],
+                ['value' => 'GR', 'label' => 'Guerrero'],
+                ['value' => 'HG', 'label' => 'Hidalgo'],
+                ['value' => 'JC', 'label' => 'Jalisco'],
+                ['value' => 'MC', 'label' => 'México'],
+                ['value' => 'MN', 'label' => 'Michoacán'],
+                ['value' => 'MS', 'label' => 'Morelos'],
+                ['value' => 'NT', 'label' => 'Nayarit'],
+                ['value' => 'NL', 'label' => 'Nuevo León'],
+                ['value' => 'OC', 'label' => 'Oaxaca'],
+                ['value' => 'PL', 'label' => 'Puebla'],
+                ['value' => 'QT', 'label' => 'Querétaro'],
+                ['value' => 'QR', 'label' => 'Quintana Roo'],
+                ['value' => 'SP', 'label' => 'San Luis Potosí'],
+                ['value' => 'SL', 'label' => 'Sinaloa'],
+                ['value' => 'SR', 'label' => 'Sonora'],
+                ['value' => 'TC', 'label' => 'Tabasco'],
+                ['value' => 'TS', 'label' => 'Tamaulipas'],
+                ['value' => 'TL', 'label' => 'Tlaxcala'],
+                ['value' => 'VZ', 'label' => 'Veracruz'],
+                ['value' => 'YN', 'label' => 'Yucatán'],
+                ['value' => 'ZS', 'label' => 'Zacatecas'],
+                ['value' => 'NE', 'label' => 'Nacido en el extranjero'],
+            ],
         ],
         ];
-
 
         foreach ($campos as $campo) {
             CatalogoCampo::updateOrCreate(
@@ -460,6 +520,7 @@ class CatalogoCampoSeeder extends Seeder
                     'longitud_maxima' => $campo['longitud_maxima'] ?? $campo['max'] ?? null,
                     'activo' => true,
                     'grupo_expediente' => $campo['grupo_expediente'] ?? 'datos',
+                    'opciones' => $campo['opciones'] ?? null,
                 ]
             );
         }
