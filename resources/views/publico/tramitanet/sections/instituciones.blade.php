@@ -21,27 +21,14 @@
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-5 gap-5">
 
-            @php
-                $logosInstituciones = [
-                    'sat' => 'images/instituciones/sat.png',
-                    'imss' => 'images/instituciones/imss.png',
-                    'infonavit' => 'images/instituciones/infonavit.png',
-                    'registro-civil' => 'images/instituciones/registro-civil.png',
-                    'issste' => 'images/instituciones/issste.png',
-                    'renapo' => 'images/instituciones/renapo.png',
-                    'cfe' => 'images/instituciones/cfe.png',
-                ];
-            @endphp
-
-
-
-
-
             @foreach($instituciones as $institucion)
 
                 @php
-                    $rutaLogo = $logosInstituciones[$institucion->slug] ?? null;
-                    $logoExiste = $rutaLogo && file_exists(public_path($rutaLogo));
+                    $nombreLogo = $institucion->logo ?: $institucion->slug . '.png';
+
+                    $rutaLogo = 'images/instituciones/' . $nombreLogo;
+
+                    $logoExiste = file_exists(public_path($rutaLogo));
                 @endphp
 
                 <a href="{{ route('tramitanet.institucion', $institucion->slug) }}"
