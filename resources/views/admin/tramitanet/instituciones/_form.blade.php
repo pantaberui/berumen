@@ -72,14 +72,30 @@
             Logo
         </label>
 
+        @if(!empty($institucion?->logo))
+            <div class="mb-3 mt-2">
+                <img
+                    src="{{ asset('images/instituciones/' . $institucion->logo) }}"
+                    alt="Logo de {{ $institucion->nombre }}"
+                    class="max-h-20 max-w-[180px] rounded-lg border border-gray-200 bg-white p-2 object-contain"
+                >
+
+                <p class="mt-1 text-xs text-gray-500">
+                    Logo actual: {{ $institucion->logo }}
+                </p>
+            </div>
+        @endif
+
         <input
-            type="text"
+            type="file"
             name="logo"
-            value="{{ old('logo', $institucion?->logo) }}"
-            data-preserve-case="true"
-            placeholder="Ruta o nombre del archivo"
-            class="mt-1 block w-full rounded-lg border-gray-300"
+            accept=".png,.jpg,.jpeg,.webp"
+            class="mt-1 block w-full rounded-lg border border-gray-300 text-sm"
         >
+
+        <p class="mt-1 text-xs text-gray-500">
+            PNG, JPG o WEBP. Recomendado: 512 × 512 px.
+        </p>
     </div>
 
     <div>

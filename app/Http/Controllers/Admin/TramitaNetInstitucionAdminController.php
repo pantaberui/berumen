@@ -32,6 +32,19 @@ class TramitaNetInstitucionAdminController extends Controller
     {
         $datos = $this->validar($request);
 
+        if ($request->hasFile('logo')) {
+            $archivo = $request->file('logo');
+
+            $nombreLogo = $request->slug . '.' . $archivo->getClientOriginalExtension();
+
+            $archivo->move(
+                public_path('images/instituciones'),
+                $nombreLogo
+            );
+
+            $datos['logo'] = $nombreLogo;
+        }
+
         $datos['activo'] = $request->boolean('activo');
         $datos['mostrar_en_portada'] = $request->boolean('mostrar_en_portada');
 
@@ -55,6 +68,21 @@ class TramitaNetInstitucionAdminController extends Controller
         CatalogoInstitucion $institucion
     ) {
         $datos = $this->validar($request, $institucion);
+
+        if ($request->hasFile('logo')) {
+            $archivo = $request->file('logo');
+
+            $nombreLogo = $request->slug . '.' . $archivo->getClientOriginalExtension();
+
+            $archivo->move(
+                public_path('images/instituciones'),
+                $nombreLogo
+            );
+
+            $datos['logo'] = $nombreLogo;
+        } else {
+            unset($datos['logo']);
+        }
 
         $datos['activo'] = $request->boolean('activo');
         $datos['mostrar_en_portada'] = $request->boolean('mostrar_en_portada');
@@ -92,8 +120,9 @@ class TramitaNetInstitucionAdminController extends Controller
 
             'logo' => [
                 'nullable',
-                'string',
-                'max:255',
+                'image',
+                'mimes:png,jpg,jpeg,webp',
+                'max:2048',
             ],
 
             'icono' => [

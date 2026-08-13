@@ -17,6 +17,7 @@
                 <form
                     method="POST"
                     action="{{ route('admin.tramitanet.instituciones.update', $institucion) }}"
+                    enctype="multipart/form-data"
                 >
                     @csrf
                     @method('PUT')
