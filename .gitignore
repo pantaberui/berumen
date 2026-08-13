@@ -34,3 +34,4 @@ WhatsApp*
 *.jpg
 *.png
 !public/images/
+!public/images/**
