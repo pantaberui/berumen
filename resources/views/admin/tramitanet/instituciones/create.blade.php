@@ -16,7 +16,7 @@
             <div class="rounded-xl bg-white p-6 shadow">
                 <form
                     method="POST"
-                    action="{{ route('admin.tramitanet.instituciones.update', $institucion) }}"
+                    action="{{ route('admin.tramitanet.instituciones.store') }}"
                     enctype="multipart/form-data"
                 >
                     @csrf
