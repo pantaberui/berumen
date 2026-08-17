@@ -11,8 +11,10 @@ use App\Services\Seo\SeoService;
 
 class TramitaNetServicioController extends Controller
 {
-    public function institucion(string $slug)
-    {
+    public function institucion(
+        string $slug,
+        SeoService $seoService
+    ) {
         $institucion = CatalogoInstitucion::with([
                 'servicios' => fn ($query) => $query
                     ->where('categoria', 'tramite')
@@ -23,7 +25,12 @@ class TramitaNetServicioController extends Controller
             ->where('activo', true)
             ->firstOrFail();
 
-        return view('publico.tramitanet.institucion', compact('institucion'));
+        $seo = $seoService->institucion($institucion);
+
+        return view(
+            'publico.tramitanet.institucion',
+            compact('institucion', 'seo')
+        );
     }
 
     public function modalidad(string $slug, string $modalidad)

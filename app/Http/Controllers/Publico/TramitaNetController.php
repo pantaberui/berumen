@@ -171,8 +171,10 @@ class TramitaNetController extends Controller
         ));
     }
 
-    public function faq()
+    public function faq(\App\Services\Seo\SeoService $seoService)
     {
-        return view('publico.tramitanet.faq');
+        $seo = $seoService->faq();
+
+        return view('publico.tramitanet.faq', compact('seo'));
     }
 }

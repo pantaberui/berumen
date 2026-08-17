@@ -82,5 +82,16 @@ class SeoService
         );
     }
 
+    public function institucion($institucion): SeoData
+    {
+        $nombre = $institucion->nombre;
+
+        return new SeoData(
+            title: $nombre . ' | TramitaNet',
+            description: 'Consulta los trámites y servicios disponibles de ' . $nombre . ' en TramitaNet.',
+            canonical: url('/institucion/' . $institucion->slug),
+            image: asset('images/tramitanet/seo/default.jpg')
+        );
+    }
 
 }
