@@ -12,6 +12,7 @@ use App\Models\HistorialEstatusSolicitud;
 use App\Services\TramitaNetService;
 use Illuminate\Support\Facades\DB;
 use App\Services\Seo\SeoService;
+use App\Models\CostoActaEntidad;
 
 
 
@@ -41,12 +42,15 @@ class TramitaNetController extends Controller
             ->where('mostrar_en_portada', true)
             ->orderBy('orden')
             ->get();
+        
+        $precioMinimoActa = CostoActaEntidad::where('activo', true)->min('costo');
 
         $seo = $seoService->home();
 
         return view('publico.tramitanet.index', compact(
             'instituciones',
             'serviciosDestacados',
+            'precioMinimoActa',
             'seo'
         ));
     }

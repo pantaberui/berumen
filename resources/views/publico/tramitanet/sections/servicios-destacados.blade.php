@@ -64,7 +64,7 @@
                         </span>
 
                         <p class="text-3xl font-black text-slate-900">
-                            $119.00
+                             ${{ number_format($precioMinimoActa, 2) }}
                         </p>
 
                         <p class="text-sm text-slate-500">
