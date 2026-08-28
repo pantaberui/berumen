@@ -37,12 +37,7 @@
                         <span class="text-gray-500">Folio:</span>
                         <span class="font-bold">#{{ str_pad($tramite->id, 6, '0', STR_PAD_LEFT) }}</span>
                     </div>
-                    @foreach($tramite->detalles as $detalle)
-                    <div class="flex justify-between">
-                        <span class="text-gray-500">Trámite:</span>
-                        <span class="font-medium text-right max-w-xs">{{ $detalle->tipoTramite->nombre }}</span>
-                    </div>
-                    @endforeach
+
                     <div class="flex justify-between">
                         <span class="text-gray-500">Cliente:</span>
                         <span>{{ $tramite->cliente_nombre }}</span>
@@ -155,7 +150,21 @@
         </div>
     </div>
 
+
+    @php
+        $detallesWhatsApp = $tramite->detalles->map(function ($detalle) {
+            return [
+                'nombre'   => $detalle->tipoTramite->nombre,
+                'cantidad' => $detalle->cantidad,
+                'importe'  => number_format($detalle->importe, 2),
+                'subtotal' => number_format($detalle->subtotal, 2),
+            ];
+        })->values();
+    @endphp
+
+
     <script>
+
         function imprimirTicket() {
             const ticket  = document.getElementById('ticket').innerHTML;
             const ventana = window.open('', '_blank', 'width=700,height=900');
@@ -190,33 +199,55 @@
 
         function enviarWhatsApp() {
             const numero = document.getElementById('whatsapp_numero').value.replace(/\D/g, '');
+
             if (numero.length !== 10) {
                 document.getElementById('error_whatsapp').classList.remove('hidden');
                 return;
             }
+
             document.getElementById('error_whatsapp').classList.add('hidden');
 
             const datos = {
-                folio:   '{{ str_pad($tramite->id, 6, "0", STR_PAD_LEFT) }}',
-                tramite: @json($detalle->tipoTramite->nombre),
+                folio: '{{ str_pad($tramite->id, 6, "0", STR_PAD_LEFT) }}',
                 cliente: @json($tramite->cliente_nombre),
-                fecha:   '{{ $tramite->fecha_hora_cobro?->format("d/m/Y H:i") }}',
-                total:   '${{ number_format($tramite->subtotal, 2) }}',
+                fecha: '{{ $tramite->fecha_hora_cobro?->format("d/m/Y H:i") }}',
+                total: '${{ number_format($tramite->subtotal, 2) }}',
+                detalles: @json($detallesWhatsApp),
             };
+
+            let listaTramites = '';
+
+            datos.detalles.forEach((detalle, index) => {
+
+                listaTramites +=
+                    `${index + 1}. ${detalle.nombre}\n` +
+                    `   Cantidad: ${detalle.cantidad}\n` +
+                    `   Importe: $${detalle.importe}\n` +
+                    `   Subtotal: $${detalle.subtotal}\n\n`;
+            });
 
             const texto =
                 `*ENTRETENIMIENTO BERUMEN*\n` +
                 `Tamaulipas 3, San José de Mojarras\n` +
                 `Tel. (311) 352-2645\n\n` +
+
                 `*Recibo de Trámite*\n` +
                 `Folio: #${datos.folio}\n` +
-                `Trámite: ${datos.tramite}\n` +
                 `Cliente: ${datos.cliente}\n` +
-                `Fecha: ${datos.fecha}\n` +
+                `Fecha: ${datos.fecha}\n\n` +
+
+                `*TRÁMITES:*\n` +
+                `${listaTramites}` +
+
                 `*TOTAL: ${datos.total}*\n\n` +
+
                 `¡Gracias por su visita!`;
 
-            window.open(`https://wa.me/52${numero}?text=${encodeURIComponent(texto)}`, '_blank');
+            window.open(
+                `https://wa.me/52${numero}?text=${encodeURIComponent(texto)}`,
+                '_blank'
+            );
+
             cerrarModalWhatsApp();
         }
 

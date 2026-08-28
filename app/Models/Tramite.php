@@ -12,25 +12,25 @@ class Tramite extends Model
     protected $table = 'tramites';
 
     protected $fillable = [
-        'user_id', 'cliente_id', 'cliente_nombre',
-        'subtotal', 'observaciones',
-        'fecha_hora_cobro', 'estatus',
-        'fecha_hora_cancelacion', 'cancelado_por',
+        'user_id',
+        'cliente_id',
+        'cliente_nombre',
+        'subtotal',
+        'observaciones',
+        'fecha_hora_cobro',
+        'estatus',
+        'fecha_hora_cancelacion',
+        'cancelado_por',
     ];
 
     protected $casts = [
-        'fecha_hora_cobro'        => 'datetime',
-        'fecha_hora_cancelacion'  => 'datetime',
+        'fecha_hora_cobro'       => 'datetime',
+        'fecha_hora_cancelacion' => 'datetime',
     ];
 
     public function detalles()
     {
         return $this->hasMany(TramiteDetalle::class);
-    }
-
-    public function tipoTramite()
-    {
-        return $this->belongsTo(TipoTramite::class);
     }
 
     public function cajero()

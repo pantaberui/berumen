@@ -27,7 +27,9 @@ class TramiteController extends Controller
         }
 
         if ($request->filled('tipo_tramite_id')) {
-            $query->where('tipo_tramite_id', $request->tipo_tramite_id);
+            $query->whereHas('detalles', function ($q) use ($request) {
+                $q->where('tipo_tramite_id', $request->tipo_tramite_id);
+            });
         }
 
         $totalAcumulado = $query->sum('subtotal');
@@ -98,44 +100,311 @@ class TramiteController extends Controller
 
     public function show(Tramite $tramite)
     {
-        $tramite->load('tipoTramite', 'cajero', 'cliente', 'canceladoPor', 'detalles.tipoTramite');
+        $tramite->load(
+            'cajero',
+            'cliente',
+            'canceladoPor',
+            'detalles.tipoTramite'
+        );
         return view('admin.tramites.show', compact('tramite'));
     }
 
     public function edit(Tramite $tramite)
     {
-        $tiposTramite = TipoTramite::where('activo', true)->orderBy('nombre')->get();
-        return view('admin.tramites.edit', compact('tramite', 'tiposTramite'));
+        $tramite->load('detalles.tipoTramite', 'cajero', 'cliente', 'canceladoPor');
+
+        $tiposTramite = TipoTramite::where('activo', true)
+            ->orderBy('nombre')
+            ->get();
+
+        return view('admin.tramites.edit', compact(
+            'tramite',
+            'tiposTramite'
+        ));
     }
 
     public function update(Request $request, Tramite $tramite)
     {
         $request->validate([
-            'cantidad'      => 'required|integer|min:1',
-            'importe'       => 'required|numeric|min:0',
+            'detalles' => 'required|array|min:1',
+
+            'detalles.*.id' => 'nullable|integer',
+
+            'detalles.*.tipo_tramite_id' => [
+                'required',
+                'exists:tipo_tramites,id',
+            ],
+
+            'detalles.*.cantidad' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+
+            'detalles.*.importe' => [
+                'required',
+                'numeric',
+                'min:0',
+            ],
+
+            'eliminar_detalles' => 'nullable|array',
+
+            'eliminar_detalles.*' => [
+                'integer',
+            ],
+
             'observaciones' => 'nullable|string',
-            'estatus'       => 'required|in:cobrado,cancelado',
+
+            'estatus' => [
+                'required',
+                'in:cobrado,cancelado',
+            ],
         ]);
 
-        $data = [
-            'cantidad'      => $request->cantidad,
-            'importe'       => $request->importe,
-            'subtotal'      => $request->importe * $request->cantidad,
-            'observaciones' => $request->observaciones,
-        ];
 
-        if (auth()->user()->hasRole('admin') &&
-            $request->estatus === 'cancelado' &&
-            $tramite->estatus !== 'cancelado') {
-            $data['estatus']                  = 'cancelado';
-            $data['fecha_hora_cancelacion']   = now();
-            $data['cancelado_por']            = auth()->id();
-        }
+        \DB::transaction(function () use ($request, $tramite) {
 
-        $tramite->update($data);
+            /*
+            * ============================================================
+            * 1. CARGAR DETALLES ACTUALES
+            * ============================================================
+            */
 
-        return redirect()->route('admin.tramites.show', $tramite)
-            ->with('success', 'Trámite actualizado correctamente.');
+            $tramite->load('detalles');
+
+
+            /*
+            * ============================================================
+            * 2. IDS MARCADOS PARA ELIMINAR
+            * ============================================================
+            */
+
+            $eliminarIds = collect(
+                $request->input('eliminar_detalles', [])
+            )
+                ->map(fn ($id) => (int) $id)
+                ->unique()
+                ->values();
+
+
+            /*
+            * Verificar que los detalles que se quieren eliminar
+            * realmente pertenecen a este folio.
+            */
+
+            if ($eliminarIds->isNotEmpty()) {
+
+                $idsPermitidos = $tramite->detalles
+                    ->pluck('id');
+
+                $idsInvalidos = $eliminarIds
+                    ->diff($idsPermitidos);
+
+                if ($idsInvalidos->isNotEmpty()) {
+                    abort(422, 'Uno de los detalles seleccionados no pertenece a este trámite.');
+                }
+            }
+
+
+            /*
+            * ============================================================
+            * 3. ELIMINAR DETALLES
+            * ============================================================
+            */
+
+            if ($eliminarIds->isNotEmpty()) {
+
+                $tramite->detalles()
+                    ->whereIn('id', $eliminarIds)
+                    ->delete();
+            }
+
+
+            /*
+            * ============================================================
+            * 4. ACTUALIZAR / CREAR DETALLES
+            * ============================================================
+            */
+
+            $totalFolio = 0;
+
+            foreach ($request->detalles as $detalleData) {
+
+                /*
+                * Si el detalle fue marcado para eliminar,
+                * no debemos volver a actualizarlo.
+                */
+
+                if (
+                    !empty($detalleData['id']) &&
+                    $eliminarIds->contains((int) $detalleData['id'])
+                ) {
+                    continue;
+                }
+
+
+                $cantidad = (int) $detalleData['cantidad'];
+
+                $importe = (float) $detalleData['importe'];
+
+                $subtotal = round(
+                    $cantidad * $importe,
+                    2
+                );
+
+
+                /*
+                * ========================================================
+                * DETALLE EXISTENTE
+                * ========================================================
+                */
+
+                if (!empty($detalleData['id'])) {
+
+                    $detalle = $tramite->detalles()
+                        ->where('id', $detalleData['id'])
+                        ->first();
+
+                    if (!$detalle) {
+                        abort(
+                            422,
+                            'Uno de los detalles enviados no pertenece a este folio.'
+                        );
+                    }
+
+                    $detalle->update([
+                        'tipo_tramite_id' => $detalleData['tipo_tramite_id'],
+                        'cantidad'        => $cantidad,
+                        'importe'         => $importe,
+                        'subtotal'        => $subtotal,
+                    ]);
+                }
+
+
+                /*
+                * ========================================================
+                * DETALLE NUEVO
+                * ========================================================
+                */
+
+                else {
+
+                    $tramite->detalles()->create([
+                        'tipo_tramite_id' => $detalleData['tipo_tramite_id'],
+                        'cantidad'        => $cantidad,
+                        'importe'         => $importe,
+                        'subtotal'        => $subtotal,
+                    ]);
+                }
+
+
+                $totalFolio += $subtotal;
+            }
+
+
+            /*
+            * ============================================================
+            * 5. VERIFICAR QUE QUEDE AL MENOS UN DETALLE
+            * ============================================================
+            */
+
+            $tramite->load('detalles');
+
+            if ($tramite->detalles->isEmpty()) {
+
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'detalles' => 'El folio debe contener al menos un trámite.',
+                ]);
+            }
+
+
+            /*
+            * ============================================================
+            * 6. RECALCULAR EL TOTAL DESDE LA BD
+            * ============================================================
+            *
+            * Lo volvemos a calcular desde los detalles ya guardados.
+            * Esto evita depender únicamente del cálculo enviado
+            * por el navegador.
+            */
+
+            $totalFolio = $tramite->detalles->sum('subtotal');
+
+            $totalFolio = round($totalFolio, 2);
+
+
+            /*
+            * ============================================================
+            * 7. DATOS GENERALES DEL FOLIO
+            * ============================================================
+            */
+
+            $data = [
+                'subtotal'      => $totalFolio,
+                'observaciones' => $request->observaciones,
+                'estatus'       => $request->estatus,
+            ];
+
+
+            /*
+            * ============================================================
+            * 8. CANCELACIÓN
+            * ============================================================
+            */
+
+            if (
+                $request->estatus === 'cancelado' &&
+                $tramite->estatus !== 'cancelado'
+            ) {
+
+                $data['fecha_hora_cancelacion'] = now();
+
+                $data['cancelado_por'] = auth()->id();
+            }
+
+
+            /*
+            * ============================================================
+            * 9. REGRESAR DE CANCELADO A COBRADO
+            * ============================================================
+            *
+            * Si el administrador revierte la cancelación,
+            * limpiamos los datos de cancelación.
+            */
+
+            if (
+                $request->estatus === 'cobrado' &&
+                $tramite->estatus === 'cancelado'
+            ) {
+
+                $data['fecha_hora_cancelacion'] = null;
+
+                $data['cancelado_por'] = null;
+            }
+
+
+            /*
+            * ============================================================
+            * 10. ACTUALIZAR FOLIO
+            * ============================================================
+            */
+
+            $tramite->update($data);
+        });
+
+
+        /*
+        * ================================================================
+        * REDIRECCIÓN
+        * ================================================================
+        */
+
+        return redirect()
+            ->route('admin.tramites.show', $tramite)
+            ->with(
+                'success',
+                'Trámite actualizado correctamente.'
+            );
     }
 
     public function buscarCliente(Request $request)
@@ -162,7 +431,7 @@ class TramiteController extends Controller
     public function enviarCorreo(Request $request, Tramite $tramite)
     {
         $request->validate(['email' => 'required|email']);
-        $tramite->load('tipoTramite', 'cajero');
+        $tramite->load('detalles.tipoTramite', 'cajero', 'cliente');
 
         try {
             \Mail::to($request->email)->send(new \App\Mail\TicketTramiteMail($tramite));
