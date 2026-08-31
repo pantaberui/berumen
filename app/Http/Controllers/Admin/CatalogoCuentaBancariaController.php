@@ -40,6 +40,11 @@ class CatalogoCuentaBancariaController extends Controller
         $cuenta = DB::transaction(function () use ($request) {
             $datos = $request->validated();
 
+            $datos['slug'] = strtolower(trim($datos['slug']));
+            $datos['logo'] = filled($datos['logo'] ?? null)
+                ? strtolower(trim($datos['logo']))
+                : null;
+
             if ($datos['es_principal'] ?? false) {
                 CatalogoCuentaBancaria::query()
                     ->where('es_principal', true)
@@ -69,6 +74,11 @@ class CatalogoCuentaBancariaController extends Controller
     ): RedirectResponse {
         DB::transaction(function () use ($request, $catalogoCuentaBancaria) {
             $datos = $request->validated();
+
+            $datos['slug'] = strtolower(trim($datos['slug']));
+            $datos['logo'] = filled($datos['logo'] ?? null)
+                ? strtolower(trim($datos['logo']))
+                : null;
 
             if ($datos['es_principal'] ?? false) {
                 CatalogoCuentaBancaria::query()
