@@ -72,6 +72,17 @@
                     </table>
                 </div>
 
+                <div class="border-t border-dashed mt-4 pt-4">
+                    <div class="flex justify-between font-bold text-lg">
+                        <span>TOTAL:</span>
+                        <span>${{ number_format($tramite->subtotal, 2) }}</span>
+                    </div>
+
+                    <div class="text-xs text-gray-500 italic mt-1 text-right">
+                        {{ \App\Helpers\NumeroALetras::convertir($tramite->subtotal) }}
+                    </div>
+                </div>
+
                 @if($tramite->observaciones)
                 <div class="border-t border-dashed mt-4 pt-4 text-xs text-gray-500">
                     <span class="font-medium">Observaciones:</span> {{ $tramite->observaciones }}
