@@ -3,6 +3,60 @@
         👤 Información recibida
     </h2>
 
+    <div class="mb-6">
+        <h3 class="text-sm font-bold text-gray-500 uppercase mb-3">
+            📞 Datos de contacto
+        </h3>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="border rounded-xl p-4 bg-gray-50">
+                <p class="text-xs text-gray-500 uppercase font-bold">
+                    📧 Correo electrónico
+                </p>
+
+                @if($solicitud->correo)
+                    <a href="mailto:{{ $solicitud->correo }}"
+                    class="mt-1 block font-bold text-blue-700 break-all hover:underline">
+                        {{ $solicitud->correo }}
+                    </a>
+                @else
+                    <p class="mt-1 text-gray-500">Sin proporcionar</p>
+                @endif
+            </div>
+
+            <div class="border rounded-xl p-4 bg-gray-50">
+                <p class="text-xs text-gray-500 uppercase font-bold">
+                    📱 WhatsApp
+                </p>
+
+                @if($solicitud->telefono_whatsapp)
+                    @php
+                        $whatsapp = preg_replace('/[^0-9]/', '', $solicitud->telefono_whatsapp);
+                    @endphp
+
+                    <a href="https://wa.me/{{ $whatsapp }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="mt-1 block font-bold text-green-700 hover:underline">
+                        {{ $solicitud->telefono_whatsapp }}
+                    </a>
+                @else
+                    <p class="mt-1 text-gray-500">Sin proporcionar</p>
+                @endif
+            </div>
+
+            <div class="border rounded-xl p-4 bg-gray-50">
+                <p class="text-xs text-gray-500 uppercase font-bold">
+                    📦 Medio de entrega
+                </p>
+
+                <p class="mt-1 font-bold text-gray-900">
+                    {{ $solicitud->medio_entrega ? ucfirst($solicitud->medio_entrega) : 'Sin proporcionar' }}
+                </p>
+            </div>
+        </div>
+    </div>
+
     @foreach($datosAgrupados as $grupo => $datos)
         @if($grupo !== 'documentos')
             <div class="mb-6">
