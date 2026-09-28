@@ -8,6 +8,7 @@ use App\Models\CatalogoInstitucion;
 use App\Models\CatalogoServicio;
 use App\Models\CatalogoServicioModalidad;
 use App\Services\Seo\SeoService;
+use App\Models\CostoActaEntidad;
 
 class TramitaNetServicioController extends Controller
 {
@@ -63,6 +64,13 @@ class TramitaNetServicioController extends Controller
             ->where('slug', $slug)
             ->where('activo', true)
             ->firstOrFail();
+        
+        $precioMinimoActa = null;
+
+        if ($servicio->tipo_precio === 'por_entidad') {
+            $precioMinimoActa = CostoActaEntidad::where('activo', true)
+                ->min('costo');
+        }
 
         $seo = $seoService->servicio($servicio);
 
@@ -70,7 +78,8 @@ class TramitaNetServicioController extends Controller
             'publico.tramitanet.servicio',
             compact(
                 'servicio',
-                'seo'
+                'seo',
+                'precioMinimoActa'
             )
         );
     }

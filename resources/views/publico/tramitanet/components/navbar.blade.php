@@ -237,14 +237,17 @@
             @endif
         </div>
 
-                <nav class="space-y-2">
-                @click.prevent="
-                    menuMovilAbierto = false;
-                    window.location = $el.href;
-                "
-                <span>Inicio</span>
-                <span>›</span>
-            </a>
+            <nav class="space-y-2">
+                <a
+                    href="{{ route('tramitanet.index') }}"
+                    @click="menuMovilAbierto = false"
+                    class="flex items-center justify-between rounded-xl px-4 py-3
+                        text-sm font-bold text-slate-200 transition
+                        hover:bg-white/10 hover:text-orange-400"
+                >
+                    <span>Inicio</span>
+                    <span>›</span>
+                </a>
 
             <a
                 href="{{ route('tramitanet.index') }}#instituciones"

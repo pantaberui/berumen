@@ -152,12 +152,37 @@
                 </p>
 
                 @if($servicio->tipo_precio === 'por_entidad')
-                    <p class="mt-3 text-slate-600">
-                        El costo se calcula automáticamente según la entidad
-                        identificada en la CURP.
+                    @if(!is_null($precioMinimoActa))
+                        <p class="mt-3 text-sm text-slate-500">
+                            Desde
+                        </p>
+
+                        <p class="text-4xl font-black text-slate-900">
+                            ${{ number_format($precioMinimoActa, 2) }}
+                        </p>
+
+                        <p class="text-sm text-slate-500">
+                            MXN
+                        </p>
+                    @else
+                        <p class="mt-3 text-slate-600">
+                            El costo se calcula según la entidad
+                            identificada en la CURP.
+                        </p>
+                    @endif
+
+                    <p class="mt-3 text-xs leading-relaxed text-slate-500">
+                        El costo del acta depende de la entidad federativa
+                        donde se encuentra registrado el nacimiento.
                     </p>
                 @elseif(!is_null($servicio->precio))
-                    <p class="mt-3 text-4xl font-black text-slate-900">
+                    @if($servicio->slug === 'constancia-de-situacion-fiscal-del-sat')
+                        <p class="mt-3 text-sm text-slate-500">
+                            Desde
+                        </p>
+                    @endif
+
+                    <p class="mt-1 text-4xl font-black text-slate-900">
                         ${{ number_format($servicio->precio, 2) }}
                     </p>
 
