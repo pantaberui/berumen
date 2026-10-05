@@ -1,0 +1,35 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('solicitudes_vistas', function (Blueprint $table) {
+            $table->id();
+
+            $table->foreignId('solicitud_servicio_id')
+                ->constrained('solicitud_servicios')
+                ->cascadeOnDelete();
+
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->cascadeOnDelete();
+
+            $table->timestamp('vista_en')->useCurrent();
+
+            $table->unique(
+                ['solicitud_servicio_id', 'user_id'],
+                'solicitud_usuario_vista_unique'
+            );
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('solicitudes_vistas');
+    }
+};

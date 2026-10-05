@@ -16,6 +16,7 @@ use App\Support\TramitaNet\EstadosSolicitud;
 use App\Services\TramitaNet\CambioEstadoService;
 use App\Models\SolicitudServicioPago;
 use App\Services\TramitaNet\PagoService;
+use App\Models\SolicitudVista;
 
 
 class TramitaNetSolicitudAdminController extends Controller
@@ -59,10 +60,48 @@ class TramitaNetSolicitudAdminController extends Controller
             'entregado' => SolicitudServicio::where('estatus', 'entregado')->count(),
         ];
 
+        $solicitudesNuevas = SolicitudServicio::query()
+            ->whereNotIn('id', function ($query) {
+                $query->select('solicitud_servicio_id')
+                    ->from('solicitudes_vistas')
+                    ->where('user_id', auth()->id());
+            })
+            ->count();
+
+        $solicitudes->getCollection()->transform(function ($solicitud) {
+            $solicitud->pagoVencido = false;
+            $solicitud->horasSinPago = 0;
+
+            if (
+                $solicitud->estatus === 'esperando_pago' &&
+                $solicitud->created_at &&
+                $solicitud->created_at->lt(now()->subHours(72)) &&
+                !$solicitud->pagos()
+                    ->where('estatus', 'validado')
+                    ->exists()
+            ) {
+                $solicitud->pagoVencido = true;
+
+                $horasTotales = $solicitud->created_at->diffInHours(now());
+
+                $dias = intdiv($horasTotales, 24);
+                $horas = $horasTotales % 24;
+
+                $solicitud->tiempoSinPago = match (true) {
+                    $dias > 0 && $horas > 0 => "{$dias} " . ($dias === 1 ? 'día' : 'días') . " y {$horas} " . ($horas === 1 ? 'hora' : 'horas'),
+                    $dias > 0 => "{$dias} " . ($dias === 1 ? 'día' : 'días'),
+                    default => "{$horas} " . ($horas === 1 ? 'hora' : 'horas'),
+                };
+            }
+
+            return $solicitud;
+        });
+
         return view('admin.tramitanet.solicitudes.index', compact(
             'solicitudes',
             'estatuses',
-            'conteos'
+            'conteos',
+            'solicitudesNuevas'
         ));
     }
 
@@ -76,6 +115,11 @@ class TramitaNetSolicitudAdminController extends Controller
             'notas',
             'documentosGenerados',
             'ultimoPago',
+        ]);
+
+        SolicitudVista::firstOrCreate([
+            'solicitud_servicio_id' => $solicitud->id,
+            'user_id' => auth()->id(),
         ]);
 
         $ultimoPago = $solicitud->ultimoPago;

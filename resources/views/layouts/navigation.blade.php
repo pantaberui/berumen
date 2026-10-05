@@ -314,8 +314,17 @@
                             >
                                 <span class="desktop-nav-icon">💳</span>
 
-                                <span class="desktop-nav-label">
+                                <span class="relative">
                                     TramitaNet
+
+                                    @if(($solicitudesNuevas ?? 0) > 0)
+                                        <span
+                                            class="absolute -top-2 -right-3 z-50 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-white text-xs font-bold leading-none"
+                                            style="background: #dc2626 !important; background-color: #dc2626 !important; color: #ffffff !important;"
+                                        >
+                                            {{ $solicitudesNuevas }}
+                                        </span>
+                                    @endif
                                 </span>
 
                                 <svg class="desktop-nav-arrow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -672,7 +681,18 @@
                     :active="request()->routeIs('admin.tramitanet.solicitudes.*')"
                     style="padding-left: 1.5rem;"
                 >
-                    Centro de Gestión
+                    <span class="flex items-center gap-2">
+                        <span>Centro de Gestión</span>
+
+                        @if(($solicitudesNuevas ?? 0) > 0)
+                            <span
+                                class="absolute -top-2 -right-3 z-50 flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full text-white text-xs font-bold leading-none"
+                                style="background: #dc2626 !important; background-color: #dc2626 !important; color: #ffffff !important;"
+                            >
+                                {{ $solicitudesNuevas }}
+                            </span>
+                        @endif
+                    </span>
                 </x-responsive-nav-link>
 
                 <x-responsive-nav-link

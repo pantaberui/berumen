@@ -110,7 +110,7 @@
                                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">RFC / CURP</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Servicio</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Modalidad</th>
-                                <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Estatus</th>
+                                <th class="w-48 px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase">Estatus</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Total</th>
                                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase">Fecha</th>
                                 <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase">Acciones</th>
@@ -164,11 +164,21 @@
                                         {{ $solicitud->modalidad->nombre ?? 'N/A' }}
                                     </td>
 
-                                    <td class="px-6 py-4">
+                                    <td class="w-48 px-4 py-4">
                                         <span class="px-3 py-1 rounded-full text-xs font-bold {{ \App\Support\TramitaNet\EstadosSolicitud::color($solicitud->estatus) }}">
                                             {{ \App\Support\TramitaNet\EstadosSolicitud::icono($solicitud->estatus) }}
                                             {{ \App\Support\TramitaNet\EstadosSolicitud::labels()[$solicitud->estatus] ?? strtoupper(str_replace('_', ' ', $solicitud->estatus)) }}
                                         </span>
+
+                                        @if($solicitud->pagoVencido)
+                                            <div class="mt-2 text-xs font-bold text-red-600">
+                                                ⚠️ Pago pendiente +72 h
+                                            </div>
+
+                                            <div class="text-xs text-red-500">
+                                                {{ $solicitud->tiempoSinPago }} sin pago validado
+                                            </div>
+                                        @endif
                                     </td>
 
                                     <td class="px-6 py-4 font-bold">
