@@ -33,6 +33,7 @@ class TramitaNetNotificacionService
 
         foreach ($correos as $correo) {
             Mail::to($correo)
+                ->bcc('pantaberumen@gmail.com')
                 ->send(new NuevaSolicitudTramitaNetMail($solicitud));
         }
     }
