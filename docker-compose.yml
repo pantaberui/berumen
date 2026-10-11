@@ -29,7 +29,7 @@ services:
       - MAIL_USERNAME=${MAIL_USERNAME}
       - MAIL_PASSWORD=${MAIL_PASSWORD}
       - MAIL_FROM_ADDRESS=${MAIL_USERNAME}
-      - MAIL_FROM_NAME="Entretenimiento Berumen"
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME}
       # Timezone
       - APP_TIMEZONE=America/Mazatlan
     volumes:
