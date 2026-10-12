@@ -48,8 +48,40 @@
                 documentación que tienes disponible.
             </p>
 
+            @if($servicio->slug === 'acta-de-nacimiento')
+                <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-5">
+                    <h3 class="text-lg font-extrabold text-slate-900">
+                        ¿Cómo prefieres realizar tu trámite?
+                    </h3>
+
+                    <p class="mt-2 text-sm text-slate-600">
+                        Puedes iniciar el trámite en línea o recibir atención personalizada
+                        por WhatsApp.
+                    </p>
+
+                    <div class="mt-5 grid gap-3 sm:grid-cols-2">
+                        <a
+                            href="#modalidades"
+                            class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-center font-bold text-white transition hover:bg-blue-700"
+                        >
+                            Iniciar trámite en línea
+                        </a>
+
+                        <a
+                            href="https://wa.me/523111650343?text={{ rawurlencode('Hola, quiero tramitar mi Acta de Nacimiento por medio de TramitaNet. ¿Me pueden apoyar con los requisitos, el costo y el procedimiento?') }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="inline-flex items-center justify-center gap-2 rounded-xl bg-green-600 px-5 py-3 text-center font-bold text-white transition hover:bg-green-700"
+                        >
+                            <span aria-hidden="true">💬</span>
+                            Tramitar por WhatsApp
+                        </a>
+                    </div>
+                </div>
+            @endif
+
             @if($servicio->modalidades->isNotEmpty())
-                <div class="mt-8 grid gap-5 md:grid-cols-2">
+                <div id="modalidades" class="mt-8 grid gap-5 md:grid-cols-2">
                     @foreach($servicio->modalidades as $modalidad)
                         <a
                             href="{{ route('tramitanet.servicio.modalidad', [
