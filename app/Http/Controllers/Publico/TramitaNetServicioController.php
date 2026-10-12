@@ -34,6 +34,7 @@ class TramitaNetServicioController extends Controller
         );
     }
 
+        
     public function modalidad(string $slug, string $modalidad)
     {
         $servicio = CatalogoServicio::with('institucion')
@@ -46,11 +47,20 @@ class TramitaNetServicioController extends Controller
             ->where('activo', true)
             ->firstOrFail();
 
+        $precioMinimoActa = null;
+
+        if ($servicio->tipo_precio === 'por_entidad') {
+            $precioMinimoActa = CostoActaEntidad::where('activo', true)
+                ->min('costo');
+        }
+
         return view('publico.tramitanet.modalidad', compact(
             'servicio',
-            'modalidadServicio'
+            'modalidadServicio',
+            'precioMinimoActa'
         ));
     }
+
 
 
     public function servicio(string $slug, SeoService $seoService)

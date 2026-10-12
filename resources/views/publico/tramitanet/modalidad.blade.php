@@ -278,22 +278,48 @@ Tiempo estimado
 
 <hr class="my-6">
 
+
 <p class="text-sm uppercase text-slate-500">
     Costo
 </p>
 
-<p class="font-black text-4xl mt-2">
-    ${{ number_format(
-        $modalidadServicio->precio ?? $servicio->precio ?? 0,
-        2
-    ) }}
-</p>
+@if($servicio->tipo_precio === 'por_entidad')
+    @if(!is_null($precioMinimoActa))
+        <p class="mt-3 text-sm text-slate-500">
+            Desde
+        </p>
 
-<p class="text-slate-500">
+        <p class="font-black text-4xl mt-2">
+            ${{ number_format($precioMinimoActa, 2) }}
+        </p>
 
-MXN
+        <p class="text-slate-500">
+            MXN
+        </p>
+    @else
+        <p class="mt-3 text-slate-600">
+            El costo se calcula según la entidad
+            identificada en la CURP.
+        </p>
+    @endif
 
-</p>
+    <p class="mt-3 text-xs leading-relaxed text-slate-500">
+        El costo del acta depende de la entidad federativa
+        donde se encuentra registrado el nacimiento.
+    </p>
+@else
+    <p class="font-black text-4xl mt-2">
+        ${{ number_format(
+            $modalidadServicio->precio ?? $servicio->precio ?? 0,
+            2
+        ) }}
+    </p>
+
+    <p class="text-slate-500">
+        MXN
+    </p>
+@endif
+
 
 </div>
 
