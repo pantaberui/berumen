@@ -49,7 +49,10 @@
             </p>
 
             @if($servicio->slug === 'acta-de-nacimiento')
-                <div class="mt-6 rounded-3xl border border-slate-200 bg-white p-5">
+                <div
+                    id="opciones-solicitud"
+                    class="mt-6 rounded-3xl border border-slate-200 bg-white p-5"
+                >
                     <h3 class="text-lg font-extrabold text-slate-900">
                         ¿Cómo prefieres realizar tu trámite?
                     </h3>
@@ -60,12 +63,13 @@
                     </p>
 
                     <div class="mt-5 grid gap-3 sm:grid-cols-2">
-                        <a
-                            href="#modalidades"
+                        <button
+                            type="button"
+                            id="btn-iniciar-en-linea"
                             class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-5 py-3 text-center font-bold text-white transition hover:bg-blue-700"
                         >
                             Iniciar trámite en línea
-                        </a>
+                        </button>
 
                         <a
                             href="https://wa.me/523111650343?text={{ rawurlencode('Hola, quiero tramitar mi Acta de Nacimiento por medio de TramitaNet. ¿Me pueden apoyar con los requisitos, el costo y el procedimiento?') }}"
@@ -80,8 +84,41 @@
                 </div>
             @endif
 
+            <div
+                id="encabezado-modalidades"
+                class="mt-8 hidden"
+                tabindex="-1"
+            >
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <p class="text-sm font-bold text-green-700">
+                            ✓ Solicitud en línea
+                        </p>
+
+                        <h3 class="mt-1 text-xl font-extrabold text-slate-900">
+                            Selecciona la modalidad de tu trámite
+                        </h3>
+
+                        <p class="mt-2 text-sm text-slate-600">
+                            Elige la opción que corresponda a los datos que tienes disponibles.
+                        </p>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="btn-volver-opciones"
+                        class="shrink-0 text-sm font-semibold text-blue-700 hover:text-blue-900"
+                    >
+                        ← Volver
+                    </button>
+                </div>
+            </div>
+
             @if($servicio->modalidades->isNotEmpty())
-                <div id="modalidades" class="mt-8 grid gap-5 md:grid-cols-2">
+                <div
+                    id="modalidades"
+                    class="mt-8 grid scroll-mt-6 gap-5 md:grid-cols-2"
+                >
                     @foreach($servicio->modalidades as $modalidad)
                         <a
                             href="{{ route('tramitanet.servicio.modalidad', [
@@ -257,5 +294,43 @@
 
     </div>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const btnIniciar = document.getElementById('btn-iniciar-en-linea');
+        const btnVolver = document.getElementById('btn-volver-opciones');
+        const opciones = document.getElementById('opciones-solicitud');
+        const encabezado = document.getElementById('encabezado-modalidades');
+        const modalidades = document.getElementById('modalidades');
+
+        if (!btnIniciar || !opciones || !encabezado || !modalidades) {
+            return;
+        }
+
+        btnIniciar.addEventListener('click', function () {
+            opciones.classList.add('hidden');
+            encabezado.classList.remove('hidden');
+
+            modalidades.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+
+            encabezado.focus({ preventScroll: true });
+        });
+
+        if (btnVolver) {
+            btnVolver.addEventListener('click', function () {
+                encabezado.classList.add('hidden');
+                opciones.classList.remove('hidden');
+
+                opciones.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'center'
+                });
+            });
+        }
+    });
+</script>
 
 @endsection
