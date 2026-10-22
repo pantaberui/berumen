@@ -65,15 +65,19 @@ class TramitaNetServicioController extends Controller
 
     public function servicio(string $slug, SeoService $seoService)
     {
-
-
+       
         $servicio = CatalogoServicio::with([
                 'institucion',
+                'modalidades' => fn ($query) => $query
+                    ->where('activo', true)
+                    ->orderBy('orden'),
                 'modalidades.campos.campoMaestro',
             ])
             ->where('slug', $slug)
             ->where('activo', true)
             ->firstOrFail();
+        
+
         
         $precioMinimoActa = null;
 
